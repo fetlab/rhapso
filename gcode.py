@@ -171,7 +171,7 @@ class Gcode(object):
 						self.preamble = Layer(curr_layer, layernum=0)
 						in_preamble = False
 					else:
-						self.layers.append(Layer(curr_layer), layernum=layernum)
+						self.layers.append(Layer(curr_layer, layernum=layernum))
 						layernum =+ 1
 					curr_layer = [l]
 
