@@ -59,8 +59,25 @@ class Layer(object):
 
 
 	def __repr__(self):
-		return '<Layer %s at Z=%s, %d lines>' % (self.layernum, self.z(),
-				len(self.lines))
+		return '<Layer %s at Z=%s; corners: (%d, %d), (%d, %d); %d lines>' % (
+				(self.layernum, self.z()) + self.extents() + (len(self.lines),))
+
+
+	def extents(self):
+		"""Return the extents of the layer: the min/max in x and y that
+		occur. Note this does not take arcs into account."""
+		min_x = min(self.lines, key=lambda l: l.args.get('X', float('inf'))).args['X']
+		min_y = min(self.lines, key=lambda l: l.args.get('Y', float('inf'))).args['Y']
+		max_x = max(self.lines, key=lambda l: l.args.get('X', float('-inf'))).args['X']
+		max_y = max(self.lines, key=lambda l: l.args.get('Y', float('-inf'))).args['Y']
+		return min_x, min_y, max_x, max_y
+
+
+	def extents_gcode(self):
+		"""Return two Lines of gcode that move to the extents."""
+		min_x, min_y, max_x, max_y = self.extents()
+		return Line(code='G0', args={'X': min_x, 'Y': min_y}),\
+					 Line(code='G0', args={'X': max_x, 'Y': max_y})
 
 
 	def z(self):
