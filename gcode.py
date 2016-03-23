@@ -131,7 +131,7 @@ class Layer(object):
 
 
 class Gcode(object):
-	def __init__(self, filestring):
+	def __init__(self, filestring=''):
 		"""Parse a file's worth of gcode passed as a string. Example:
 		  g = Gcode(open('mycode.gcode').read())"""
 		self.preamble = None
@@ -170,6 +170,9 @@ class Gcode(object):
 
 	def parse(self, filestring):
 		"""Parse the gcode."""
+		if not filestring:
+			return
+
 		in_preamble = True
 
 		#Cura nicely adds a "LAYER" comment just before each layer
