@@ -1,34 +1,39 @@
 import re, sys
 
 class Line(object):
-	def __init__(self, line):
+	def __init__(self, line='', code=None, args={}):
 		"""Parse a single line of gcode into its code and named
 		arguments."""
-		self.line = line
+		self.line    = line
+		self.comment = None
 
-		#Extract the comment if there is one
-		lc = self.line.split(';', 1)
-		if len(lc) > 1:
-			self.line, self.comment = lc
+		if args or code:
+			if not (args and code):
+				raise ValueError("Both code and args must be specified")
+			self.code = code
+			self.args = args
 		else:
-			self.comment = None
+			#Extract the comment if there is one
+			lc = self.line.split(';', 1)
+			if len(lc) > 1:
+				self.line, self.comment = lc
 
-		#Get the actual code and the arguments
-		args = self.line.split()
-		self.code = args[0]
-		self.args = {}
-		if self.code == 'M117':
-			self.args[None] = self.line.split(None, 1)[1]
-		else:
-			for arg in args[1:]:
-				if re.match('[A-Za-z]', arg[0]):
-					try:
-						self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
-					except ValueError:
-						sys.stderr.write("Line: %s\n" % line)
-						raise
-				else:
-					self.args[None] = arg
+			#Get the actual code and the arguments
+			args = self.line.split()
+			self.code = args[0]
+			self.args = {}
+			if self.code == 'M117':
+				self.args[None] = self.line.split(None, 1)[1]
+			else:
+				for arg in args[1:]:
+					if re.match('[A-Za-z]', arg[0]):
+						try:
+							self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
+						except ValueError:
+							sys.stderr.write("Line: %s\n" % line)
+							raise
+					else:
+						self.args[None] = arg
 
 
 	def __repr__(self):
