@@ -1,4 +1,4 @@
-import re, sys
+import re, sys, warnings
 
 class Line(object):
 	def __init__(self, line='', code=None, args={}):
@@ -131,11 +131,15 @@ class Layer(object):
 
 
 class Gcode(object):
-	def __init__(self, filestring=''):
+	def __init__(self, filename=None, filestring=''):
 		"""Parse a file's worth of gcode passed as a string. Example:
 		  g = Gcode(open('mycode.gcode').read())"""
 		self.preamble = None
 		self.layers   = []
+		if filename:
+			if filestring:
+				warnings.warn("Ignoring passed filestring in favor of loading file.")
+			filestring = open(filename).read()
 		self.parse(filestring)
 
 
@@ -143,14 +147,19 @@ class Gcode(object):
 		return '<Gcode with %d layers>' % len(self.layers)
 
 
-	def construct(self):
-		"""Construct and return all of the gcode."""
+	def construct(self, outfile=None):
+		"""Construct all and return of the gcode. If outfile is given,
+		write the gcode to the file instead of returning it."""
 		s = (self.preamble.construct() + '\n') if self.preamble else ''
 		for i,layer in enumerate(self.layers):
 			s += ';LAYER:%d\n' % i
 			s += layer.construct()
 			s += '\n'
-		return s
+		if outfile:
+			with open(outfile, 'w') as f:
+				f.write(s)
+		else:
+			return s
 
 
 	def shift(self, layernum=0, **kwargs):
