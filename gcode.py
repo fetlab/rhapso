@@ -27,11 +27,14 @@ class Line(object):
 			else:
 				for arg in args[1:]:
 					if re.match('[A-Za-z]', arg[0]):
-						try:
-							self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
-						except ValueError:
-							sys.stderr.write("Line: %s\n" % line)
-							raise
+						if arg[1:]:
+							try:
+								self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
+							except ValueError:
+								sys.stderr.write("Line: %s\n" % line)
+								raise
+						else:
+							self.args[arg[0]] = None
 					else:
 						self.args[None] = arg
 
