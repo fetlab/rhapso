@@ -199,8 +199,8 @@ class Gcode(object):
 		# G0 or G1 commands with a Z in them
 		else:
 			layernum = 1
+			curr_layer = []
 			for l in filestring.split('\n'):
-				curr_layer = []
 
 				#Looks like a layer change because we have a Z
 				if re.match(r'G[01]\s.*Z-?\.?\d+', l):
