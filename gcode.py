@@ -53,7 +53,7 @@ class Line(object):
 
 
 class Layer(object):
-	def __init__(self, lines, layernum=None):
+	def __init__(self, lines=[], layernum=None):
 		"""Parse a layer of gcode line-by-line, making Line objects."""
 		self.layernum  = layernum
 		self.preamble  = []
