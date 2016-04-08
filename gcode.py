@@ -47,8 +47,10 @@ class Line(object):
 	def construct(self):
 		"""Construct and return a line of gcode based on self.code and
 		self.args."""
-		return ' '.join([self.code] + ['%s%s' % (k if k else '', v if v else '') for k,v in
-			self.args.iteritems()]) + (' ;%s' % self.comment if self.comment else '')
+		return ' '.join([self.code] +
+				['%s%s' % (k if k is not None else '', v if v is not None else '')
+					for k,v in self.args.iteritems()]) +\
+		(' ;%s' % self.comment if self.comment else '')
 
 
 
