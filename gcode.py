@@ -27,7 +27,7 @@ class Line(object):
 			else:
 				for arg in args[1:]:
 					if re.match('[A-Za-z]', arg[0]):
-						if arg[1:]:
+						if arg[1:] is not None and arg[1:] != '':
 							try:
 								self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
 							except ValueError:
@@ -47,7 +47,7 @@ class Line(object):
 	def construct(self):
 		"""Construct and return a line of gcode based on self.code and
 		self.args."""
-		return ' '.join([self.code] + ['%s%s' % (k if k else '', v) for k,v in
+		return ' '.join([self.code] + ['%s%s' % (k if k else '', v if v else '') for k,v in
 			self.args.iteritems()]) + (' ;%s' % self.comment if self.comment else '')
 
 
