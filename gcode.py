@@ -217,3 +217,10 @@ class Gcode(object):
 					curr_layer.append(l)
 
 			self.layers.append(Layer(curr_layer))
+
+
+if __name__ == "__main__":
+	if sys.argv[1:]:
+		g = Gcode(sys.argv[1])
+		print g
+		print g.layers
