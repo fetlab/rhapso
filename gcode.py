@@ -1,42 +1,47 @@
 import re, sys, warnings
 
 class Line(object):
-	def __init__(self, line='', code=None, args={}):
+	def __init__(self, line='', code=None, args={}, comment=None):
 		"""Parse a single line of gcode into its code and named
 		arguments."""
 		self.line    = line
-		self.comment = None
+		self.code    = code
+		self.args    = args
+		self.comment = comment
 
 		if args or code:
 			if not (args and code):
 				raise ValueError("Both code and args must be specified")
-			self.code = code
-			self.args = args
 		else:
-			#Extract the comment if there is one
-			lc = self.line.split(';', 1)
-			if len(lc) > 1:
-				self.line, self.comment = lc
-
-			#Get the actual code and the arguments
-			args = self.line.split()
-			self.code = args[0]
-			self.args = {}
-			if self.code == 'M117':
-				self.args[None] = self.line.split(None, 1)[1]
+			#Check for comment-only lines
+			if re.match(r'\s*;', line):
+				self.comment = line[line.index(';')+1:]
+				print self.comment
 			else:
-				for arg in args[1:]:
-					if re.match('[A-Za-z]', arg[0]):
-						if arg[1:] is not None and arg[1:] != '':
-							try:
-								self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
-							except ValueError:
-								sys.stderr.write("Line: %s\n" % line)
-								raise
+				#Extract the comment if there is one
+				lc = self.line.split(';', 1)
+				if len(lc) > 1:
+					self.line, self.comment = lc
+
+				#Get the actual code and the arguments
+				args = self.line.split()
+				self.code = args[0]
+				self.args = {}
+				if self.code == 'M117':
+					self.args[None] = self.line.split(None, 1)[1]
+				else:
+					for arg in args[1:]:
+						if re.match('[A-Za-z]', arg[0]):
+							if arg[1:] is not None and arg[1:] != '':
+								try:
+									self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
+								except ValueError:
+									sys.stderr.write("Line: %s\n" % line)
+									raise
+							else:
+								self.args[arg[0]] = None
 						else:
-							self.args[arg[0]] = None
-					else:
-						self.args[None] = arg
+							self.args[None] = arg
 
 
 	def __repr__(self):
@@ -47,6 +52,8 @@ class Line(object):
 	def construct(self):
 		"""Construct and return a line of gcode based on self.code and
 		self.args."""
+		if not self.code:
+			return ';%s' % self.comment
 		return ' '.join([self.code] +
 				['%s%s' % (k if k is not None else '', v if v is not None else '')
 					for k,v in self.args.iteritems()]) +\
@@ -59,7 +66,7 @@ class Layer(object):
 		"""Parse a layer of gcode line-by-line, making Line objects."""
 		self.layernum  = layernum
 		self.preamble  = []
-		self.lines     = [Line(l) for l in lines if l and l[0] != ';']
+		self.lines     = [Line(l) for l in lines if l]
 		self.postamble = []
 
 
