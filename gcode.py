@@ -16,7 +16,6 @@ class Line(object):
 			#Check for comment-only lines
 			if re.match(r'\s*;', line):
 				self.comment = line[line.index(';')+1:]
-				print self.comment
 			else:
 				#Extract the comment if there is one
 				lc = self.line.split(';', 1)
