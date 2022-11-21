@@ -1,13 +1,12 @@
 import re
 import plotly.graph_objects as go
-from plot_helpers import segs_xy, plot_segments, plot_points, show_dark, styles
+from plot_helpers import plot_segments, plot_points, show_dark, styles
 from tlayer import TLayer
 from util import deep_update
 from geometry import GSegment, GPoint
 from geometry.utils import angle2point
 from Geometry3D import Vector
 from gcline import GCLine
-import ender3
 
 def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 							 prev_layer_only_outline=True, preview_layer=True):

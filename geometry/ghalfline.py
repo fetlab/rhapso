@@ -40,12 +40,6 @@ class GHalfLine(HalfLine):
 
 	def distance(self, other):
 		return distance_linelike_point(self, other)
-		if not isinstance(other, Point):
-			return super().distance(other)
-		p = other
-		aux_plane = Plane(p, self.vector)
-		foot = aux_plane.intersection(self)
-		return None if foot is None else p.distance(foot)
 
 
 	def moved(self, vec):

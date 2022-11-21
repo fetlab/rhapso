@@ -1,7 +1,6 @@
 import re
-from gcline import GCLine, GCLines
+from gcline import GCLine
 from util import listsplit
-from more_itertools import peekable
 
 class GCodeException(Exception):
 	def __init__(self, obj, message):

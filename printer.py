@@ -1,15 +1,10 @@
 from copy import copy
-from typing import List, Collection, Set
+from typing import Collection, Set
 from itertools import groupby
 from more_itertools import flatten
-from math import degrees, atan2
-
-import plotly.graph_objects as go
-from plot_helpers import segs_xy, update_figure
 
 from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
-from geometry.utils import eq2d
 from gcline import GCLine
 from ring import Ring
 from bed import Bed
@@ -29,10 +24,7 @@ class Printer:
 	}
 
 	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
-							#effective_bed_size:tuple[Number, Number], ring_radius:Number, z:Number=0):
 		self._x, self._y, self._z = 0, 0, z
-		# self.bed  = Bed(size=effective_bed_size)
-		# self.ring = Ring(radius=ring_radius, center=GPoint(0, 0, z))
 		self.bed = bed
 		self.ring = ring
 
@@ -74,14 +66,6 @@ class Printer:
 
 	def attr_changed(self, attr, old_value, new_value):
 		return
-		if attr[1] == 'y':
-			curr_thread = GHalfLine(self.anchor, self.ring.point)
-			self.ring.y = -new_value
-			isec = self.ring.intersection(curr_thread)
-
-			#Move the ring to keep the thread intersecting the anchor
-			#TODO: this reuses the anchor so doesn't work!
-			#self.thread_intersect(self.anchor, set_new_anchor=False, move_ring=True)
 
 
 	def execute_gcode(self, gcline:GCLine) -> list[GCLine]:

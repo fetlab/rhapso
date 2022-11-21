@@ -1,12 +1,10 @@
 from Geometry3D import Circle, Vector
 from math import degrees, cos, radians, sin, atan2
-from typing import Tuple, List
 
 from gcline import GCLine
 from geometry import GPoint, GSegment, GHalfLine
-from geometry.utils import eq2d, ang_diff
+from geometry.utils import ang_diff
 from util import attrhelper
-from logger import rprint
 
 from plot_helpers import update_figure
 
@@ -68,7 +66,7 @@ class Ring:
 		return self.angle2point(self.angle)
 
 
-	def intersection(self, seg:GSegment|GHalfLine) -> List[GPoint]:
+	def intersection(self, seg:GSegment|GHalfLine) -> list[GPoint]:
 		"""Return the intersection points between the passed GSegment and the ring,
 		sorted by distance to seg.start_point ."""
 		#Form a half line (basically a ray) from the anchor through the target

@@ -1,5 +1,5 @@
 import logging
-import plotly, plotly.graph_objects as go
+import plotly.graph_objects as go
 from Geometry3D import Point, Segment, Plane, distance
 from geometry_helpers import GPoint, GSegment, Geometry, Planes, seg_combine, gcode2segments
 from typing import List, Set, Dict

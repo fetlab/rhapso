@@ -56,11 +56,9 @@ Transforms to provide:
 from printer import Printer
 from bed import Bed
 from ring import Ring
-from geometry import GPoint, GSegment
-from Geometry3D import Vector
-from gcline import GCLine
+from geometry import GPoint
 from typing import TypedDict
-from util import Number, Saver
+from util import Number
 
 # --- Ring gearing ---
 steps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps

@@ -71,7 +71,6 @@ class RichHandler(logging.Handler):
 
 	def emit(self, record):
 		style = record.__dict__.get('style', {})
-		div   = record.__dict__.get('div', '') or self.force_div
 
 		html  = self._render_segments(
 			self.console.render(self.format(record)),

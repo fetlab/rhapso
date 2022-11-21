@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from geometry import GSegment, GPoint
+from geometry import GSegment
 from gcline import GCLine
 from util import linf, Saver, unprinted
 from logger import rprint, rich_log
@@ -28,7 +28,7 @@ class Step:
 					 f'[light_sea_green italic]{self.name}[/]>')
 
 
-	def gcode(self, include_start=False) -> list:
+	def gcode(self) -> list:
 		"""Render the gcode involved in this Step, returning a list of GCLines:
 			* Sort added gcode lines by line number. If there are breaks in line
 				number, check whether the represented head position also has a break.

@@ -11,7 +11,6 @@ class Steps:
 		self.printer       = printer
 		self.debug_plot    = debug_plot
 		self.steps         = []
-		self._current_step = None
 
 
 	def __repr__(self):

@@ -17,22 +17,8 @@ from util import unprinted
 print('reload threader')
 restart_logging()
 
-# --- Options for specific setups ---
-# What size does the slicer think the bed is?
-effective_bed_size =  79, 220
-
-#Where is the ring center, according to the effective bed coordinate system?
-# Note that the ring will be wider than the bed. I got these coordinates via
-# the Ender 3 CAD model.
-ring_center = 36, 28
-
-#What is the radius of the circle inscribed by the thread outlet from the
-# carrier?
-ring_radius = 92.5
-
 #Epsilon for various things
 thread_epsilon = 1   #Thread segments under this length (mm) get ingored/merged
-avoid_epsilon  = 1   #how much room (mm) to leave around segments
 
 """
 Usage notes:
@@ -98,7 +84,6 @@ class Threader:
 		self.layer_steps.append(Steps(layer=layer, printer=self.printer, debug_plot=debug_plot))
 		steps = self.layer_steps[-1]
 
-		self.input_thread = thread_list
 		thread = deepcopy(thread_list)
 
 		if thread[0].start_point == self.printer.bed.anchor:
@@ -242,7 +227,6 @@ class Threader:
 						thread)
 			else:
 				rprint(f"[red]———[/] Now process {len(thread)} thread segments [red]———[/]")
-				self.debug_threads = thread
 
 				#At this point we've printed everything that does not intersect the
 				# thread path. Now we need to work with the individual thread segments

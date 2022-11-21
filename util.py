@@ -1,4 +1,3 @@
-from collections  import namedtuple
 import inspect
 from time         import time
 from functools    import wraps, reduce
@@ -194,39 +193,17 @@ def deep_update(mapping, *updating_mappings):
 	return updated_mapping
 
 
-class Restore:
-	def __init__(self, obj, vars):
-		self.saved = {v: getattr(obj, v) for v in vars}
-		self.obj = obj
-		self.changed = {}
-
-	def __enter__(self):
-		return self
-
-	def __exit__(self, exc_type, value, tb):
-		if exc_type is not None:
-			return False
-		for var,oldval in self.saved.items():
-			newval = getattr(self.obj, var)
-			if newval != oldval:
-				self.changed[var] = newval
-			setattr(self.obj, var, oldval)
-
-
-
 class Saver:
 	"""Save values for variables in save_vars that have changed."""
 	def __init__(self, obj, save_vars):
 		self.saved = {v: getattr(obj, v) for v in save_vars}
 		self.obj = obj
 		self.changed = {}
-		from threader import rprint
 
 	def __enter__(self):
 		return self
 
 	def __exit__(self, exc_type, value, tb):
-		from threader import rprint
 		if exc_type is not None:
 			return False
 		for var,oldval in self.saved.items():
