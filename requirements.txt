@@ -1,0 +1,7 @@
+Geometry3D
+dataclasses
+fastcore
+more_itertools
+plotly
+rich
+ipywidgets
