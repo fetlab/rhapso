@@ -266,4 +266,4 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 
 	fig = go.Figure(fig_dict)
 	fig.show()
-	return fig, fig_dict
+	return fig
