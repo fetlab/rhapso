@@ -1,4 +1,4 @@
-#from Geometry3D import Vector, Point, Segment, Line, Plane
+from Geometry3D import Vector, get_eps
 from gcline import GCLines
 from dataclasses import make_dataclass
 from typing import List, Dict, Collection, Set
@@ -149,3 +149,24 @@ def gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
 	return preamble, segments, extra
 
 
+#Source: https://web.archive.org/web/20171110082203/http://www.geomalgorithms.com/a07-_distance.html
+def cpa_time(seg1:GSegment, seg2:GSegment):
+	"""Determine the "time" at which the closest point of approach occurs between
+	the two segments."""
+	v1 = Vector(*seg1)
+	v2 = Vector(*seg2)
+	dv = v1 - v2
+	dv2 = dv * dv
+
+	if dv2 < get_eps(): return 0
+
+	w0 = Vector(seg2.start_point, seg1.start_point)
+	return -(w0 * dv) / dv2
+
+
+#Source: https://web.archive.org/web/20171110082203/http://www.geomalgorithms.com/a07-_distance.html
+def cpa(seg1:GSegment, seg2:GSegment):
+	"""Return the closest points of approach on the two segments."""
+	c = cpa_time(seg1, seg2)
+	return (seg1.start_point + c * Vector(*seg1),
+					seg2.start_point + c * Vector(*seg2))
