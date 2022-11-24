@@ -9,7 +9,7 @@ from gcline import GCLine
 from ring import Ring
 from bed import Bed
 from logger import rprint
-from geometry_helpers import visibility4, too_close
+from geometry_helpers import visibility, too_close
 from geometry.utils import angsort
 
 
@@ -121,7 +121,7 @@ class Printer:
 			 and not any(too_close(thr, ep) for ep in (set(flatten(avoid)) - set(thr[:])))):
 			return set()
 
-		vis, ipts = visibility4(anchor, avoid, avoid_by)
+		vis, ipts = visibility(anchor, avoid, avoid_by)
 
 		#Get all of the visibility points with N intersections, where N is the
 		# smallest number of intersections

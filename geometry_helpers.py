@@ -15,7 +15,7 @@ Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
 Planes   = make_dataclass('Planes',   ['top', 'bottom'])
 
 
-def visibility4(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> Dict[GPoint, Set]:
+def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> Dict[GPoint, Set]:
 	"""Calculate visibility for `origin` with respect to `query`, attempting to
 	ensure `avoid_by` mm of avoidance. For every potential visibility point,
 	return the segments intersected by a ray from `origin` to that point:
