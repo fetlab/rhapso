@@ -105,8 +105,11 @@ class GCLine:
 
 
 	@property
-	def xy(self):
-		return self.args['X'], self.args['Y']
+	def x(self): return self.args['X']
+	@property
+	def y(self): return self.args['Y']
+	@property
+	def xy(self): return self.x, self.y
 
 
 	def construct(self, **kwargs):
