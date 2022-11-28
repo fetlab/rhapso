@@ -3,7 +3,7 @@ from typing import List
 from geometry_helpers import GSegment
 from fastcore.basics import filter_values
 from gcline import GCLine
-from gcode import GcodeFile
+from gcode_file import GcodeFile
 from rich import print
 from rich.pretty import pretty_repr
 from itertools import pairwise
