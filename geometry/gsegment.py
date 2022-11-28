@@ -8,6 +8,14 @@ from .utils import distance_linelike_point
 
 class GSegment(Segment):
 	def __init__(self, a, b=None, z=None, gc_lines=None, is_extrude=False, **kwargs):
+		"""Instantiate a GSegment.
+
+		If the first argument is a Segment, the second argument will be ignored and
+		a copy of the segment will be returned.
+
+		Otherwise, the first two arguments can be any combination of Point, GCLine,
+		or tuple/list (passed to the GPoint constructor).
+		"""
 		#Label whether this is an extrusion move or not
 		self.is_extrude = is_extrude
 
