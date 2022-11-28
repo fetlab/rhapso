@@ -41,6 +41,7 @@ class Threader:
 			r.append(GCLine(fake=True, comment=f'==== Start layer {steps_obj.layer.layernum} ===='))
 			r.extend(steps_obj.gcode())
 			r.append(GCLine(fake=True, comment=f'====== End layer {steps_obj.layer.layernum} ===='))
+		r.extend(self.gcode_file.postamble.lines.data.copy() if self.gcode_file.postamble else [])
 		return r
 
 
