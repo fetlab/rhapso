@@ -8,8 +8,9 @@ class GcodeFile:
 	def __init__(self, filename=None, filestring='', layer_class=Layer,
 			line_class=GCLine, parser=None):
 		"""Parse a file's worth of gcode."""
-		self.preamble = None
-		self.layers   = []
+		self.preamble   = None
+		self.postamble  = None
+		self.layers     = []
 		self.filestring = filestring
 		if filename:
 			if filestring:
@@ -64,14 +65,6 @@ class GcodeFile:
 
 		parser = parser or parsers.find_parser(self.filelines)
 		parser.parse(self)
-
-
-def test():
-	try:
-		g = GcodeFile('example_gcode/cubex2-cura_4.12.1.gcode')
-	except Exception as e:
-		return e.args[0]
-	return g
 
 
 if __name__ == "__main__":
