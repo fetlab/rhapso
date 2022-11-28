@@ -83,11 +83,13 @@ class GPoint(Point):
 		return c
 
 
-	def moved(self, vec):
-		"""Return a copy of this point moved by vector vec."""
-		return GPoint(self.copy().move(vec))
+	def moved(self, vec=None, x=None, y=None, z=None):
+		"""Return a copy of this point moved by vector vec or by x/y/z."""
+		return GPoint(self.copy().move(
+			vec if vec is not None
+			else Vector(x or 0, y or 0, z or 0)))
+
 
 
 	def intersecting(self, check):
 		return {o for o in listify(check) if self in o}
-
