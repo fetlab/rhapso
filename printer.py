@@ -24,7 +24,7 @@ class Printer:
 	}
 
 	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
-		self._x, self._y, self._z = 0, 0, z
+		self._x, self._y, self._z, self._e = 0, 0, z, 0
 		self.bed = bed
 		self.ring = ring
 
@@ -40,6 +40,7 @@ class Printer:
 	x = property(**attrhelper('_x'))
 	y = property(**attrhelper('_y'))
 	z = property(**attrhelper('_z'))
+	e = property(**attrhelper('_e'))
 
 	@property
 	def xy(self): return self.x, self.y
@@ -54,7 +55,7 @@ class Printer:
 		rprint(textwrap.dedent(f"""\
 			[yellow]—————[/]
 			{self}:
-				_x, _y, _z: {self._x}, {self._y}, {self._z}
+				_x, _y, _z, _e: {self._x}, {self._y}, {self._z}, {self._e}
 				anchor: {self.anchor}
 
 				bed: {self.bed}
