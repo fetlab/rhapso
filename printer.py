@@ -73,10 +73,31 @@ class Printer:
 	def execute_gcode(self, gcline:GCLine) -> list[GCLine]:
 		"""Update the printer state according to the passed line of gcode. Return
 		the line of gcode for convenience. Assumes absolute coordinates."""
-		if gcline.code in ['M82', 'M83']:
-			self.extrusion_mode = gcline
-		elif gcline.code and gcline.code[0] == 'T':
-			self.extruder_no = gcline
+		#M82: absolute, M83: relative
+		#G92: set axis value
+
+		if gcline.code is None: return []
+
+		if gcline.code in ('M82', 'M83'): self.extrusion_mode = gcline
+		elif gcline.code[0] == 'T':       self.extruder_no    = gcline
+		elif gcline.code == 'M302':       self.cold_extrusion = gcline
+		elif gcline.code in ('G0', 'G1', 'G92') and self.extruder_no.code == 'T0':
+			for axis in 'xyz':
+				if axis.upper() in gcline.args:
+					setattr(self, axis, gcline.args[axis.upper()])
+
+			if 'E' in gcline.args:
+				if gcline.code == 'G92' or self.extrusion_mode.code == 'M82':
+					self.e = gcline.args['E']
+				elif self.extrusion_mode.code == 'M83':
+					if hasattr(gcline, 'relative_extrude'):
+						self.e += gcline.args['E']
+					else:
+						raise ValueError('Printer extrusion mode is M83 (relative) but '
+							f'current GCLine has no relative_extrude attribute:\n{gcline}')
+				else:
+					raise ValueError('Extrude GCLine but printer has no valid extrusion mode set')
+
 		return [gcline]
 
 
