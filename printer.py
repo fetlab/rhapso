@@ -52,7 +52,7 @@ class Printer:
 
 	def summarize(self):
 		import textwrap
-		rprint(textwrap.dedent(f"""\
+		return textwrap.dedent(f"""\
 			[yellow]—————[/]
 			{self}:
 				_x, _y, _z, _e: {self._x}, {self._y}, {self._z}, {self._e}
@@ -63,7 +63,7 @@ class Printer:
 					_angle: {self.ring._angle}
 					center: {self.ring.center}
 			[yellow]—————[/]
-		"""))
+		""")
 
 
 	def attr_changed(self, attr, old_value, new_value):
