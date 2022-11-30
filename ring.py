@@ -116,12 +116,13 @@ class Ring:
 		extrude = self.rot_mul * dist
 		dir_str = 'CCW' if dist > 0 else 'CW'
 
-		gc = ([
+		gc = [
 			GCLine(code='T1', comment='Switch to ring extruder', fake=True),
 			GCLine(code='M83', comment='Set relative extrusion mode', fake=True),
+			GCLine(code='M302', args={'P':1}, comment='Allow cold extrusion', fake=True),
 			GCLine(code='G1', args={'E':round(extrude,3), 'F':8000},
 				comment=f'Ring move {dir_str} from {self.initial_angle:.2f}° to {self.angle:.2f}°', fake=True),
-		])
+		]
 
 		return gc
 

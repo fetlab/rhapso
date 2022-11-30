@@ -46,7 +46,7 @@ class Step:
 				# "execute" each line of ring-movement gcode to update the machine
 				# state, but want to reset the extruder to the current state after the
 				# ring moves.
-				save_vars = 'extruder_no', 'extrusion_mode'
+				save_vars = 'extruder_no', 'extrusion_mode', 'cold_extrusion'
 
 				newlines:list[GCLine] = []
 				with Saver(self.printer, save_vars) as saver:
