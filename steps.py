@@ -31,10 +31,7 @@ class Steps:
 
 
 	def step_exited(self, step):
-		"""When a Step exits it will call this. Janky!"""
-		# if step.debug_plot:
-		# 	with get_output():
-		# 		self.plot(stepnum=step.number)
+		"""When a Step exits it will call this."""
 		if not step.valid:
 			rprint(f"Step {step.number} invalid, deleting")
 			del(self.steps[-1])

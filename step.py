@@ -37,7 +37,6 @@ class Step:
 		self.gcsegs is made of GSegment objects, each of which should have a .gc_line1
 		and .gc_line2 member which are GCLines.
 		"""
-		# rprint(f'[red]————— START STEP {self.number}: {self.name} —————')
 
 		gcode = []
 
