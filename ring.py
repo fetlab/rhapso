@@ -79,15 +79,6 @@ class Ring:
 		return sorted(isecs, key=lambda p: hl.point.distance(p))
 
 
-	def carrier_location(self, offset=0):
-		"""Used in plotting."""
-		return GPoint(
-			self.center.x + cos(radians(self.angle))*(self.radius+offset),
-			self.center.y + sin(radians(self.angle))*(self.radius+offset),
-			self.center.z
-		)
-
-
 	def angle2point(self, angle):
 		"""Return an x,y,z=0 location on the ring based on the given angle, without
 		moving the ring."""
@@ -127,7 +118,8 @@ class Ring:
 		return gc
 
 
-	def plot(self, fig, style=None, offset:Vector=None):
+	def plot(self, fig, style=None, offset:Vector=None, angle=None):
+		angle = self.angle if angle is None else angle
 		center = self.center.copy()
 		if offset: center.move(offset)
 		fig.add_shape(
@@ -142,8 +134,16 @@ class Ring:
 
 		ringwidth = next(fig.select_shapes(selector={'name':'ring'})).line.width
 
-		c1 = self.carrier_location(offset=-ringwidth/2)
-		c2 = self.carrier_location(offset=ringwidth/2)
+		c1 = GPoint(
+				self.center.x + cos(radians(angle))*(self.radius-ringwidth/2),
+				self.center.y + sin(radians(angle))*(self.radius-ringwidth/2),
+				self.center.z)
+		c2 = GPoint(
+				self.center.x + cos(radians(angle))*(self.radius+ringwidth/2),
+				self.center.y + sin(radians(angle))*(self.radius+ringwidth/2),
+				self.center.z)
+
+
 		if offset:
 			c1.move(offset)
 			c2.move(offset)
