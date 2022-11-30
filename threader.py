@@ -34,6 +34,11 @@ class Threader:
 		self.acclog      = reinit_logging()
 
 
+	def save(self, filename):
+		with open(filename, 'w') as f:
+			f.write('\n'.join([l.construct() for l in self.gcode()]))
+
+
 	def gcode(self):
 		"""Return the gcode for all layers."""
 		r = self.gcode_file.preamble.lines.data.copy() if self.gcode_file.preamble else []
