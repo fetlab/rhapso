@@ -82,10 +82,10 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 
 		##Plot the thread from the previous steps
 		#for i in range(1, stepnum):
-		#	steps[i].plot_thread(fig, steps[i-1].printer.anchor, style={'thread': styles['old_thread']})
+		#	steps[i].plot_thread(fig, steps[i-1].state['printer_anchor'], style={'thread': styles['old_thread']})
 		for i in range(1, stepnum):
-			if steps[i-1].printer.anchor != steps[i].printer.anchor:
-				plot_segments(fig, [GSegment(steps[i-1].printer.anchor, steps[i].printer.anchor)],
+			if steps[i-1].state['printer_anchor'] != steps[i].state['printer_anchor']:
+				plot_segments(fig, [GSegment(steps[i-1].state['printer_anchor'], steps[i].state['printer_anchor'])],
 									style=styles['printed_thread'], name='finished thread')
 
 		#Plot geometry printed in this step
@@ -97,17 +97,17 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 
 		#Plot thread trajectory from current anchor to ring
 		plot_segments(fig, [GSegment(
-			steps[stepnum-1].printer.anchor if stepnum > 0 else steps[0].printer.anchor,
-			step.printer.ring.point)], name='thread', style=styles['thread_ring'])
+			steps[stepnum-1].state['printer_anchor'] if stepnum > 0 else steps[0].state['printer_anchor'],
+			step.printer.ring.angle2point(step.state['ring_angle']))], name='thread', style=styles['thread_ring'])
 
 		#Plot anchor/enter/exit points if any
-		plot_points(fig, [step.printer.anchor], name='anchor', style=styles['anchor'])
+		plot_points(fig, [step.state['printer_anchor']], name='anchor', style=styles['anchor'])
 		if hasattr(layer, 'start_anchor'):
 			plot_points(fig, [layer.start_anchor], style=styles['anchor'],
 							 name='start anchor', marker_symbol='circle', marker_size=6)
 
 		#Plot the ring
-		step.printer.ring.plot(fig)#, offset=Vector(ender3.bed_config['zero'], ender3.ring_config['zero']))
+		step.printer.ring.plot(fig, angle=step.state['ring_angle'])#, offset=Vector(ender3.bed_config['zero'], ender3.ring_config['zero']))
 
 		#Show the figure for this step
 		(x1,y1),(x2,y2) = layer.extents()

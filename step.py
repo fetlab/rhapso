@@ -1,11 +1,13 @@
 from copy import deepcopy
+from typing import TypedDict
 
-from geometry import GSegment
+from geometry import GSegment, GPoint
 from gcline import GCLine
-from util import linf, Saver, unprinted
+from util import linf, Saver, unprinted, Number
 from logger import rprint, rich_log
 import logging
 
+StepState = TypedDict('StepState', {'printer_anchor': GPoint, 'ring_angle': Number})
 
 class Step:
 	def __init__(self, steps_obj, name='', debug=True, debug_plot=False):
@@ -19,6 +21,12 @@ class Step:
 		self.number     = -1
 		self.caller     = linf(2)
 		self.valid      = True
+
+		ninf = float('-inf')
+		self.state: StepState = {
+				'printer_anchor': GPoint(ninf, ninf, ninf),
+				'ring_angle': ninf,
+		}
 
 
 	def __repr__(self):
@@ -105,7 +113,9 @@ class Step:
 
 	def __exit__(self, exc_type, value, traceback):
 		if self.debug is False: rich_log.setLevel(logging.DEBUG)
-		self.printer = deepcopy(self.printer)
+		#self.printer = deepcopy(self.printer)
+		self.state['printer_anchor'] = self.printer.anchor.copy()
+		self.state['ring_angle'] = self.printer.ring.angle
 		#Die if there's an exception
 		if exc_type is not None:
 			print(f'Exception on Step.__exit__: {exc_type}')
