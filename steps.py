@@ -1,4 +1,3 @@
-from typing import List
 from util import find
 from step import Step
 from logger import rprint
@@ -41,9 +40,9 @@ class Steps:
 			del(self.steps[-1])
 
 
-	def gcode(self) -> List[GCLine]:
+	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all steps."""
-		r: List[GCLine] = self.layer.preamble.data.copy()
+		r: list[GCLine] = self.layer.preamble.data.copy()
 
 		ring_angle = self.steps[0].printer.ring.angle
 
