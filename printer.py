@@ -11,6 +11,7 @@ from bed import Bed
 from logger import rprint
 from geometry_helpers import visibility, too_close
 from geometry.utils import angsort
+from steps import Steps
 
 
 class Printer:
@@ -107,7 +108,7 @@ class Printer:
 		return GSegment(self.anchor, self.ring.point, z=self.z)
 
 
-	def avoid_and_print(self, steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
+	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
 		"""Loop to print everything in avoid without thread intersections."""
 		avoid = set(avoid or [])
 		repeats = 0

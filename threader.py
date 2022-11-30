@@ -1,5 +1,4 @@
 from copy import deepcopy
-from typing import List
 from geometry_helpers import GSegment
 from fastcore.basics import filter_values
 from gcline import GCLine
@@ -30,7 +29,7 @@ class Threader:
 	def __init__(self, gcode_file:GcodeFile):
 		self.gcode_file  = gcode_file
 		self.printer     = Ender3()
-		self.layer_steps: List[Steps] = []
+		self.layer_steps: list[Steps] = []
 		self.acclog      = reinit_logging()
 
 
@@ -50,7 +49,7 @@ class Threader:
 		return r
 
 
-	def route_model(self, thread_list: List[GSegment], start_layer=None, end_layer=None, debug_plot=False):
+	def route_model(self, thread_list: list[GSegment], start_layer=None, end_layer=None, debug_plot=False):
 		if self.layer_steps: raise ValueError("This Threader has been used already")
 		self.acclog = reinit_logging(self.acclog)
 		self.acclog.show()
@@ -69,7 +68,7 @@ class Threader:
 		end_accordion_logging()
 
 
-	def route_layer(self, thread_list: List[GSegment], layer, start_anchor=None, debug_plot=False):
+	def route_layer(self, thread_list: list[GSegment], layer, start_anchor=None, debug_plot=False):
 		"""Goal: produce a sequence of "steps" that route the thread through one
 		layer. A "step" is a set of operations that diverge from the original
 		gcode; for example, printing all of the non-thread-intersecting segments
@@ -84,7 +83,7 @@ class Threader:
 			end_accordion_logging()
 
 
-	def _route_layer(self, thread_list: List[GSegment], layer, start_anchor=None, debug_plot=False):
+	def _route_layer(self, thread_list: list[GSegment], layer, start_anchor=None, debug_plot=False):
 		self.printer.z = layer.z
 
 		self.layer_steps.append(Steps(layer=layer, printer=self.printer, debug_plot=debug_plot))
