@@ -30,8 +30,8 @@ class GSegment(Segment):
 
 		#Argument |a| is a GSegment: instantiate a copy
 		if isinstance(a, Segment):
-			# if b is not None:
-			# 	raise ValueError('Second argument must be None when first is a Segment')
+			if b is not None:
+				raise ValueError('Second argument must be None when first is a Segment')
 			copyseg = a
 			#Make copies of the start/end points to ensure we avoid accidents
 			a = copy(kwargs.get('start_point', copyseg.start_point))
