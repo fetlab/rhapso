@@ -95,15 +95,11 @@ class Ring:
 		return degrees(atan2(point.y - self.center.y, point.x - self.center.x))
 
 
-	def gcode_move(self):
-		"""Return the gcode necessary to move the ring from its current angle
-		to its requested one."""
-		#Were there any changes in angle?
-		if self.angle == self.initial_angle:
-			return []
+	def gcode_move(self, dist):
+		"""Return the gcode necessary to move the ring by `dist` degrees."""
+		if not degrees: return []
 
 		#Find "extrusion" amount - requires M92 has set steps/degree correctly
-		dist = ang_diff(self.initial_angle, self.angle)
 		extrude = self.rot_mul * dist
 		dir_str = 'CCW' if dist > 0 else 'CW'
 

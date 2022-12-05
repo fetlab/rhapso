@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 from geometry import GSegment, GPoint
+from geometry.utils import ang_diff
 from gcline import GCLine
 from util import Saver, unprinted, Number
 from logger import rprint, rich_log
@@ -16,8 +17,9 @@ class Step:
 		self.gcsegs:list[GSegment] = []
 		self.number     = -1
 		self.valid      = True
-		self.printer_anchor = GPoint(float('-inf'), float('-inf'), float('-inf'))
-		self.ring_angle = float('-inf')
+		self.printer_anchor = None
+		self.ring_angle = None
+		self.ring_move = 0
 
 
 	def __repr__(self):
@@ -39,7 +41,7 @@ class Step:
 		gcode = []
 
 		if not self.gcsegs:
-			if self.printer.ring.initial_angle != self.printer.ring.angle:
+			if self.ring_move:
 				#Variables to be restored, in the order they should be restored: we
 				# "execute" each line of ring-movement gcode to update the machine
 				# state, but want to reset the extruder to the current state after the
@@ -48,7 +50,7 @@ class Step:
 
 				newlines:list[GCLine] = []
 				with Saver(self.printer, save_vars) as saver:
-					for rline in self.printer.ring.gcode_move():
+					for rline in self.printer.ring.gcode_move(self.ring_move):
 						newlines.extend(self.printer.execute_gcode(rline))
 
 				#Restore extruder state if it was changed
@@ -70,21 +72,24 @@ class Step:
 			# Save and execute every line, as the XY move will put the head in the
 			# right place for the extrude.
 			if len(seg.gc_lines) > 2:
-				for line in seg.gc_lines:
+				for line in seg.gc_lines.data[:-1]:
 					gcode.extend(self.printer.execute_gcode(line))
-				continue
+				extrude_line = seg.gc_lines.data[-1]
 
 			#For 2-line Segments
-			l1, l2 = seg.gc_lines.data
+			else:
+				l1, extrude_line = seg.gc_lines.data
 
-			#The first line should never execute an extrusion move, but we might need
-			# to use its coordinates to position the print head in the right place.
-			if l1.is_xymove() and self.printer.xy != l1.xy:
-				if l1.is_xyextrude():
-					l1 = l1.as_xymove(fake=True)
-				move_lines = self.printer.execute_gcode(l1)
-				gcode.extend(move_lines)
-			gcode.extend(self.printer.execute_gcode(l2))
+				#The first line should never execute an extrusion move, but we might need
+				# to use its coordinates to position the print head in the right place.
+				if l1.is_xymove() and self.printer.xy != l1.xy:
+					if l1.is_xyextrude():
+						l1 = l1.as_xymove(fake=True)
+					move_lines = self.printer.execute_gcode(l1)
+					gcode.extend(move_lines)
+
+			assert(extrude_line.is_extrude())
+			gcode.extend(self.printer.execute_gcode(extrude_line))
 
 		return gcode
 
@@ -103,9 +108,9 @@ class Step:
 
 	def __exit__(self, exc_type, value, traceback):
 		if self.debug is False: rich_log.setLevel(logging.DEBUG)
-		#self.printer = deepcopy(self.printer)
 		self.printer_anchor = self.printer.anchor.copy()
 		self.ring_angle = self.printer.ring.angle
+		self.ring_move = ang_diff(self.printer.ring.initial_angle, self.printer.ring.angle)
 		#Die if there's an exception
 		if exc_type is not None:
 			print(f'Exception on Step.__exit__: {exc_type}')

@@ -39,35 +39,31 @@ class Steps:
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all steps."""
-		r: list[GCLine] = self.layer.preamble.data.copy()
-
-		ring_angle = self.steps[0].printer.ring.angle
+		r: list[GCLine] = self.printer.execute_gcode(self.layer.preamble.data)
 
 		for i,step in enumerate(self.steps):
-			step.printer.ring.initial_angle = ring_angle
+			printer_xy = self.printer.xy
 
 			g = step.gcode()
-
-			ring_angle = step.printer.ring.angle
 
 			if not g:
 				r.append(GCLine(fake=True,
 					comment=f'Step {step.number} ({len(g)} lines): {step.name} ---------------------------'))
 				continue
 
-			#--- Fill in any fake moves we need between steps ---
-			#Find the first "real" extruding move in this step, if any
-			start_extrude = find(g, lambda l:l.is_xyextrude() and isinstance(l.lineno, int))
+			##--- Fill in any fake moves we need between steps ---
+			##Find the first extruding move in this step
+			#start_extrude = find(g, lambda l:l.is_xyextrude() and not l.fake)
 
-			if r and start_extrude:
-				#Find the last print head position
-				if missing_move := self.layer.lines[:start_extrude.lineno].end():
-					new_line = missing_move.as_xymove()
-					new_line.comment = f'---- fake inter-step move from {missing_move.lineno}'
-					new_line.fake = True
-					new_line.lineno = ''
-					g.append(new_line)
-					# rprint(f'  new step line: {new_line}')
+			#if r and start_extrude:
+			#	#Find the last print head position
+			#	if missing_move := self.layer.lines[:start_extrude.lineno].end():
+			#		new_line = missing_move.as_xymove()
+			#		new_line.comment = f'---- fake inter-step move from {missing_move.lineno}'
+			#		new_line.fake = True
+			#		new_line.lineno = ''
+			#		g.append(new_line)
+			#		# rprint(f'  new step line: {new_line}')
 
 			#Put the step-delimiter comment first in the list; do it last to prevent issues
 			g.insert(0, GCLine(#lineno=r[-1].lineno+.5 if r else 0.5,
@@ -80,6 +76,6 @@ class Steps:
 		if r:
 			r.append(GCLine(fake=True, comment='Layer postamble ------'))
 
-		r.extend(self.layer.postamble)
+		r.extend(self.printer.execute_gcode(self.layer.postamble))
 
 		return r

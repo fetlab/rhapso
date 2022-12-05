@@ -34,6 +34,9 @@ class Threader:
 
 
 	def save(self, filename):
+		if len(self.layer_steps) != len(self.gcode_file.layers):
+			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
+				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
 			f.write('\n'.join([l.construct() for l in self.gcode()]))
 
@@ -84,8 +87,6 @@ class Threader:
 
 
 	def _route_layer(self, thread_list: list[GSegment], layer, start_anchor=None, debug_plot=False):
-		self.printer.z = layer.z
-
 		self.layer_steps.append(Steps(layer=layer, printer=self.printer, debug_plot=debug_plot))
 		steps = self.layer_steps[-1]
 

@@ -1,11 +1,12 @@
-from copy import copy
+from copy import copy, deepcopy
 from typing import Collection, Set
 from itertools import groupby
 from more_itertools import flatten
+from fastcore.basics import listify
 
 from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
-from gcline import GCLine
+from gcline import GCLine, GCLines
 from ring import Ring
 from bed import Bed
 from logger import rprint
@@ -29,13 +30,15 @@ class Printer:
 		self.bed = bed
 		self.ring = ring
 
-		self.anchor = GPoint(self.bed.anchor[0], self.bed.anchor[1], z)
+		self.anchor = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
 
 		#Default states
 		self.extruder_no    = GCLine(code='T0',  args={}, comment='Switch to main extruder', fake=True)
 		self.extrusion_mode = GCLine(code='M82', args={}, comment='Set absolute extrusion mode', fake=True)
 		self.cold_extrusion = GCLine(code='M302', args={'P':0}, comment='Prevent cold extrusion', fake=True)
 
+		#Debug
+		self._executing_line:GCLine|None = None
 
 	#Create attributes which call Printer.attr_changed on change
 	x = property(**attrhelper('_x'))
@@ -69,43 +72,70 @@ class Printer:
 
 	def attr_changed(self, attr, old_value, new_value):
 		return
+		if old_value != new_value and attr[1] == 'e':
+			if self._executing_line and (self._executing_line.lineno < 40 or
+																4486 < self._executing_line.lineno < 4725 ):
+				print(f'{self._executing_line}:\n\tprinter.{attr[1:]} {old_value} -> {new_value}')
 
 
 	def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
 		"""Update the printer state according to the passed line of gcode. Return
 		the line of gcode for convenience. Assumes absolute coordinates."""
-		#M82: absolute, M83: relative
-		#G92: set axis value
+		r = []
+		for l in listify(gcline):
+			r.extend(self.execute_gcode_line(l))
+		return r
 
-		if gcline.code is None: return []
 
-		if gcline.code in ('M82', 'M83'): self.extrusion_mode = gcline
-		elif gcline.code[0] == 'T':       self.extruder_no    = gcline
-		elif gcline.code == 'M302':       self.cold_extrusion = gcline
-		elif gcline.code in ('G0', 'G1', 'G92') and self.extruder_no.code == 'T0':
-			for axis in 'xyz':
-				if axis.upper() in gcline.args:
-					setattr(self, axis, gcline.args[axis.upper()])
+	def execute_gcode_line(self, gcline:GCLine) -> list[GCLine]:
+		self._executing_line = gcline
 
-			if 'E' in gcline.args:
-				if gcline.code == 'G92' or self.extrusion_mode.code == 'M82':
-					self.e = gcline.args['E']
-				elif self.extrusion_mode.code == 'M83':
-					if hasattr(gcline, 'relative_extrude'):
+		match gcline.code:
+			#Comment-only line
+			case None: return [gcline]
+
+			#M82: absolute; M83: relative
+			case 'M82' | 'M83': self.extrusion_mode = gcline
+
+			#Extruder change
+			case 'T0' | 'T1': self.extruder_no = gcline
+
+			#Enable/disable cold extrusion
+			case 'M302': self.cold_extrusion = gcline
+
+			#Auto home
+			case 'G28':
+				self.x = 0
+				self.y = 0
+				self.z = 0
+
+			#G0, G1: move; G92: set axis value
+			case 'G0' | 'G1' | 'G92' if self.extruder_no.code == 'T0':
+				if gcline.x: self.x = gcline.x
+				if gcline.y: self.y = gcline.y
+				if gcline.z: self.z = gcline.z
+
+				if 'E' in gcline.args:
+					#G92: software set value
+					if gcline.code == 'G92':
+						self.e = gcline.args['E']
+
+					#M83: relative extrude mode
+					elif self.extrusion_mode.code == 'M83':
 						self.e += gcline.args['E']
+
+					#A normal extruding line; we need to use the relative extrude value
+					# since our lines get emitted out-of-order
+					########### TODO: it looks like there is a parsing or something bug
+					# that makes the lines E-6.5 / E0 turn into E-6.5 / E6.5 -> see
+					# input/output gcode line 36
 					else:
-						raise ValueError('Printer extrusion mode is M83 (relative) but '
-							f'current GCLine has no relative_extrude attribute:\n{gcline}')
-				else:
-					raise ValueError('Extrude GCLine but printer has no valid extrusion mode set')
+						self.e += gcline.relative_extrude
+						gcline = deepcopy(gcline)
+						gcline.args['E'] = self.e
+
 
 		return [gcline]
-
-
-	def anchor_to_ring(self) -> GSegment:
-		"""Return a Segment representing the current thread, from the anchor point
-		to the ring."""
-		return GSegment(self.anchor, self.ring.point, z=self.z)
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
@@ -136,7 +166,7 @@ class Printer:
 		avoid = set(avoid)
 		self.debug_avoid = avoid.copy()
 
-		thr = self.anchor_to_ring()
+		thr = GSegment(self.anchor, self.ring.point)
 		anchor = thr.start_point
 
 		#If no thread-avoid intersections and the thread is not too close to any
