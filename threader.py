@@ -52,7 +52,7 @@ class Threader:
 		return r
 
 
-	def route_model(self, thread_list: list[GSegment], start_layer=None, end_layer=None, debug_plot=False):
+	def route_model(self, thread_list: list[GSegment], start_layer=None, end_layer=None):
 		if self.layer_steps: raise ValueError("This Threader has been used already")
 		self.acclog = reinit_logging(self.acclog)
 		self.acclog.show()
@@ -61,8 +61,7 @@ class Threader:
 				self._route_layer(
 											thread_list,
 											layer,
-											self.printer.anchor.copy(z=layer.z),
-											debug_plot=debug_plot)
+											self.printer.anchor.copy(z=layer.z))
 			except:
 				self.acclog.unfold()
 				end_accordion_logging()
@@ -71,7 +70,7 @@ class Threader:
 		end_accordion_logging()
 
 
-	def route_layer(self, thread_list: list[GSegment], layer, start_anchor=None, debug_plot=False):
+	def route_layer(self, thread_list: list[GSegment], layer, start_anchor=None):
 		"""Goal: produce a sequence of "steps" that route the thread through one
 		layer. A "step" is a set of operations that diverge from the original
 		gcode; for example, printing all of the non-thread-intersecting segments
@@ -80,14 +79,14 @@ class Threader:
 		self.acclog = reinit_logging(self.acclog)
 		self.acclog.show()
 		try:
-			self._route_layer(thread_list, layer, start_anchor, debug_plot=debug_plot)
+			self._route_layer(thread_list, layer, start_anchor)
 		finally:
 			self.acclog.unfold()
 			end_accordion_logging()
 
 
-	def _route_layer(self, thread_list: list[GSegment], layer, start_anchor=None, debug_plot=False):
-		self.layer_steps.append(Steps(layer=layer, printer=self.printer, debug_plot=debug_plot))
+	def _route_layer(self, thread_list: list[GSegment], layer, start_anchor=None):
+		self.layer_steps.append(Steps(layer=layer, printer=self.printer))
 		steps = self.layer_steps[-1]
 
 		thread = deepcopy(thread_list)
@@ -111,8 +110,7 @@ class Threader:
 				((min_x, max_y, layer.z), (max_x, max_y, layer.z)),
 				((max_x, max_y, layer.z), (max_x, min_y, layer.z)),
 				((max_x, min_y, layer.z), (min_x, min_y, layer.z)))]
-			with steps.new_step('Move thread to avoid layer extents', debug=False,
-											 debug_plot=False):
+			with steps.new_step('Move thread to avoid layer extents', debug=False):
 				self.printer.thread_avoid(ext_rect)
 			#Set the Layer's postamble to the entire set of gcode lines so that we
 			# correctly generate the output gcode with Steps.gcode()

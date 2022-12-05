@@ -5,10 +5,9 @@ from gcline import GCLine, comment
 
 
 class Steps:
-	def __init__(self, layer, printer, debug_plot=False):
+	def __init__(self, layer, printer):
 		self.layer         = layer
 		self.printer       = printer
-		self.debug_plot    = debug_plot
 		self.steps         = []
 
 
@@ -21,10 +20,8 @@ class Steps:
 		return self.steps[-1] if self.steps else None
 
 
-	def new_step(self, *messages, debug=True, debug_plot=None):
-		self.steps.append(
-			Step(self, ' '.join(map(str,messages)), debug=debug,
-					 debug_plot=self.debug_plot if debug_plot is None else debug_plot))
+	def new_step(self, *messages, debug=True):
+		self.steps.append(Step(self, ' '.join(map(str,messages)), debug=debug))
 		self.current.number = len(self.steps) - 1
 		self.current.printer.debug_avoid = set()
 		if debug: rprint(f'\n{self.current}')

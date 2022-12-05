@@ -8,10 +8,9 @@ from logger import rprint, rich_log
 import logging
 
 class Step:
-	def __init__(self, steps_obj, name='', debug=True, debug_plot=False):
+	def __init__(self, steps_obj, name='', debug=True):
 		self.name       = name
 		self.debug      = debug
-		self.debug_plot = debug_plot
 		self.steps_obj  = steps_obj
 		self.printer = steps_obj.printer
 		self.gcsegs:list[GSegment] = []
