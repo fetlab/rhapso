@@ -105,11 +105,15 @@ class GCLine:
 
 
 	@property
-	def x(self): return self.args['X']
+	def x(self): return self.args.get('X', None)
 	@property
-	def y(self): return self.args['Y']
+	def y(self): return self.args.get('Y', None)
+	@property
+	def z(self): return self.args.get('Z', None)
 	@property
 	def xy(self): return self.x, self.y
+	@property
+	def xyz(self): return self.x, self.y, self.z
 
 
 	def construct(self, **kwargs):
@@ -122,7 +126,7 @@ class GCLine:
 
 		if self.code:
 			out.append(self.code)
-		out.extend(['{}{}'.format(k, v) for k,v in args.items()])
+		out.extend([f'{k}{round(v,5) if v is not None else ""}' for k,v in args.items()])
 		comment = f'; [{self.lineno}]' if self.lineno else '; '
 		if self.comment:
 			comment += f' {self.comment}'
@@ -281,13 +285,7 @@ class GCLines(UserList):
 	def start(self, is_extrude=False) -> GCLine|None:
 		"""Return the first X/Y (extruding) move in this group of GCLines or None
 		if no moves are present."""
-		#TODO: what's right with is_extrude=True? Return the start point of the
-		# move, or the line with the extrude command in it?
 		test = GCLine.is_xyextrude if is_extrude else GCLine.is_xymove
-		# for i,line in enumerate(self.data):
-		# 	if test(line):
-		# 		return self.data[i-1] if is_extrude else line
-		# return None
 		return next(filter(test, self.data), None)
 
 
