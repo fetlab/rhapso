@@ -1,7 +1,7 @@
 from copy import deepcopy
 from geometry_helpers import GSegment
 from fastcore.basics import filter_values
-from gcline import GCLine
+from gcline import GCLine, comment
 from gcode_file import GcodeFile
 from rich import print
 from rich.pretty import pretty_repr
@@ -45,9 +45,9 @@ class Threader:
 		"""Return the gcode for all layers."""
 		r = self.printer.execute_gcode(self.gcode_file.preamble_layer.lines)
 		for steps_obj in self.layer_steps:
-			r.append(GCLine(fake=True, comment=f'==== Start layer {steps_obj.layer.layernum} ===='))
+			r.append(comment(f'==== Start layer {steps_obj.layer.layernum} ===='))
 			r.extend(steps_obj.gcode())
-			r.append(GCLine(fake=True, comment=f'====== End layer {steps_obj.layer.layernum} ===='))
+			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
 		r.extend(self.printer.execute_gcode(self.gcode_file.postamble_layer.lines))
 		return r
 
