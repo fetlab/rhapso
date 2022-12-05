@@ -3,9 +3,9 @@ from gcline import GCLine, GCLines
 class Layer():
 	def __init__(self, lines=[], layernum=None):
 		self.layernum  = layernum
-		self.preamble  = GCLines()
-		self.lines     = GCLines(lines)
-		self.postamble = GCLines()
+		self.preamble:  list[GCLine] | GCLines = GCLines()
+		self.lines:     list[GCLine] | GCLines = GCLines(lines)
+		self.postamble: list[GCLine] | GCLines = GCLines()
 		self.has_moves = len(list(filter(lambda l:l.is_xymove(), self.lines)))
 		self._z        = None
 

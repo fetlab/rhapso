@@ -71,7 +71,7 @@ class Printer:
 		return
 
 
-	def execute_gcode(self, gcline:GCLine) -> list[GCLine]:
+	def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
 		"""Update the printer state according to the passed line of gcode. Return
 		the line of gcode for convenience. Assumes absolute coordinates."""
 		#M82: absolute, M83: relative
