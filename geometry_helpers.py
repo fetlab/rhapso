@@ -1,14 +1,13 @@
-from Geometry3D import Vector, get_eps
+from Geometry3D import Vector, Line, get_eps
 from gcline import GCLines
 from dataclasses import make_dataclass
 from typing import List, Dict, Collection, Set
 from collections import defaultdict
 from more_itertools import flatten
 
-from geometry.gpoint import GPoint
-from geometry.gsegment import GSegment
-from geometry.ghalfline import GHalfLine, GHalfLine as HalfLine
+from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import tangent_points, eps
+from geometry.gcast import gcastr
 
 
 Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
@@ -32,7 +31,7 @@ def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> Dict[GP
 	isec_points:Dict[GPoint, Set] = {}
 
 	for tp in tanpoints:
-		hl = HalfLine(origin, tp)
+		hl = GHalfLine(origin, tp)
 		isecs[tp] = set()
 		isec_points[tp] = set()
 		for seg in query:
@@ -170,3 +169,47 @@ def cpa(seg1:GSegment, seg2:GSegment):
 	c = cpa_time(seg1, seg2)
 	return (seg1.start_point + c * Vector(*seg1),
 					seg2.start_point + c * Vector(*seg2))
+
+
+"""We want to determine if, for a particular printed segment, the print head
+will intersect the line between the anchor and the ring. So, given the
+trajectory of the head in X, we want to find the trajectory of the point that
+is the intersection of the thread and the X axis, and then compare those
+trajectories to see if there is an intersection. If there is, then we need to
+move the thread so that it doesn't intersect any
+more.
+
+To get the trajectory of the intersecting point, we want to move the anchor by
+the negative of the printed segment's starting Y coordinate, to simulate the
+bed moving to place this point under the X axis. Then we can check the thread
+intersection with the X axis. We do the same for the printed segment's ending Y
+coordinate. Then we have the trajectory between the two intersecting X points
+which we can use cpa() to compare.
+
+There can be a degenerate condition where the Y coordinates of the thread
+carrier, the thread anchor, and the start and end of a printed segment are all
+the same. In this case the function will return a GSegment rather than a
+GPoint.
+"""
+def traj_isec(seg:GSegment, thread:GSegment) -> None|GPoint|GSegment:
+	tx1 = Line.x_axis().intersection(
+		GSegment(
+			thread.start_point.moved(y=-seg.start_point.y),
+			thread.end_point,
+			z=0))
+	if not tx1: return None
+
+	tx2 = Line.x_axis().intersection(
+		GSegment(
+			thread.start_point.moved(y=-seg.end_point.y),
+			thread.end_point,
+			z=0))
+	if not tx2: return None
+
+	if tx1 == tx2: return gcastr(tx1)
+
+	thr_traj  = GSegment(tx1, tx2)
+	head_traj = GSegment((seg.start_point.x, 0, 0), (seg.end_point.x, 0, 0))
+
+	appr1, appr2 = cpa(thr_traj, head_traj)
+	return gcastr(appr1) if appr1 == appr2 else None
