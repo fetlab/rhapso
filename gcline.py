@@ -300,8 +300,5 @@ class GCLines(UserList):
 		return '\n'.join([l.construct() for l in self])
 
 
-
-# def doc(self):
-# 	"""Print documentation about the code in this line, if any."""
-# 	if self.code:
-# 		gcode_docs.pdoc(self.code)
+def comment(comment):
+	return GCLine(fake=True, comment=comment)
