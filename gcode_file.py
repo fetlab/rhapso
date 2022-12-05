@@ -1,16 +1,16 @@
 import sys, warnings
 import parsers
 from gclayer import Layer
-from gcline import GCLine
+from gcline import GCLine, GCLines
 
 
 class GcodeFile:
 	def __init__(self, filename=None, filestring='', layer_class=Layer,
 			line_class=GCLine, parser=None):
 		"""Parse a file's worth of gcode."""
-		self.preamble   = None
-		self.postamble  = None
-		self.layers     = []
+		self.preamble_layer = Layer()
+		self.postamble_layer = Layer()
+		self.layers: list[Layer] = []
 		self.filestring = filestring
 		if filename:
 			if filestring:
@@ -29,11 +29,12 @@ class GcodeFile:
 	def construct(self, outfile=None):
 		"""Construct all of and return the gcode. If outfile is given,
 		write the gcode to the file instead of returning it."""
-		s = (self.preamble.construct() + '\n') if self.preamble else ''
+		s = (self.preamble_layer.construct() + '\n') if self.preamble_layer else ''
 		for i,layer in enumerate(self.layers):
 			s += ';LAYER:%d\n' % i
 			s += layer.construct()
 			s += '\n'
+		s = (self.postamble_layer.construct() + '\n') if self.postamble_layer else ''
 		if outfile:
 			with open(outfile, 'w') as f:
 				f.write(s)
