@@ -120,9 +120,9 @@ def parse(gcobj):
 			key, val = line.line[1:].split(':', maxsplit=1)
 			file_preamble.info[key] = val
 
-	gcobj.preamble  = file_preamble
-	gcobj.layers    = layers
-	gcobj.postamble = file_postamble
+	gcobj.preamble_layer  = file_preamble
+	gcobj.layers          = layers
+	gcobj.postamble_layer = file_postamble
 
 
 def parse_3mf(filename):
