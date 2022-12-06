@@ -217,25 +217,6 @@ class TLayer(Cura4Layer):
 
 		return newthread
 
-		#for tseg in thread:
-		#	if end: tseg = tseg.copy(start_point=end)
-		#	hl = HalfLine(tseg.start_point, tseg.end_point)
-		#	self.intersect_model([hl])
-		#	isecs = self.model_isecs[hl]['isec_points']
-		#	end = sorted(isecs, key=lambda p:distance(tseg.end_point, p))[0]
-
-		#	if (move_dist := end.distance(tseg.end_point)) > 1:
-		#		print(f"WARNING: moved end point for {tseg} {move_dist:02f} mm")
-
-		#	#Not enough distance to intersect anything else
-		#	if end == tseg.start_point:
-		#		continue
-
-		#	tseg = tseg.copy(end_point=end)
-		#	newthread.append(tseg)
-
-		#return newthread
-
 
 	def non_intersecting(self, thread: List[Segment]) -> Set[GSegment]:
 		"""Return a list of GSegments which the given thread segments do not
