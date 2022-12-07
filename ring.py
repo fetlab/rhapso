@@ -17,7 +17,7 @@ class Ring:
 	}
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
-	def __init__(self, radius=100, angle=0, center:GPoint=None):
+	def __init__(self, radius=100, angle=0, center:GPoint=None, rot_mul=1):
 		self.radius        = radius
 		self._angle        = angle
 		self.initial_angle = angle
@@ -25,7 +25,7 @@ class Ring:
 		self.geometry      = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
 
 		#Set to -1 if positive E commands make the ring go clockwise
-		self.rot_mul        = 1  # 1 since positive steps make it go CCW
+		self.rot_mul        = rot_mul
 
 	x = property(**attrhelper('center.x'))
 	z = property(**attrhelper('center.z'))

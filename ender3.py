@@ -72,30 +72,34 @@ rot_mul = 1  # 1 since positive steps make it go CCW
 # Use this with M92 to set steps per unit
 esteps_per_degree = steps_per_rotation * ring_gear_teeth / motor_gear_teeth / 360
 
+#Default defined for Marlin
+default_esteps_per_unit = 93
+
+deg_mm_step_ratio = esteps_per_degree / default_esteps_per_unit
+
 
 # --- Actual measured parameters of the printer, in the coordinate system of
 # the printer frame (see comments above) ---
-BedConfig = TypedDict('BedConfig', {'zero': GPoint, 'size': tuple[Number, Number]})
-RingConfig = TypedDict('RingConfig', {'zero': GPoint, 'radius': Number, 'esteps': Number, 'rot_mul': Number})
+BedConfig  = TypedDict('BedConfig',  {'zero': GPoint, 'size': tuple[Number, Number]})
+RingConfig = TypedDict('RingConfig', {'center': GPoint, 'radius': Number,  'rot_mul': Number})
 
 bed_config: BedConfig = {
 	'zero': GPoint(-32.5, -65, 0),
 	'size': (77.5, 220),
 }
 ring_config: RingConfig = {
-	'zero': GPoint(5, -37, 0),
+	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
-	'esteps': esteps_per_degree,
-	'rot_mul': 1,
+	'rot_mul': esteps_per_degree / default_esteps_per_unit,
 }
 
 #Move the zero points so the bed zero is actually 0,0
-ring_config['zero'] -= bed_config['zero']
+ring_config['center'] -= bed_config['zero']
 bed_config ['zero'] -= bed_config['zero']
 
 
 class Ender3(Printer):
 	def __init__(self):
-		bed = Bed(size=bed_config['size'])
-		ring = Ring(radius=ring_config['radius'], center=ring_config['zero'])
-		super().__init__(bed, ring)
+		self.bed = Bed(size=bed_config['size'])
+		self.ring = Ring(**ring_config)
+		super().__init__(self.bed, self.ring)
