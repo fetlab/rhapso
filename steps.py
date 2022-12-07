@@ -23,7 +23,6 @@ class Steps:
 	def new_step(self, *messages, debug=True):
 		self.steps.append(Step(self, ' '.join(map(str,messages)), debug=debug))
 		self.current.number = len(self.steps) - 1
-		self.current.printer.debug_avoid = set()
 		if debug: rprint(f'\n{self.current}')
 		return self.current
 
