@@ -17,6 +17,7 @@ class Step:
 		self.number     = -1
 		self.valid      = True
 		self.printer_anchor = None
+		self.ring_initial_angle = None
 		self.ring_angle = None
 		self.ring_move = 0
 
@@ -109,6 +110,7 @@ class Step:
 		if self.debug is False: rich_log.setLevel(logging.DEBUG)
 		self.printer_anchor = self.printer.anchor.copy()
 		self.ring_angle = self.printer.ring.angle
+		self.ring_initial_angle = self.printer.ring.initial_angle
 		self.ring_move = ang_diff(self.printer.ring.initial_angle, self.printer.ring.angle)
 		#Die if there's an exception
 		if exc_type is not None:
