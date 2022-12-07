@@ -25,6 +25,7 @@ class Printer:
 		'anchor': {'mode':'markers', 'marker': dict(color='red', symbol='x', size=4)},
 	}
 
+
 	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
 		self._x, self._y, self._z, self._e = 0, 0, z, 0
 		self.bed = bed
@@ -126,9 +127,6 @@ class Printer:
 
 					#A normal extruding line; we need to use the relative extrude value
 					# since our lines get emitted out-of-order
-					########### TODO: it looks like there is a parsing or something bug
-					# that makes the lines E-6.5 / E0 turn into E-6.5 / E6.5 -> see
-					# input/output gcode line 36
 					else:
 						self.e += gcline.relative_extrude
 						gcline = deepcopy(gcline)
