@@ -69,7 +69,6 @@ ring_gear_teeth    = 125
 rot_mul = 1  # 1 since positive steps make it go CCW
 
 #How many motor steps per CCW degree?
-# Use this with M92 to set steps per unit
 esteps_per_degree = steps_per_rotation * ring_gear_teeth / motor_gear_teeth / 360
 
 #Default defined for Marlin
