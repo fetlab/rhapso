@@ -23,9 +23,12 @@ class Step:
 
 
 	def __repr__(self):
-		return(f'<Step {self.number} ' +
-					(f'{len(self.gcsegs)} segments)>: ' if self.gcsegs else '') +
-					 f'[light_sea_green italic]{self.name}[/]>')
+		return(f'<Step {self.number}'
+				+ (f' ({len(self.gcsegs)} segments)>:' if self.gcsegs else '>')
+				+ f' [light_sea_green italic]{self.name}[/]>'
+				+ ((f' from {self.ring_initial_angle:.2f}° → {self.ring_angle:.2f}°' + f'({self.ring_move:.2f}°) ')
+					if self.ring_initial_angle and self.ring_angle and self.ring_move else '')
+		)
 
 
 	def gcode(self) -> list:
