@@ -1,3 +1,5 @@
+import re
+from rich.markup import RE_TAGS
 from util import find
 from step import Step
 from logger import rprint
@@ -40,7 +42,7 @@ class Steps:
 
 		for i,step in enumerate(self.steps):
 			step_gcode = step.gcode()
-			r.append(comment(f'Step {step.number} ({len(step_gcode)} lines): {step.name} {"-"*25}'))
+			r.append(comment(re.sub(RE_TAGS, '', repr(step)) + ' ' + "-"*25))
 			r.extend(step_gcode)
 
 		#Finally add any extra attached to the layer
