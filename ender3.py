@@ -53,12 +53,13 @@ Transforms to provide:
 	fact that the bed moves in the y-axis.
 """
 
-from printer import Printer
-from bed import Bed
-from ring import Ring
+from printer  import Printer
+from bed      import Bed
+from ring     import Ring
 from geometry import GPoint
-from typing import TypedDict
-from util import Number
+from typing   import TypedDict
+from util     import Number
+from gcline   import GCLine
 
 # --- Ring gearing ---
 steps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps
