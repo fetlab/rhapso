@@ -61,7 +61,14 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			print(f'Skip {step.number}')
 			continue
 
-		print(f'Step {stepnum}: {step.name}')
+		if not step.gcsegs:
+			print(f'Step {stepnum}',
+				 step.name,
+				 f'from {step.ring_initial_angle:.2f}° → {step.ring_angle:.2f}°',
+				 f'({step.ring_move:.2f}°)'
+			)
+		else:
+			print(f'Step {stepnum}: {step.name}')
 		fig = go.Figure()
 
 		#Plot the bed
