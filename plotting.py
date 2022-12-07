@@ -91,10 +91,6 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		#Plot geometry printed in this step
 		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
 
-		#Print segments to avoid, if any
-		if avoid_seg := getattr(step.printer, 'debug_avoid'):
-			plot_segments(fig, avoid_seg, style=styles['avoid_segs'], name='avoid')
-
 		#Plot thread trajectory from current anchor to ring
 		plot_segments(fig, [GSegment(
 			steps[stepnum-1].printer_anchor if stepnum > 0 else steps[0].printer_anchor,

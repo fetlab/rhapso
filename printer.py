@@ -146,7 +146,6 @@ class Printer:
 			repeats += 1
 			if repeats > 5: raise ValueError("Too many repeats")
 			with steps.new_step(f"Move thread to avoid {len(avoid)} segments" + extra_message) as s:
-				s.debug_avoid = copy(avoid)
 				isecs = self.thread_avoid(avoid)
 				rprint(f"{len(isecs)} intersections" + (f": {isecs}" if isecs else ""))
 				if len(isecs) == 0:
@@ -164,7 +163,6 @@ class Printer:
 	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> Set[GSegment]:
 		if not avoid: raise ValueError("Need some Segments in avoid")
 		avoid = set(avoid)
-		self.debug_avoid = avoid.copy()
 
 		thr = GSegment(self.anchor, self.ring.point)
 		anchor = thr.start_point
