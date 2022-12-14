@@ -188,8 +188,8 @@ class Printer:
 			avoid = isecs
 
 
-	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> Set[GSegment]:
-		if not avoid: raise ValueError("Need some Segments in avoid")
+	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> set[GSegment]:
+		assert(avoid)
 		avoid = set(avoid)
 
 		thr = GSegment(self.anchor, self.ring.point)
@@ -225,9 +225,9 @@ class Printer:
 
 
 
-	def thread_intersect(self, target, anchor=None, set_new_anchor=True, move_ring=True):
-		"""Rotate the ring so that the thread starting at anchor intersects the
-		target Point. By default sets the anchor to the intersection. Return the
+	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True):
+		"""Rotate the ring so that the thread starting at `anchor` intersects the
+		`target`. By default sets the anchor to the intersection. Return the
 		rotation value."""
 		anchor = (anchor or self.anchor).as2d()
 		target = target.as2d()
