@@ -1,5 +1,5 @@
 from copy import copy, deepcopy
-from typing import Collection, Set
+from typing import Collection, Callable
 from itertools import groupby
 from more_itertools import flatten
 from fastcore.basics import listify
