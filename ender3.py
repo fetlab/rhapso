@@ -103,3 +103,13 @@ class Ender3(Printer):
 		self.bed = Bed(size=bed_config['size'])
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
+
+		self.save_vars = 'extruder_no', 'extrusion_mode', 'cold_extrusion'
+
+
+	def gcode_ring_move(self, move_amount) -> list[GCLine]:
+		with Saver(self, self.save_vars) as saver:
+			gcode = self.execute_gcode(self.ring.gcode_move(move_amount))
+		gcode.extend(self.execute_gcode(saver.originals.values()))
+		return gcode
+
