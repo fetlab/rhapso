@@ -18,21 +18,20 @@ class Ring:
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
 	def __init__(self, radius=100, angle=0, center:GPoint=None, rot_mul=1):
-		self.radius        = radius
-		self._angle        = angle
-		self.initial_angle = angle
-		self.center        = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
-		self.geometry      = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
+		self.radius   = radius
+		self.angle    = angle
+		self.center   = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
+		self.geometry = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
 
 		#Set to -1 if positive E commands make the ring go clockwise
-		self.rot_mul        = rot_mul
+		self.rot_mul  = rot_mul
 
 	x = property(**attrhelper('center.x'))
 	z = property(**attrhelper('center.z'))
 
 
 	def __repr__(self):
-		return f'Ring({self._angle:.2f}°, ⌀{self.radius*2}, ⊙{self.center})'
+		return f'Ring({self.angle:.2f}°, ⌀{self.radius*2}, ⊙{self.center})'
 
 
 	@property
@@ -48,17 +47,6 @@ class Ring:
 
 	def attr_changed(self, attr, old_value, new_value):
 		raise ValueError(f"Can't adjust the {attr} coordinate of the ring!")
-
-
-	@property
-	def angle(self):
-		return self._angle
-
-
-	@angle.setter
-	def angle(self, new_angle):
-		self.initial_angle = self._angle
-		self._angle = new_angle
 
 
 	@property
@@ -99,7 +87,7 @@ class Ring:
 		"""Return the gcode necessary to move the ring by `dist` degrees."""
 		if not degrees: return []
 
-		#Find "extrusion" amount - requires M92 has set steps/degree correctly
+		#Find "extrusion" amount
 		extrude = self.rot_mul * dist
 		dir_str = 'CCW' if dist > 0 else 'CW'
 
@@ -108,7 +96,7 @@ class Ring:
 			GCLine(code='M83', comment='Set relative extrusion mode', fake=True),
 			GCLine(code='M302', args={'P':1}, comment='Allow cold extrusion', fake=True),
 			GCLine(code='G1', args={'E':round(extrude,3), 'F':8000},
-				comment=f'Ring move by {dist:.2f}° ({dir_str})', fake=True),
+					comment=f'Ring move by {dist:.2f}° {dir_str}', fake=True, meta={'ring_move_deg': dist}),
 		]
 
 		return gc
