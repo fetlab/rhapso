@@ -13,11 +13,10 @@ from gclayer import Layer
 
 
 class Steps:
-	def __init__(self, layer, printer):
-		self.layer         = layer
-		self.printer       = printer
-		self.steps         = []
 	def __init__(self, layer:Layer, printer:Printer):
+		self.layer   = layer
+		self.printer = printer
+		self.steps: list[Step] = []
 
 
 	def __repr__(self):
