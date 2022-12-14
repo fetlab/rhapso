@@ -176,8 +176,7 @@ will intersect the line between the anchor and the ring. So, given the
 trajectory of the head in X, we want to find the trajectory of the point that
 is the intersection of the thread and the X axis, and then compare those
 trajectories to see if there is an intersection. If there is, then we need to
-move the thread so that it doesn't intersect any
-more.
+move the thread so that it doesn't intersect any more.
 
 To get the trajectory of the intersecting point, we want to move the anchor by
 the negative of the printed segment's starting Y coordinate, to simulate the
