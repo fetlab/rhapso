@@ -9,6 +9,7 @@ from util import find
 from step import Step
 from logger import rprint
 from gcline import GCLine, comment
+from gclayer import Layer
 
 
 class Steps:
