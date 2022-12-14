@@ -38,21 +38,27 @@ class Steps:
 	def step_exited(self, step):
 		"""When a Step exits it will call this."""
 		if not step.valid:
-			rprint(f"Step {step.number} invalid, deleting")
+			if step.debug:
+				rprint(f"Step {step.number} invalid, deleting")
 			del(self.steps[-1])
 
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all steps."""
 		r: list[GCLine] = self.printer.execute_gcode(self.layer.preamble.data)
+		if r:
+			r.insert(0, comment(f'::: Layer {self.layer.layernum} preamble :::'))
+			r.append(comment(f'::: End layer {self.layer.layernum} preamble :::'))
 
 		for i,step in enumerate(self.steps):
 			step_gcode = step.gcode()
-			r.append(comment(re.sub(RE_TAGS, '', repr(step)) + ' ' + "-"*25))
+			r.append(comment(re.sub(RE_TAGS, '', f'Layer {self.layer.layernum} - {step} {"-"*25}')))
 			r.extend(step_gcode)
 
 		#Finally add any extra attached to the layer
-		r.append(comment('Layer postamble ------'))
-		r.extend(self.printer.execute_gcode(self.layer.postamble))
+		if self.layer.postamble:
+			r.append(comment(f'::: Layer {self.layer.layernum} postamble :::'))
+			r.extend(self.printer.execute_gcode(self.layer.postamble))
+			r.append(comment(f'::: End layer {self.layer.layernum} postamble :::'))
 
 		return r
