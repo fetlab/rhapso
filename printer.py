@@ -27,32 +27,64 @@ class Printer:
 
 
 	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
-		self._x, self._y, self._z, self._e = 0, 0, z, 0
-		self.bed = bed
+		self.bed  = bed
 		self.ring = ring
 
-		self.anchor = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
-
-		#Default states
-		self.extruder_no    = GCLine(code='T0',  args={}, comment='Switch to main extruder', fake=True)
-		self.extrusion_mode = GCLine(code='M82', args={}, comment='Set absolute extrusion mode', fake=True)
+		#State
+		self.head_loc   = GPoint(0, 0, z)
+		self.anchor     = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
+		self.extruder_no    = GCLine(code='T0', comment='Switch to main extruder', fake=True)
+		self.extrusion_mode = GCLine(code='M82',comment='Set absolute extrusion mode', fake=True)
 		self.cold_extrusion = GCLine(code='M302', args={'P':0}, comment='Prevent cold extrusion', fake=True)
 
-		#Debug
-		self._executing_line:GCLine|None = None
+		#Properties for self.attr_changed()
+		self._ring_angle = self.ring.angle
+		self._x = 0
+		self._y = 0
+		self._z = 0
+		self._e = 0
+
+		#Functions for different Gcode commands
+		self._code_actions: dict[str|None,Callable] = {}
+		self.add_codes(None,              action=lambda gcline: [gcline])
+		self.add_codes('G28',             action=self.gcfunc_auto_home)
+		self.add_codes('G0', 'G1', 'G92', action=self.gcfunc_set_axis_value)
+		self.add_codes('M82', 'M83',      action='extrusion_mode')
+		self.add_codes('T0', 'T1',        action='extruder_no')
+		self.add_codes('M302',            action='cold_extrusion')
+
 
 	#Create attributes which call Printer.attr_changed on change
 	x = property(**attrhelper('_x'))
 	y = property(**attrhelper('_y'))
 	z = property(**attrhelper('_z'))
 	e = property(**attrhelper('_e'))
+	ring_angle = property(**attrhelper('_ring_angle'))
+
 
 	@property
-	def xy(self): return self.x, self.y
+	def xy(self): return self.head_loc.xy
+
+
+	@property
+	def xyz(self): return self.head_loc.xyz
 
 
 	def __repr__(self):
-		return f'Printer(⚓︎{self.anchor}, ∡ {self.ring._angle:.2f}°)'
+		return f'Printer(⚓︎{self.anchor}, ∡ {self.ring.angle:.2f}°)'
+
+
+	def add_codes(self, *codes, action:str|Callable):
+		"""Add the given action for each code in `codes`. `action` can be a string,
+		in which case the line of gcode will be saved as an attribute with that
+		name on this object, or it can be a function, in which case that function
+		will be called with the line of gcode as a parameter."""
+		for code in codes:
+			if isinstance(action, str):
+				self._code_actions[code] = lambda v: setattr(self, action, v)
+			elif callable(action):
+				self._code_actions[code] = action
+			else: raise ValueError(f'Need function or string for `action`, not {type(action)}')
 
 
 	def summarize(self):
@@ -65,75 +97,73 @@ class Printer:
 
 				bed: {self.bed}
 				ring: {self.ring}
-					_angle: {self.ring._angle}
+					angle: {self.ring.angle}
 					center: {self.ring.center}
 			[yellow]—————[/]
 		""")
 
 
 	def attr_changed(self, attr, old_value, new_value):
-		return
-		if old_value != new_value and attr[1] == 'e':
-			if self._executing_line and (self._executing_line.lineno < 40 or
-																4486 < self._executing_line.lineno < 4725 ):
-				print(f'{self._executing_line}:\n\tprinter.{attr[1:]} {old_value} -> {new_value}')
+		if attr[1] in 'xyz':
+			self.head_loc['xyz'.index(attr[1])] = new_value
 
 
-	def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
-		"""Update the printer state according to the passed line of gcode. Return
-		the line of gcode for convenience. Assumes absolute coordinates."""
-		r = []
-		for l in listify(gcline):
-			r.extend(self.execute_gcode_line(l))
-		return r
+	def gcode_ring_move(self, move_amount) -> list[GCLine]:
+		return self.ring.gcode_move(move_amount)
 
 
-	def execute_gcode_line(self, gcline:GCLine) -> list[GCLine]:
-		self._executing_line = gcline
-
-		match gcline.code:
-			#Comment-only line
-			case None: return [gcline]
-
-			#M82: absolute; M83: relative
-			case 'M82' | 'M83': self.extrusion_mode = gcline
-
-			#Extruder change
-			case 'T0' | 'T1': self.extruder_no = gcline
-
-			#Enable/disable cold extrusion
-			case 'M302': self.cold_extrusion = gcline
-
-			#Auto home
-			case 'G28':
-				self.x = 0
-				self.y = 0
-				self.z = 0
-
-			#G0, G1: move; G92: set axis value
-			case 'G0' | 'G1' | 'G92' if self.extruder_no.code == 'T0':
-				if gcline.x: self.x = gcline.x
-				if gcline.y: self.y = gcline.y
-				if gcline.z: self.z = gcline.z
-
-				if 'E' in gcline.args:
-					#G92: software set value
-					if gcline.code == 'G92':
-						self.e = gcline.args['E']
-
-					#M83: relative extrude mode
-					elif self.extrusion_mode.code == 'M83':
-						self.e += gcline.args['E']
-
-					#A normal extruding line; we need to use the relative extrude value
-					# since our lines get emitted out-of-order
-					else:
-						self.e += gcline.relative_extrude
-						gcline = deepcopy(gcline)
-						gcline.args['E'] = self.e
+	def _execute_gcline(self, gcline:GCLine) -> list[GCLine]:
+		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline) or [gcline]
 
 
-		return [gcline]
+	# def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
+	# 	"""Update the printer state according to the passed line of gcode. Return
+	# 	the line of gcode for convenience. Assumes absolute coordinates."""
+	# 	r: list[GCLine] = []
+	# 	for l in listify(gcline):
+	# 		r.extend(self._code_actions.get(l.code, self._code_actions[None])(l) or [l])
+	# 	return r
+
+
+	def execute_gcode(self, gcline:GCLine|list[GCLine]) -> list[GCLine]:
+		return sum(map(self._execute_gcline, listify(gcline)), [])
+
+
+	#G28
+	def gcfunc_auto_home(self, gcline: GCLine):
+		self.x, self.y, self.z = 0, 0, 0
+
+
+	#G0, G1, G92
+	def gcfunc_set_axis_value(self, gcline: GCLine):
+		#Keep track of current ring angle
+		if self.extruder_no.code == 'T1':
+			if gcline.code in ('G0', 'G1'):
+				if dist := gcline.meta.get('ring_move_deg', None):
+					self.ring_angle += dist
+			return
+
+		#Extruder is T0; track head location
+		if gcline.x: self.x = gcline.x
+		if gcline.y: self.y = gcline.y
+		if gcline.z: self.z = gcline.z
+
+		if 'E' in gcline.args:
+			#G92: software set value
+			if gcline.code == 'G92':
+				self.e = gcline.args['E']
+
+			#M83: relative extrude mode
+			elif self.extrusion_mode.code == 'M83':
+				self.e += gcline.args['E']
+
+			#A normal extruding line; we need to use the relative extrude value
+			# since our lines get emitted out-of-order
+			else:
+				self.e += gcline.relative_extrude
+				gcline = deepcopy(gcline)
+				gcline.args['E'] = self.e
+				return [gcline]
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
