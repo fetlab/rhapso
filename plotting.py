@@ -133,7 +133,7 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 	#Shift coordinates so bed 0,0 is actually at 0,0 and ring is moved relative
 	zvec = Vector(bed_config['zero'], GPoint(0, 0, bed_config['zero'].z))
 	bed_zero = bed_config['zero'].moved(zvec)
-	ring_zero = ring_config['zero'].moved(zvec)
+	ring_zero = ring_config['center'].moved(zvec)
 
 	fig_dict = {'data': [], 'frames': [],
 		'layout': {
@@ -192,7 +192,7 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 							**deep_update(styles['anchor'], {'marker': {'symbol': 'circle-dot'}})),
 	]
 
-	fig_dict['data'] = [ dict(x=[0,1], y=[0,1], name='0', **gc_style)]
+	fig_dict['data'] = [dict(x=[0,1], y=[0,1], name='0', **gc_style)]
 	fig_dict['data'].extend(thread)
 	fig_dict['data'].extend([
 		dict(x=[0],   y=[0],   name='anchor', mode='markers', **styles['anchor']),
