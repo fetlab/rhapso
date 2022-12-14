@@ -218,3 +218,9 @@ class Saver:
 				 '\n'.join([f'\t\t{var}: {self.saved[var]}' for var in self.saved if var
 								not in self.changed])
 			)
+
+
+	@property
+	def originals(self):
+		"""Return the original values for every saved variable that changed."""
+		return {var: self.saved[var] for var in self.changed}
