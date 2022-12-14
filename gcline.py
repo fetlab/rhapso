@@ -9,7 +9,7 @@ rprint = Console(style="on #272727").print
 #Use total_ordering to allow comparing based on line number
 @total_ordering
 class GCLine:
-	def __init__(self, line='', lineno='', code=None, args={}, comment=None, fake=False):
+	def __init__(self, line='', lineno='', code=None, args={}, comment=None, fake=False, meta=None):
 		"""Parse a single line of gcode into its code and named
 		arguments."""
 		self.line    = line.strip()
@@ -17,12 +17,13 @@ class GCLine:
 		self.code    = code.upper() if code else None
 		self.args    = args or {}
 		self.comment = comment
-		self.empty   = False
-		self.fake    = fake    #Set to True if it's been generated
+		self.fake    = fake       #Set to True if it's been generated
+		self.meta    = meta or {} #Metadata about this line
+
+		self.relative_extrude = None
 
 		#Comment-only or empty line
 		if not self.code and self.line in ('', ';'):
-			self.empty = True
 			return
 
 		if ';' in line:
