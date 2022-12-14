@@ -110,8 +110,8 @@ class Threader:
 				((min_x, max_y, layer.z), (max_x, max_y, layer.z)),
 				((max_x, max_y, layer.z), (max_x, min_y, layer.z)),
 				((max_x, min_y, layer.z), (min_x, min_y, layer.z)))]
-			with steps.new_step('Move thread to avoid layer extents', debug=False):
-				self.printer.thread_avoid(ext_rect)
+			with steps.new_step('Move thread to avoid layer extents', debug=False) as s:
+				s.valid = bool(self.printer.thread_avoid(ext_rect))
 			#Set the Layer's postamble to the entire set of gcode lines so that we
 			# correctly generate the output gcode with Steps.gcode()
 			layer.postamble = layer.lines
