@@ -82,6 +82,7 @@ def str2style(spec, linewidth=1, markersize=4):
 			linestyle = lines[c]
 			i += 1
 
+
 	style: dict[str, dict|Any] = {}
 
 	if markercolor or markerstyle:
@@ -92,17 +93,20 @@ def str2style(spec, linewidth=1, markersize=4):
 	if markercolor is None and linecolor is None and color is not None:
 		markercolor = linecolor = color
 
+	if markerstyle is None and linestyle is None:
+		linestyle = lines['-']
+
 	if linestyle:
 		style['mode'] = 'lines+markers' if markerstyle else 'lines'
-		style['line']['dash'] = linestyle
+		style.setdefault('line', {})['dash'] = linestyle
 	if markerstyle:
 		style.setdefault('mode', 'markers')
 		if isinstance(markerstyle, str): markerstyle = {'symbol': markerstyle}
 		style['marker'].update(markerstyle)
 	if markercolor:
-		style['marker']['color'] = markercolor
+		style.setdefault('marker', {})['color'] = markercolor
 	if linecolor:
-		style['line']['color'] = linecolor
+		style.setdefault('line', {})['color'] = linecolor
 
 	return style
 
@@ -204,7 +208,7 @@ def add_circles(fig, centers, radius=1, name='circles', style=None):
 
 def show_dark(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:float=1.1):
 	xaxis = {}
-	yaxis = {'scaleanchor':'x', 'scaleratio':1, 'constrain':'domain'}
+	yaxis = {'scaleanchor':'x', 'scaleratio':1}#, 'constrain':'domain'}
 	if zoom_box is not None:
 		(x1,y1),(x2,y2)	= zoom_box
 		exp_x = (x2-x1)*zoom_factor
