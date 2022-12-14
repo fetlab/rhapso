@@ -19,6 +19,9 @@ Add a new **Creality Ender-3 Pro** printer in Cura. Change the following from th
 * _X min:_ 0 mm
 * _X max:_ 0 mm
 
+#### Slicing settings
+The router needs to have enough infill to find places to attach the thread when it turns corners inside of an object. Therefore, I recomment using **50%** infill in the **grid** pattern.
+
 ### Design a model with thread
 
 1. Design your model in Fusion 360. Make a copy of the `Print bed` design in the thread printer folder. This has a sketch outline of the print bed with boundaries. Designing with this as the base will prevent alignment issues later on.
