@@ -1,3 +1,8 @@
+#Avoid circular imports for type checking; see https://adamj.eu/tech/2021/05/13/python-type-hints-how-to-fix-circular-imports/
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from printer import Printer
+
 import re
 from rich.markup import RE_TAGS
 from util import find
@@ -11,6 +16,7 @@ class Steps:
 		self.layer         = layer
 		self.printer       = printer
 		self.steps         = []
+	def __init__(self, layer:Layer, printer:Printer):
 
 
 	def __repr__(self):
