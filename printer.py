@@ -193,7 +193,6 @@ class Printer:
 		avoid = set(avoid)
 
 		thr = GSegment(self.anchor, self.ring.point)
-		anchor = thr.start_point
 
 		#If no thread-avoid intersections and the thread is not too close to any
 		# avoid segment endpoints, we don't need to move ring, and are done
@@ -201,7 +200,7 @@ class Printer:
 			 and not any(too_close(thr, ep) for ep in (set(flatten(avoid)) - set(thr[:])))):
 			return set()
 
-		vis, ipts = visibility(anchor, avoid, avoid_by)
+		vis, ipts = visibility(self.anchor, avoid, avoid_by)
 
 		#Get all of the visibility points with N intersections, where N is the
 		# smallest number of intersections
@@ -216,7 +215,7 @@ class Printer:
 		if vis[vis_points[0]] == avoid:
 			rprint("Result of visibility:", vis[vis_points[0]], "is the same thing we tried to avoid:",
 					avoid, indent=4)
-			rprint(f"intersections {anchor}→{vis_points[0]}:",
+			rprint(f"intersections {self.anchor}→{vis_points[0]}:",
 					ipts[vis_points[0]], indent=4)
 			raise ValueError("oh noes")
 
@@ -229,8 +228,7 @@ class Printer:
 		"""Rotate the ring so that the thread starting at `anchor` intersects the
 		`target`. By default sets the anchor to the intersection. Return the
 		rotation value."""
-		anchor = (anchor or self.anchor).as2d()
-		target = target.as2d()
+		anchor = anchor or self.anchor
 		if target != anchor:
 			if isecs := self.ring.intersection(GHalfLine(anchor, target)):
 				ring_angle = self.ring.point2angle(isecs[-1])
