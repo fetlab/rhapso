@@ -236,7 +236,7 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 
 		elif line.is_extrude() and extruder == 1:
 			if line.args["E"] > 400: print(line)
-			angle += line.args['E']
+			angle += line.args['E'] / ring_config['rot_mul']
 			angle = angle % 360
 			p = angle2point(angle, ring_zero, ring_config['radius'])
 			tx = [a.x for a in anchors] + [p.x]
