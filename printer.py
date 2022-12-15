@@ -174,11 +174,14 @@ class Printer:
 			repeats += 1
 			if repeats > 5: raise ValueError("Too many repeats")
 			with steps.new_step(f"Move thread to avoid {len(avoid)} segments" + extra_message) as s:
+				s._debug = dict(avoid=avoid.copy(), anchor=self.anchor.copy(),
+										ring_angle=self.ring.angle,
+										ring_point=self.ring.point.copy())
 				isecs = self.thread_avoid(avoid)
 				rprint(f"{len(isecs)} intersections" + (f": {isecs}" if isecs else ""))
 				if len(isecs) == 0:
 					rprint("No intersections, don't need to move thread")
-					s.valid = False
+					#s.valid = False
 				if len(avoid) == 1: rprint('Was avoiding:', avoid, indent=2)
 				avoid -= isecs
 			if avoid:
@@ -229,19 +232,17 @@ class Printer:
 		`target`. By default sets the anchor to the intersection. Return the
 		rotation value."""
 		anchor = anchor or self.anchor
+		ring_angle = self.ring.angle
+
 		if target != anchor:
 			if isecs := self.ring.intersection(GHalfLine(anchor, target)):
 				ring_angle = self.ring.point2angle(isecs[-1])
 
-				if move_ring and self.ring.angle != ring_angle:
+				if move_ring:
 					self.ring.angle = ring_angle
-
-		else:
-			#rprint('thread_intersect with target == anchor, doing nothing')
-			ring_angle = self.ring.angle
 
 		if set_new_anchor:
 			rprint(f'thread_intersect set new anchor to {target}')
 			self.anchor = target
 
-		return ring_angle
+		return self.ring.angle

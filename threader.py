@@ -153,6 +153,7 @@ class Threader:
 			rprint('+++++ START ANCHOR:', start_anchor)
 			start_anchor = start_anchor.copy(z=layer.z)
 			layer.start_anchor = start_anchor
+			self.printer.anchor = start_anchor
 			if (sdist := start_anchor.distance(thread[0].start_point.copy(z=layer.z))) > thread_epsilon:
 				thread.insert(0, GSegment(start_anchor, thread[0].start_point, z=layer.z))
 				rprint(f'Added start anchor seg: {thread[0]}')
