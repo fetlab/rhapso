@@ -6,7 +6,7 @@ from collections import defaultdict
 from more_itertools import flatten
 
 from geometry import GPoint, GSegment, GHalfLine
-from geometry.utils import tangent_points, eps
+from geometry.utils import tangent_points, eps, sign
 from geometry.gcast import gcastr
 
 
@@ -205,10 +205,15 @@ def traj_isec(seg:GSegment, thread:GSegment) -> None|GPoint|GSegment:
 			z=0))
 	if not tx2: return None
 
-	if tx1 == tx2: return gcastr(tx1)
+	if tx1 == tx2:
+		return gcastr(tx1) if (seg.start_point.x <= tx1.x <= seg.end_point.x or
+													 seg.start_point.x >= tx1.x >= seg.end_point.x) else None
 
 	thr_traj  = GSegment(tx1, tx2)
-	head_traj = GSegment((seg.start_point.x, 0, 0), (seg.end_point.x, 0, 0))
+
+	#The trajectory of the head on the x axis. Assign tiny values to y to easily
+	# account for vertical segments.
+	head_traj = GSegment((seg.start_point.x, -.001, 0), (seg.end_point.x, .001, 0))
 
 	appr1, appr2 = cpa(thr_traj, head_traj)
 	return gcastr(appr1) if appr1 == appr2 else None

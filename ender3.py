@@ -56,10 +56,12 @@ Transforms to provide:
 from printer  import Printer
 from bed      import Bed
 from ring     import Ring
-from geometry import GPoint
+from geometry import GPoint, GSegment
 from typing   import TypedDict
-from util     import Number
-from gcline   import GCLine
+from util     import Number, Saver
+from gcline   import GCLine, comment
+from geometry.utils import ang_diff
+from geometry_helpers import traj_isec
 
 # --- Ring gearing ---
 steps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps
@@ -113,3 +115,31 @@ class Ender3(Printer):
 		gcode.extend(self.execute_gcode(saver.originals.values()))
 		return gcode
 
+	# Segment:      <{ 28.66,  50.91,   0.20}←→{ 26.03,  50.91,   0.20} (2.64 mm)>
+	# Thread (0°):  <{ 33.27,  21.60,   0.00}←→{130.50,  28.00,   0.00} (97.44 mm)>
+
+	#Called for G0, G1, G92
+	def gcfunc_set_axis_value(self, gcline: GCLine):
+		cur_loc = self.head_loc.copy()
+		gclines = super().gcfunc_set_axis_value(gcline)
+		if not gclines or not gcline.is_xyextrude(): return
+
+		printed_seg = GSegment(cur_loc, self.head_loc)
+
+		#Fixing segment, we *want* interference!
+		if self.anchor in printed_seg.copy(z=0): return
+
+		thread_seg  = GSegment(self.anchor, self.ring.angle2point(self.ring_angle))
+		if traj_isec(printed_seg, thread_seg):
+			#Move anchor by negative of endpoint of printed segment's y value, then
+			# avoid the segment formed by the two x values of the endpoints
+			ang1 = self.thread_intersect(cur_loc.copy(y=0), self.anchor.moved(y=-cur_loc.y),       False, False)
+			ang2 = self.thread_intersect(cur_loc.copy(y=0), self.anchor.moved(y=-self.head_loc.y), False, False)
+			dist1 = ang_diff(self.ring_angle, ang1)
+			dist2 = ang_diff(self.ring_angle, ang2)
+			move_by = min(dist1, dist2, key=abs)
+			return ([
+							comment(f'Move thread to avoid head during bed move for [{gcline.lineno}]'),
+							comment(f'  Segment: {printed_seg}'),
+							comment(f'  Thread ({self.ring_angle:.2f}°):  {thread_seg}'),
+						] + self.gcode_ring_move(move_by) + gclines)
