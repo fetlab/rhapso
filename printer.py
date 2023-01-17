@@ -7,6 +7,7 @@ from fastcore.basics import listify
 from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
 from gcline import GCLine, GCLines
+from gclayer import Layer
 from ring import Ring
 from bed import Bed
 from logger import rprint
@@ -106,6 +107,14 @@ class Printer:
 	def attr_changed(self, attr, old_value, new_value):
 		if attr[1] in 'xyz':
 			self.head_loc['xyz'.index(attr[1])] = new_value
+
+
+	#Functions to add extra lines of GCode. Each is passed the pre/postamble and
+	# should return it, possibly modified.
+	def gcode_file_preamble  (self, preamble:  list[GCLine]) -> list[GCLine]: return preamble
+	def gcode_file_postamble (self, postamble: list[GCLine]) -> list[GCLine]: return postamble
+	def gcode_layer_preamble (self, preamble:  list[GCLine], layer:Layer) -> list[GCLine]: return preamble
+	def gcode_layer_postamble(self, postamble: list[GCLine], layer:Layer) -> list[GCLine]: return postamble
 
 
 	def gcode_ring_move(self, move_amount) -> list[GCLine]:
