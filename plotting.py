@@ -183,20 +183,20 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 			break
 
 	extruder = 0
-	anchors = [GPoint(0, 0, 0)]
+	anchors = [bed_config['anchor']]
 	angle = start_angle
 	tx, ty = angle2point(angle, ring_zero, ring_config['radius']).xy
 	thread = [
-				dict(x=[0, tx], y=[0, ty], name='thread', mode='lines+markers', **thread_style),
-				dict(x=[0, tx], y=[0, ty], name='target', mode='markers',
+				dict(x=[anchors[0].x, tx], y=[anchors[0].y, ty], name='thread', mode='lines+markers', **thread_style),
+				dict(x=[anchors[0].x, tx], y=[anchors[0].y, ty], name='target', mode='markers',
 							**deep_update(styles['anchor'], {'marker': {'symbol': 'circle-dot'}})),
 	]
 
 	fig_dict['data'] = [dict(x=[0,1], y=[0,1], name='0', **gc_style)]
 	fig_dict['data'].extend(thread)
 	fig_dict['data'].extend([
-		dict(x=[0],   y=[0],   name='anchor', mode='markers', **styles['anchor']),
-		dict(x=[0],   y=[0],   name='target', mode='markers', **styles['anchor']),
+		dict(x=anchors[0].x,   y=anchors[0].y,   name='anchor', mode='markers', **styles['anchor']),
+		dict(x=anchors[0].x,   y=anchors[0].y,   name='target', mode='markers', **styles['anchor']),
 	])
 
 	for line in gclines[i:]:

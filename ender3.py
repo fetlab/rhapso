@@ -109,6 +109,18 @@ class Ender3(Printer):
 		self.save_vars = 'extruder_no', 'extrusion_mode', 'cold_extrusion'
 
 
+	def gcode_file_preamble(self, preamble: list[GCLine]) -> list[GCLine]:
+		"""Add a z-move and a pause in order to attach the thread after homing."""
+		home_idx = next((i for i,l in reversed(list(enumerate(preamble))) if l.code == 'G28'))
+		bed_temp = next((l for l in preamble if l.code == 'M190')).args['S']
+		return preamble[:home_idx+1] + [
+				GCLine(code='M140', args={'S': bed_temp}, comment='Start heating bed'),
+				GCLine(code='G0', args=dict(Z=50, F=5000.0), comment='Raise Z to allow thread attachment'),
+				GCLine('M117 Bed heating, attach thread', comment='Display message'),
+			] + preamble[home_idx+1:]
+
+
+
 	def gcode_ring_move(self, move_amount) -> list[GCLine]:
 		with Saver(self, self.save_vars) as saver:
 			gcode = self.execute_gcode(self.ring.gcode_move(move_amount))

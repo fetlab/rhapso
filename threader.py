@@ -43,12 +43,14 @@ class Threader:
 
 	def gcode(self):
 		"""Return the gcode for all layers."""
-		r = self.printer.execute_gcode(self.gcode_file.preamble_layer.lines)
+		r = self.printer.execute_gcode(
+				self.printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
 			r.append(comment(f'==== Start layer {steps_obj.layer.layernum} ===='))
 			r.extend(steps_obj.gcode())
 			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
-		r.extend(self.printer.execute_gcode(self.gcode_file.postamble_layer.lines))
+		r.extend(self.printer.execute_gcode(
+				self.printer.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
 		return r
 
 

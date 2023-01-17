@@ -45,7 +45,8 @@ class Steps:
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all steps."""
-		r: list[GCLine] = self.printer.execute_gcode(self.layer.preamble.data)
+		r: list[GCLine] = self.printer.execute_gcode(
+				self.printer.gcode_layer_preamble(list(self.layer.preamble), self.layer))
 		if r:
 			r.insert(0, comment(f'::: Layer {self.layer.layernum} preamble :::'))
 			r.append(comment(f'::: End layer {self.layer.layernum} preamble :::'))
@@ -58,7 +59,8 @@ class Steps:
 		#Finally add any extra attached to the layer
 		if self.layer.postamble:
 			r.append(comment(f'::: Layer {self.layer.layernum} postamble :::'))
-			r.extend(self.printer.execute_gcode(self.layer.postamble))
+			r.extend(self.printer.execute_gcode(
+				self.printer.gcode_layer_postamble(list(self.layer.postamble), self.layer)))
 			r.append(comment(f'::: End layer {self.layer.layernum} postamble :::'))
 
 		return r
