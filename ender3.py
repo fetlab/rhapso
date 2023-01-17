@@ -82,17 +82,18 @@ deg_mm_step_ratio = esteps_per_degree / default_esteps_per_unit
 
 # --- Actual measured parameters of the printer, in the coordinate system of
 # the printer frame (see comments above) ---
-BedConfig  = TypedDict('BedConfig',  {'zero': GPoint, 'size': tuple[Number, Number]})
+BedConfig  = TypedDict('BedConfig',  {'zero': GPoint, 'size': tuple[Number, Number], 'anchor': GPoint})
 RingConfig = TypedDict('RingConfig', {'center': GPoint, 'radius': Number,  'rot_mul': Number})
 
-bed_config: BedConfig = {
-	'zero': GPoint(-32.5, -65, 0),
-	'size': (77.5, 220),
-}
 ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
+}
+bed_config: BedConfig = {
+	'zero': GPoint(-32.5, -65, 0),
+	'size': (77.5, 220),
+	'anchor': GPoint(ring_config['radius'] + ring_config['center'].x, 0, 0),
 }
 
 #Move the zero points so the bed zero is actually 0,0
@@ -102,7 +103,7 @@ bed_config ['zero'] -= bed_config['zero']
 
 class Ender3(Printer):
 	def __init__(self):
-		self.bed = Bed(size=bed_config['size'])
+		self.bed = Bed(anchor=(ring_config['radius']+ring_config['center'].x, 0, 0), size=bed_config['size'])
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
 
