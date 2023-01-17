@@ -121,17 +121,24 @@ class GCLine:
 		"""Construct and return a line of gcode based on self.code,
 		self.args, and self.comment. Pass kwargs to override this line's existing
 		arguments."""
-		args = self.args.copy()
-		args.update(kwargs)
+		args = self.args
+		if kwargs:
+			args = self.args.copy()
+			args.update(kwargs)
 		out = []
 
 		if self.code:
 			out.append(self.code)
-		out.extend([f'{k}{round(v,5) if v is not None else ""}' for k,v in args.items()])
-		comment = f'; [{self.lineno}]' if self.lineno else '; '
-		if self.comment:
-			comment += f' {self.comment}'
-		out.append(comment)
+		for arg, val in args.items():
+			out.append(
+					(arg or "") +
+					("" if val is None else
+								str(round(val, 5)) if isinstance(val, (int,float)) else val))
+		comment = ' '.join([
+				f'[{self.lineno}]' if self.lineno else '',
+				self.comment or '']).strip()
+		if comment:
+			out.append(f'; {comment}')
 
 		return ' '.join(out)
 
