@@ -18,9 +18,10 @@ styles: dict[str, dict] = {
 	#GCode segment styles
 	'gc_segs':    {'line': dict(color='green',     width=2)},
 	'old_layer':  {'line': dict(color='gray',      width=.5), 'opacity': .25},
-	'old_segs':   {'line': dict(color= 'gray',     width=1)},
+	'old_segs':   {'line': dict(color='gray',      width=1)},
 	'to_print':   {'line': dict(color='green',     width=.5), 'opacity': .25},
-	'avoid_segs': {'line': dict(color='firebrick', width=1)}
+	'avoid_segs': {'line': dict(color='firebrick', width=1)},
+	'isec_segs':  {'line': dict(color='orange',    width=1)},
 
 
 
