@@ -186,13 +186,24 @@ class Printer:
 				s._debug = dict(avoid=avoid.copy(), anchor=self.anchor.copy(),
 										ring_angle=self.ring.angle,
 										ring_point=self.ring.point.copy())
-				isecs = self.thread_avoid(avoid)
+
+				#First let's just try to drop everything the thread trajectory intersects
+				thr = GSegment(self.anchor, self.ring.point, z=self.anchor.z)
+				rprint(f"Thread trajectory: {thr}")
+
+				isecs = thr.intersecting(avoid, ignore=self.anchor)
+				isecs.update({seg for seg in avoid - isecs if
+					too_close(thr, seg.start_point, by=avoid_by) or too_close(thr, seg.end_point, by=avoid_by)})
+
+				s._debug['isecs'] = isecs
+
+				#If we end up intersecting everything, we have to be more sophisticated
+				if isecs == avoid: isecs = self.thread_avoid(avoid)
+
 				rprint(f"{len(isecs)} intersections" + (f": {isecs}" if isecs else ""))
-				if len(isecs) == 0:
-					rprint("No intersections, don't need to move thread")
-					#s.valid = False
-				if len(avoid) == 1: rprint('Was avoiding:', avoid, indent=2)
+
 				avoid -= isecs
+
 			if avoid:
 				with steps.new_step(f"Print {len(avoid)} segments thread doesn't intersect" + extra_message) as s:
 					s.add(avoid)
@@ -201,18 +212,39 @@ class Printer:
 
 
 	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> set[GSegment]:
+		"""Move the ring to try to make the thread's anchor->ring trajectory avoid
+		the segments in `avoid` by at least `avoid_by`. Return any printed segments
+		that could not be avoided."""
 		assert(avoid)
 		avoid = set(avoid)
 
 		thr = GSegment(self.anchor, self.ring.point)
 
+		if not thr.intersecting(avoid):
+			from geometry.utils import eps
+			endpoints = set(flatten(avoid)) - set(thr[:])
+			avoidables = set(ep for ep in endpoints if self.anchor.distance(ep) > avoid_by)
+			dists = {ep: thr.distance(ep) for ep in avoidables}
+			if any(False if d is None else d - avoid_by <= -eps for d in dists.values()):
+				rprint("No intersection but something is too close:")
+				rprint(dists)
+			else:
+				return set()
+
+
 		#If no thread-avoid intersections and the thread is not too close to any
 		# avoid segment endpoints, we don't need to move ring, and are done
-		if(not thr.intersecting(avoid)
-			 and not any(too_close(thr, ep) for ep in (set(flatten(avoid)) - set(thr[:])))):
-			return set()
+		# if(not thr.intersecting(avoid)
+		# 	 and not any(too_close(thr, ep) for ep in (set(flatten(avoid)) - set(thr[:])))):
+		# 	return set()
 
 		vis, ipts = visibility(self.anchor, avoid, avoid_by)
+
+		#We only have 1 segment to avoid but can't avoid it. Let's pretend we did
+		# and see what happens.
+		if len(vis) == 1 and vis == {self.anchor: avoid}:
+			return set()
+
 
 		#Get all of the visibility points with N intersections, where N is the
 		# smallest number of intersections
@@ -227,8 +259,10 @@ class Printer:
 		if vis[vis_points[0]] == avoid:
 			rprint("Result of visibility:", vis[vis_points[0]], "is the same thing we tried to avoid:",
 					avoid, indent=4)
-			rprint(f"intersections {self.anchor}→{vis_points[0]}:",
+			rprint(f"Intersections {self.anchor}→{vis_points[0]}:",
 					ipts[vis_points[0]], indent=4)
+			self._debug_quickplot_args = dict(gc_segs=avoid, anchor=self.anchor,
+																thread_ring=thr)
 			raise ValueError("oh noes")
 
 		#Return the set of segments that we intersected
@@ -249,6 +283,9 @@ class Printer:
 
 				if move_ring:
 					self.ring.angle = ring_angle
+			else:
+				if move_ring:
+					raise ValueError(f"Didn't get an intersection between {anchor} → {target}")
 
 		if set_new_anchor:
 			rprint(f'thread_intersect set new anchor to {target}')
