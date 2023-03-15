@@ -160,7 +160,8 @@ class Threader:
 				thread.insert(0, GSegment(start_anchor, thread[0].start_point, z=layer.z))
 				rprint(f'Added start anchor seg: {thread[0]}')
 			else:
-				rprint(f'Start anchor to first thread point only {sdist:.2f} mm, moving thread start point')
+				rprint(f'Start anchor to first thread point only {sdist:.2f} mm, moving thread start point'
+					 f' from {thread[0].start_point} to start anchor {start_anchor}')
 				thread[0] = thread[0].copy(start_point=start_anchor, z=layer.z)
 
 		#Snap thread to printed geometry
