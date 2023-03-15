@@ -70,6 +70,10 @@ class GSegment(Segment):
 		else:
 			raise ValueError(f"Arg b is type {type(b)} = {b} but that's not supported!")
 
+		#Ensure that we're not going to overwrite anything
+		if point1 is a: point1 = point1.copy()
+		if point2 is b: point2 = point2.copy()
+
 		if z is not None:
 			point1.z = point2.z = z
 
