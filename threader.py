@@ -166,9 +166,14 @@ class Threader:
 				thread[0] = thread[0].copy(start_point=start_anchor, z=layer.z)
 
 		#Snap thread to printed geometry
-		snapped_thread = layer.geometry_snap(thread)
+		snap_first = start_anchor and not start_anchor.as2d() == self.printer.bed.anchor.as2d()
+		snapped_thread = layer.geometry_snap(thread, snap_first=snap_first)
 		if snapped_thread:
 			layer.snapped_thread = snapped_thread
+			#If we have start_anchor, we did snap_first, so need to move the anchor
+			# to the new place
+			if snap_first: start_anchor = snapped_thread[thread[0]].start_point
+
 			thread = list(filter(None, snapped_thread.values()))
 			rprint('Snapped thread:',
 					[(f'  {i}. Old: {o}\n     New: {n}' +

@@ -174,7 +174,7 @@ class TLayer(Cura4Layer):
 		return segs
 
 
-	def geometry_snap(self, thread: List[GSegment]) -> Dict[GSegment, None|GSegment]:
+	def geometry_snap(self, thread: List[GSegment], snap_first=False) -> Dict[GSegment, None|GSegment]:
 		"""Return new thread segments, modified as follows:
 			* Each segment end point is moved to its closest intersection with
 				printed layer geometry.
@@ -183,27 +183,41 @@ class TLayer(Cura4Layer):
 			* If the closest intersection is the same as the start point, then no new
 				segment is generated.
 			The return value is a dict: {original_segment: new_segment or None}
+
+			If `snap_first` is True, the start point of the first thread segment will
+			also be snapped to the closest geometry.
 		"""
-		end = None
-		newthread = {}
-
-		for tseg in thread:
-			if end and tseg.start_point != end: tseg = tseg.copy(start_point=end)
+		def _closest_seg_point(p: GPoint) -> tuple[GPoint, GSegment]:
+			closest_seg  = None
+			closest_isec = None
 			mindist = float('inf')
-			for s in self.geometry.segments:
-				if tseg.end_point in s:
-					log.debug(f'{tseg.end_point} in segment {s}')
-					end = tseg.end_point
-					break
-				isec = Plane(tseg.end_point, s.line.dv).intersection(s)
-				if isec is None: continue
-				dist = isec.distance(tseg.end_point)
-				if dist < mindist:
+			for seg in self.geometry.segments:
+				if p in seg: return p, seg
+				isec = seg.closest(p)
+				if (dist := isec.distance(p)) < mindist:
 					mindist = dist
-					end = isec
+					closest_isec = isec
+					closest_seg  = seg
+			assert closest_isec is not None
+			return closest_isec, closest_seg
 
-			#No intersections with anything
-			if end is None: raise ValueError(f"Can't snap segment {tseg}")
+		end = None
+		newthread: Dict[GSegment, None|GSegment] = {}
+
+		for i,tseg in enumerate(thread):
+			orig_seg = tseg.copy()
+
+			if i == 0 and snap_first:
+				start, cseg = _closest_seg_point(tseg.start_point)
+				tseg = tseg.copy(start_point=start)
+				log.debug(f'Snap first thread point to {cseg}:\n\t'
+							f'{thread[0].start_point} →\n\t{tseg.start_point}\n\t'
+							f'(distance: {tseg.start_point.distance(thread[0].start_point)})')
+				log.debug(f'Anchor in geom? {tseg.start_point in cseg}')
+
+			if end and tseg.start_point != end: tseg = tseg.copy(start_point=end)
+
+			end, cseg = _closest_seg_point(tseg.end_point)
 
 			if (move_dist := tseg.end_point.distance(end)) > 1:
 				log.debug(f"WARNING: moved end point for {tseg} {move_dist:02f} mm")
@@ -211,9 +225,9 @@ class TLayer(Cura4Layer):
 			#Not enough distance to intersect anything else
 			if end == tseg.start_point:
 				log.debug(f'Closest point for {tseg} is its start point, dropping it')
-				newthread[tseg] = None
+				newthread[orig_seg] = None
 			else:
-				newthread[tseg] = tseg.copy(end_point=end)
+				newthread[orig_seg] = tseg.copy(end_point=end)
 
 		return newthread
 
