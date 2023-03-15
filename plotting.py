@@ -98,6 +98,13 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		#Plot geometry printed in this step
 		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
 
+		#Plot debug things
+		if hasattr(step, '_debug'):
+			isecs = step._debug['isecs']
+			avoid = step._debug['avoid'] - isecs
+			plot_segments(fig, avoid, name='avoid', style=styles['avoid_segs'])
+			plot_segments(fig, isecs, name='isecs', style=styles['isec_segs'])
+
 		#Plot thread trajectory from current anchor to ring
 		plot_segments(fig, [GSegment(
 			steps[stepnum-1].printer_anchor if stepnum > 0 else steps[0].printer_anchor,
