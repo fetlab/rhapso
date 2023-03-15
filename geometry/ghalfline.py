@@ -14,24 +14,25 @@ class GHalfLine(HalfLine):
 			b = GPoint(b) if isinstance(b, (tuple, list, set, Point)) else b
 		super().__init__(a, b)
 
-	intersection = gcast(HalfLine.intersection)
+	_intersection = HalfLine.intersection
+	intersection  = gcast(HalfLine.intersection)
 
 
 	def as2d(self):
-		return self.__class__(GPoint.as2d(self.point), self.vector)
+		return self.__class__(GPoint.as2d(self.point), Vector(self.vector[0], self.vector[1], 0))
 
 
 	def intersecting(self, check:Collection[Segment]) -> Set[Segment]:
 		"""Return Segments in check which this HalfLine intersects with,
 		ignoring intersections with the start point of this HalfLine."""
-		return {seg for seg in listify(check) if self.intersection(seg) not in [None, self.point]}
+		return {gcast(seg) for seg in listify(check) if self._intersection(seg) not in [None, self.point]}
 
 
 	def intersections(self, check:Collection[Segment]) -> Set[Segment]:
 		"""Return all intersection points of this GHalfLine with the Segments in
 		`check`, where the intersection is not the start point of this HalfLine."""
-		return set(filter(lambda i: i not in [None, self.point],
-											[self.intersection(seg) for seg in listify(check)]))
+		return {gcast(seg) for seg in filter(lambda i: i not in [None, self.point],
+											[self._intersection(seg) for seg in listify(check)])}
 
 
 	def __repr__(self):
