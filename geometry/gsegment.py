@@ -6,6 +6,10 @@ from .gpoint import GPoint
 from .gcast import gcast
 from .utils import distance_linelike_point
 
+def list2gsegments(points:Collection):
+	return [GSegment(s, e) for s,e in points]
+
+
 class GSegment(Segment):
 	def __init__(self, a, b=None, z=None, gc_lines=None, is_extrude=False, **kwargs):
 		"""Instantiate a GSegment.
