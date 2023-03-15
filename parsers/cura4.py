@@ -64,9 +64,9 @@ def parse(gcobj):
 	gcobj.lines = glines.copy()
 
 	#Extract the file preamble and postamble
-	file_preamble, glines = listsplit(glines, lambda l: l.line.startswith(';LAYER:0'),
+	file_preamble, glines = listsplit(glines, lambda l: l.line.lstrip('; ').startswith('LAYER:0'),
 			maxsplit=1, keepsep='>')
-	file_postamble, glines = listsplit(reversed(glines), lambda l: l.line.startswith(';TIME_ELAPSED'),
+	file_postamble, glines = listsplit(reversed(glines), lambda l: l.line.lstrip('; ').startswith('TIME_ELAPSED'),
 			maxsplit=1, keepsep='>')
 	file_postamble.reverse()
 	glines.reverse()
@@ -100,7 +100,7 @@ def parse(gcobj):
 				lambda l: l.line.startswith(';LAYER'), layer.lines)).line.split(':')[1])
 		except (StopIteration, AttributeError) as e:
 			raise GCodeException(layer,
-					f"Couldn't find ';LAYER' comment in layer {i+1} (lines {layer.lines.first().lineno} - {layer.lines.last().lineno})") from e
+					f"Couldn't find ';LAYER' comment in layer {i+1} (lines {layer.lines.first.lineno} - {layer.lines.last.lineno})") from e
 
 	#For each layer, find the starting absolute extrusion value (the last
 	# extrusion in the previous layer)
