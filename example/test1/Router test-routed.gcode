@@ -31,7 +31,6 @@ G1 F1500 E-6.5 ; [29]
 ; [31] LAYER:0
 M107 ; [32]
 ;  ==== Start layer 0 ====
-;  Layer 0 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 0 postamble :::
 G0 F6000 X7.134 Y7.198 Z0.2 ; [33]
 G0 X3.937 Y15.459 ; [34]
@@ -109,28 +108,8 @@ G1 X40.235 Y50.921 E3.39231 ; [105]
 G1 X39.606 Y50.934 E3.41324 ; [106]
 G1 X30.496 Y50.933 E3.71624 ; [107]
 G1 X28.665 Y50.907 E3.77714 ; [108]
-;  Move thread to avoid head during bed move for [109]
-;    Segment: <{ 28.66,  50.91,   0.20}←→{ 26.03,  50.91,   0.20} (2.64 mm)>
-;    Thread (0.00°):  <{ 33.27,  21.60,   0.00}←→{130.50,  28.00,   0.00} (97.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E42.616 F8000 ;  Ring move by 107.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X26.026 Y50.907 E3.86491 ; [109]
 G1 X24.733 Y50.933 E3.90793 ; [110]
-;  Move thread to avoid head during bed move for [111]
-;    Segment: <{ 24.73,  50.93,   0.20}←→{ 15.50,  50.93,   0.20} (9.23 mm)>
-;    Thread (107.01°):  <{ 33.27,  21.60,   0.00}←→{ 10.30, 116.93,   0.00} (98.06 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E4.653 F8000 ;  Ring move by 11.68° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.501 Y50.933 E4.21499 ; [111]
 G1 X14.803 Y50.924 E4.2382 ; [112]
 G1 X13.867 Y50.872 E4.26938 ; [113]
@@ -230,28 +209,8 @@ G1 X40.224 Y50.521 E8.95198 ; [206]
 G1 X39.606 Y50.534 E8.97254 ; [207]
 G1 X30.501 Y50.533 E9.27537 ; [208]
 G1 X28.67 Y50.507 E9.33627 ; [209]
-;  Move thread to avoid head during bed move for [210]
-;    Segment: <{ 28.67,  50.51,   0.20}←→{ 26.02,  50.51,   0.20} (2.65 mm)>
-;    Thread (118.69°):  <{ 33.27,  21.60,   0.00}←→{ -7.15, 109.58,   0.00} (96.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-4.597 F8000 ;  Ring move by -11.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X26.017 Y50.507 E9.42451 ; [210]
 G1 X24.733 Y50.533 E9.46723 ; [211]
-;  Move thread to avoid head during bed move for [212]
-;    Segment: <{ 24.73,  50.53,   0.20}←→{ 15.51,  50.53,   0.20} (9.23 mm)>
-;    Thread (107.15°):  <{ 33.27,  21.60,   0.00}←→{ 10.08, 116.87,   0.00} (98.05 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E4.704 F8000 ;  Ring move by 11.81° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.506 Y50.533 E9.77412 ; [212]
 G1 X14.808 Y50.524 E9.79734 ; [213]
 G1 X13.889 Y50.472 E9.82795 ; [214]
@@ -348,16 +307,6 @@ G1 X40.213 Y50.121 E14.42797 ; [304]
 G1 X39.606 Y50.134 E14.44816 ; [305]
 G1 X30.507 Y50.133 E14.7508 ; [306]
 G1 X28.676 Y50.107 E14.8117 ; [307]
-;  Move thread to avoid head during bed move for [308]
-;    Segment: <{ 28.68,  50.11,   0.20}←→{ 26.05,  50.11,   0.20} (2.62 mm)>
-;    Thread (118.96°):  <{ 33.27,  21.60,   0.00}←→{ -7.53, 109.37,   0.00} (96.79 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-4.647 F8000 ;  Ring move by -11.67° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X26.054 Y50.107 E14.89891 ; [308]
 G1 X24.955 Y50.131 E14.93547 ; [309]
 G1 X15.511 Y50.133 E15.24958 ; [310]
@@ -394,32 +343,12 @@ G1 F1500 E16.61453 ; [340]
 G1 F1200 X24.336 Y15.534 E16.90721 ; [341]
 G1 X15.536 Y15.534 E17.1999 ; [342]
 G1 X15.536 Y24.334 E17.49259 ; [343]
-;  Move thread to avoid head during bed move for [344]
-;    Segment: <{ 15.54,  24.33,   0.20}←→{ 24.34,  24.33,   0.20} (8.80 mm)>
-;    Thread (107.29°):  <{ 33.27,  21.60,   0.00}←→{  9.86, 116.80,   0.00} (98.03 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E33.225 F8000 ;  Ring move by 83.43° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E17.78528 ; [344]
 G0 F6000 X24.736 Y24.734 ; [345]
 ; [346] TYPE:WALL-OUTER
 G1 F1200 X24.736 Y15.134 E18.10458 ; [347]
 G1 X15.136 Y15.134 E18.42388 ; [348]
 G1 X15.136 Y24.734 E18.74317 ; [349]
-;  Move thread to avoid head during bed move for [350]
-;    Segment: <{ 15.14,  24.73,   0.20}←→{ 24.74,  24.73,   0.20} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E19.06247 ; [350]
 G0 F6000 X24.466 Y24.464 ; [351]
 G0 X24.236 Y23.974 ; [352]
@@ -428,16 +357,6 @@ G0 X23.976 Y23.974 ; [353]
 G1 F1200 X23.976 Y15.894 E19.33121 ; [355]
 G1 X15.896 Y15.894 E19.59996 ; [356]
 G1 X15.896 Y23.974 E19.8687 ; [357]
-;  Move thread to avoid head during bed move for [358]
-;    Segment: <{ 15.90,  23.97,   0.20}←→{ 23.98,  23.97,   0.20} (8.08 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.615 F8000 ;  Ring move by 1.54° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y23.974 E20.13744 ; [358]
 G0 F6000 X24.236 Y23.974 ; [359]
 G0 X24.236 Y16.421 ; [360]
@@ -508,32 +427,12 @@ G1 F1500 E25.04765 ; [424]
 G1 F1200 X39.336 Y15.534 E25.34034 ; [425]
 G1 X30.536 Y15.534 E25.63303 ; [426]
 G1 X30.536 Y24.334 E25.92572 ; [427]
-;  Move thread to avoid head during bed move for [428]
-;    Segment: <{ 30.54,  24.33,   0.20}←→{ 39.34,  24.33,   0.20} (8.80 mm)>
-;    Thread (191.48°):  <{ 33.27,  21.60,   0.00}←→{-53.64,   9.50,   0.00} (87.75 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-16.363 F8000 ;  Ring move by -41.09° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E26.21841 ; [428]
 G0 F6000 X39.736 Y24.734 ; [429]
 ; [430] TYPE:WALL-OUTER
 G1 F1200 X39.736 Y15.134 E26.5377 ; [431]
 G1 X30.136 Y15.134 E26.857 ; [432]
 G1 X30.136 Y24.734 E27.1763 ; [433]
-;  Move thread to avoid head during bed move for [434]
-;    Segment: <{ 30.14,  24.73,   0.20}←→{ 39.74,  24.73,   0.20} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E27.49559 ; [434]
 G0 F6000 X39.466 Y24.464 ; [435]
 G0 X39.236 Y23.974 ; [436]
@@ -542,16 +441,6 @@ G0 X38.976 Y23.974 ; [437]
 G1 F1200 X38.976 Y15.894 E27.76434 ; [439]
 G1 X30.896 Y15.894 E28.03308 ; [440]
 G1 X30.896 Y23.974 E28.30182 ; [441]
-;  Move thread to avoid head during bed move for [442]
-;    Segment: <{ 30.90,  23.97,   0.20}←→{ 38.98,  23.97,   0.20} (8.08 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.14 F8000 ;  Ring move by -0.35° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y23.974 E28.57056 ; [442]
 G0 F6000 X39.236 Y23.974 ; [443]
 G0 X39.236 Y16.713 ; [444]
@@ -617,82 +506,22 @@ G0 X39.336 Y39.334 ; [503]
 ; [504] TYPE:WALL-INNER
 G1 F1500 E33.46628 ; [505]
 G1 F1200 X39.336 Y30.534 E33.75897 ; [506]
-;  Move thread to avoid head during bed move for [507]
-;    Segment: <{ 39.34,  30.53,   0.20}←→{ 30.54,  30.53,   0.20} (8.80 mm)>
-;    Thread (150.22°):  <{ 33.27,  21.60,   0.00}←→{-43.22,  74.19,   0.00} (92.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.856 F8000 ;  Ring move by -105.10° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E34.05166 ; [507]
 G1 X30.536 Y39.334 E34.34435 ; [508]
-;  Move thread to avoid head during bed move for [509]
-;    Segment: <{ 30.54,  39.33,   0.20}←→{ 39.34,  39.33,   0.20} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E34.63704 ; [509]
 G0 F6000 X39.736 Y39.734 ; [510]
 ; [511] TYPE:WALL-OUTER
 G1 F1200 X39.736 Y30.134 E34.95634 ; [512]
-;  Move thread to avoid head during bed move for [513]
-;    Segment: <{ 39.74,  30.13,   0.20}←→{ 30.14,  30.13,   0.20} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E35.27563 ; [513]
 G1 X30.136 Y39.734 E35.59493 ; [514]
-;  Move thread to avoid head during bed move for [515]
-;    Segment: <{ 30.14,  39.73,   0.20}←→{ 39.74,  39.73,   0.20} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E35.91423 ; [515]
 G0 F6000 X39.466 Y39.464 ; [516]
 G0 X39.236 Y38.974 ; [517]
 G0 X38.976 Y38.974 ; [518]
 ; [519] TYPE:SKIN
 G1 F1200 X38.976 Y30.894 E36.18297 ; [520]
-;  Move thread to avoid head during bed move for [521]
-;    Segment: <{ 38.98,  30.89,   0.20}←→{ 30.90,  30.89,   0.20} (8.08 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-23.353 F8000 ;  Ring move by -58.64° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.896 Y30.894 E36.45171 ; [521]
 G1 X30.896 Y38.974 E36.72046 ; [522]
-;  Move thread to avoid head during bed move for [523]
-;    Segment: <{ 30.90,  38.97,   0.20}←→{ 38.98,  38.97,   0.20} (8.08 mm)>
-;    Thread (48.59°):  <{ 33.27,  21.60,   0.00}←→{ 99.02,  97.75,   0.00} (100.61 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E22.128 F8000 ;  Ring move by 55.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y38.974 E36.9892 ; [523]
 G0 F6000 X39.236 Y38.974 ; [524]
 G0 X39.236 Y31.421 ; [525]
@@ -760,82 +589,22 @@ G0 X24.336 Y39.334 ; [586]
 ; [587] TYPE:WALL-INNER
 G1 F1500 E41.89964 ; [588]
 G1 F1200 X24.336 Y30.534 E42.19233 ; [589]
-;  Move thread to avoid head during bed move for [590]
-;    Segment: <{ 24.34,  30.53,   0.20}←→{ 15.54,  30.53,   0.20} (8.80 mm)>
-;    Thread (104.15°):  <{ 33.27,  21.60,   0.00}←→{ 14.76, 118.18,   0.00} (98.34 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E19.549 F8000 ;  Ring move by 49.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E42.48502 ; [590]
 G1 X15.536 Y39.334 E42.77771 ; [591]
-;  Move thread to avoid head during bed move for [592]
-;    Segment: <{ 15.54,  39.33,   0.20}←→{ 24.34,  39.33,   0.20} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E43.0704 ; [592]
 G0 F6000 X24.736 Y39.734 ; [593]
 ; [594] TYPE:WALL-OUTER
 G1 F1200 X24.736 Y30.134 E43.3897 ; [595]
-;  Move thread to avoid head during bed move for [596]
-;    Segment: <{ 24.74,  30.13,   0.20}←→{ 15.14,  30.13,   0.20} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E43.70899 ; [596]
 G1 X15.136 Y39.734 E44.02829 ; [597]
-;  Move thread to avoid head during bed move for [598]
-;    Segment: <{ 15.14,  39.73,   0.20}←→{ 24.74,  39.73,   0.20} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E44.34759 ; [598]
 G0 F6000 X24.466 Y39.464 ; [599]
 G0 X24.236 Y38.974 ; [600]
 G0 X23.976 Y38.974 ; [601]
 ; [602] TYPE:SKIN
 G1 F1200 X23.976 Y30.894 E44.61633 ; [603]
-;  Move thread to avoid head during bed move for [604]
-;    Segment: <{ 23.98,  30.89,   0.20}←→{ 15.90,  30.89,   0.20} (8.08 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.639 F8000 ;  Ring move by -4.12° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.896 Y30.894 E44.88507 ; [604]
 G1 X15.896 Y38.974 E45.15381 ; [605]
-;  Move thread to avoid head during bed move for [606]
-;    Segment: <{ 15.90,  38.97,   0.20}←→{ 23.98,  38.97,   0.20} (8.08 mm)>
-;    Thread (153.40°):  <{ 33.27,  21.60,   0.00}←→{-45.66,  69.64,   0.00} (92.40 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.497 F8000 ;  Ring move by 3.76° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y38.974 E45.42255 ; [606]
 G0 F6000 X24.236 Y38.974 ; [607]
 G0 X24.236 Y31.695 ; [608]
@@ -897,7 +666,6 @@ G1 F1500 E43.81755 ; [662]
 ;  ::: End layer 0 postamble :::
 ;  ====== End layer 0 ====
 ;  ==== Start layer 1 ====
-;  Layer 1 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 1 postamble :::
 G0 F300 X16.711 Y38.772 Z0.4 ; [664]
 G0 F6000 X16.711 Y39.234 ; [665]
@@ -915,32 +683,12 @@ G1 F1500 E50.31755 ; [676]
 G1 F1350 X24.336 Y15.534 E50.61024 ; [677]
 G1 X15.536 Y15.534 E50.90293 ; [678]
 G1 X15.536 Y24.334 E51.19562 ; [679]
-;  Move thread to avoid head during bed move for [680]
-;    Segment: <{ 15.54,  24.33,   0.40}←→{ 24.34,  24.33,   0.40} (8.80 mm)>
-;    Thread (157.16°):  <{ 33.27,  21.60,   0.00}←→{-48.21,  64.09,   0.00} (91.89 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.363 F8000 ;  Ring move by 33.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E51.4883 ; [680]
 G0 F7500 X24.736 Y24.734 ; [681]
 ; [682] TYPE:WALL-OUTER
 G1 F1350 X24.736 Y15.134 E51.8076 ; [683]
 G1 X15.136 Y15.134 E52.1269 ; [684]
 G1 X15.136 Y24.734 E52.4462 ; [685]
-;  Move thread to avoid head during bed move for [686]
-;    Segment: <{ 15.14,  24.73,   0.40}←→{ 24.74,  24.73,   0.40} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E52.76549 ; [686]
 G0 F7500 X24.466 Y24.464 ; [687]
 G0 X24.236 Y23.974 ; [688]
@@ -949,16 +697,6 @@ G0 X23.976 Y23.974 ; [689]
 G1 F1350 X23.976 Y15.894 E53.03424 ; [691]
 G1 X15.896 Y15.894 E53.30298 ; [692]
 G1 X15.896 Y23.974 E53.57172 ; [693]
-;  Move thread to avoid head during bed move for [694]
-;    Segment: <{ 15.90,  23.97,   0.40}←→{ 23.98,  23.97,   0.40} (8.08 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.615 F8000 ;  Ring move by 1.54° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y23.974 E53.84046 ; [694]
 G0 F7500 X23.178 Y23.773 ; [695]
 G1 F1350 X23.775 Y23.176 E53.86854 ; [696]
@@ -1025,32 +763,12 @@ G1 F1500 E58.73574 ; [756]
 G1 F1350 X39.336 Y15.534 E59.02843 ; [757]
 G1 X30.536 Y15.534 E59.32111 ; [758]
 G1 X30.536 Y24.334 E59.6138 ; [759]
-;  Move thread to avoid head during bed move for [760]
-;    Segment: <{ 30.54,  24.33,   0.40}←→{ 39.34,  24.33,   0.40} (8.80 mm)>
-;    Thread (191.48°):  <{ 33.27,  21.60,   0.00}←→{-53.64,   9.50,   0.00} (87.75 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-16.363 F8000 ;  Ring move by -41.09° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E59.90649 ; [760]
 G0 F7500 X39.736 Y24.734 ; [761]
 ; [762] TYPE:WALL-OUTER
 G1 F1350 X39.736 Y15.134 E60.22579 ; [763]
 G1 X30.136 Y15.134 E60.54509 ; [764]
 G1 X30.136 Y24.734 E60.86438 ; [765]
-;  Move thread to avoid head during bed move for [766]
-;    Segment: <{ 30.14,  24.73,   0.40}←→{ 39.74,  24.73,   0.40} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E61.18368 ; [766]
 G0 F7500 X39.466 Y24.464 ; [767]
 G0 X39.236 Y23.974 ; [768]
@@ -1059,16 +777,6 @@ G0 X38.976 Y23.974 ; [769]
 G1 F1350 X38.976 Y15.894 E61.45242 ; [771]
 G1 X30.896 Y15.894 E61.72117 ; [772]
 G1 X30.896 Y23.974 E61.98991 ; [773]
-;  Move thread to avoid head during bed move for [774]
-;    Segment: <{ 30.90,  23.97,   0.40}←→{ 38.98,  23.97,   0.40} (8.08 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.14 F8000 ;  Ring move by -0.35° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y23.974 E62.25865 ; [774]
 G0 F7500 X38.774 Y23.45 ; [775]
 G1 F1350 X38.451 Y23.773 E62.27384 ; [776]
@@ -1135,82 +843,22 @@ G0 X39.336 Y39.334 ; [836]
 ; [837] TYPE:WALL-INNER
 G1 F1500 E67.16879 ; [838]
 G1 F1350 X39.336 Y30.534 E67.46148 ; [839]
-;  Move thread to avoid head during bed move for [840]
-;    Segment: <{ 39.34,  30.53,   0.40}←→{ 30.54,  30.53,   0.40} (8.80 mm)>
-;    Thread (150.22°):  <{ 33.27,  21.60,   0.00}←→{-43.22,  74.19,   0.00} (92.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.856 F8000 ;  Ring move by -105.10° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E67.75417 ; [840]
 G1 X30.536 Y39.334 E68.04686 ; [841]
-;  Move thread to avoid head during bed move for [842]
-;    Segment: <{ 30.54,  39.33,   0.40}←→{ 39.34,  39.33,   0.40} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E68.33954 ; [842]
 G0 F7500 X39.736 Y39.734 ; [843]
 ; [844] TYPE:WALL-OUTER
 G1 F1350 X39.736 Y30.134 E68.65884 ; [845]
-;  Move thread to avoid head during bed move for [846]
-;    Segment: <{ 39.74,  30.13,   0.40}←→{ 30.14,  30.13,   0.40} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E68.97814 ; [846]
 G1 X30.136 Y39.734 E69.29744 ; [847]
-;  Move thread to avoid head during bed move for [848]
-;    Segment: <{ 30.14,  39.73,   0.40}←→{ 39.74,  39.73,   0.40} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E69.61673 ; [848]
 G0 F7500 X39.466 Y39.464 ; [849]
 G0 X39.236 Y38.974 ; [850]
 G0 X38.976 Y38.974 ; [851]
 ; [852] TYPE:SKIN
 G1 F1350 X38.976 Y30.894 E69.88548 ; [853]
-;  Move thread to avoid head during bed move for [854]
-;    Segment: <{ 38.98,  30.89,   0.40}←→{ 30.90,  30.89,   0.40} (8.08 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-23.353 F8000 ;  Ring move by -58.64° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.896 Y30.894 E70.15422 ; [854]
 G1 X30.896 Y38.974 E70.42296 ; [855]
-;  Move thread to avoid head during bed move for [856]
-;    Segment: <{ 30.90,  38.97,   0.40}←→{ 38.98,  38.97,   0.40} (8.08 mm)>
-;    Thread (48.59°):  <{ 33.27,  21.60,   0.00}←→{ 99.02,  97.75,   0.00} (100.61 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E22.128 F8000 ;  Ring move by 55.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y38.974 E70.6917 ; [856]
 G0 F7500 X38.774 Y38.158 ; [857]
 G1 F1350 X38.159 Y38.774 E70.72065 ; [858]
@@ -1275,82 +923,22 @@ G0 X24.336 Y39.334 ; [916]
 ; [917] TYPE:WALL-INNER
 G1 F1500 E75.58721 ; [918]
 G1 F1350 X24.336 Y30.534 E75.8799 ; [919]
-;  Move thread to avoid head during bed move for [920]
-;    Segment: <{ 24.34,  30.53,   0.40}←→{ 15.54,  30.53,   0.40} (8.80 mm)>
-;    Thread (104.15°):  <{ 33.27,  21.60,   0.00}←→{ 14.76, 118.18,   0.00} (98.34 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E19.549 F8000 ;  Ring move by 49.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E76.17259 ; [920]
 G1 X15.536 Y39.334 E76.46528 ; [921]
-;  Move thread to avoid head during bed move for [922]
-;    Segment: <{ 15.54,  39.33,   0.40}←→{ 24.34,  39.33,   0.40} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E76.75797 ; [922]
 G0 F7500 X24.736 Y39.734 ; [923]
 ; [924] TYPE:WALL-OUTER
 G1 F1350 X24.736 Y30.134 E77.07727 ; [925]
-;  Move thread to avoid head during bed move for [926]
-;    Segment: <{ 24.74,  30.13,   0.40}←→{ 15.14,  30.13,   0.40} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E77.39656 ; [926]
 G1 X15.136 Y39.734 E77.71586 ; [927]
-;  Move thread to avoid head during bed move for [928]
-;    Segment: <{ 15.14,  39.73,   0.40}←→{ 24.74,  39.73,   0.40} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E78.03516 ; [928]
 G0 F7500 X24.466 Y39.464 ; [929]
 G0 X24.236 Y38.974 ; [930]
 G0 X23.976 Y38.974 ; [931]
 ; [932] TYPE:SKIN
 G1 F1350 X23.976 Y30.894 E78.3039 ; [933]
-;  Move thread to avoid head during bed move for [934]
-;    Segment: <{ 23.98,  30.89,   0.40}←→{ 15.90,  30.89,   0.40} (8.08 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.639 F8000 ;  Ring move by -4.12° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.896 Y30.894 E78.57264 ; [934]
 G1 X15.896 Y38.974 E78.84138 ; [935]
-;  Move thread to avoid head during bed move for [936]
-;    Segment: <{ 15.90,  38.97,   0.40}←→{ 23.98,  38.97,   0.40} (8.08 mm)>
-;    Thread (153.40°):  <{ 33.27,  21.60,   0.00}←→{-45.66,  69.64,   0.00} (92.40 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.497 F8000 ;  Ring move by 3.76° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y38.974 E79.11012 ; [936]
 G0 F7500 X23.451 Y38.773 ; [937]
 G1 F1350 X23.775 Y38.449 E79.12536 ; [938]
@@ -1411,7 +999,6 @@ G1 F1500 E77.52139 ; [991]
 ;  ::: End layer 1 postamble :::
 ;  ====== End layer 1 ====
 ;  ==== Start layer 2 ====
-;  Layer 2 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 2 postamble :::
 G0 F300 X16.424 Y31.092 Z0.6 ; [993]
 G0 F7500 X16.424 Y30.634 ; [994]
@@ -1428,32 +1015,12 @@ G1 F1500 E84.02139 ; [1004]
 G1 X24.336 Y15.534 E84.31408 ; [1005]
 G1 X15.536 Y15.534 E84.60677 ; [1006]
 G1 X15.536 Y24.334 E84.89946 ; [1007]
-;  Move thread to avoid head during bed move for [1008]
-;    Segment: <{ 15.54,  24.33,   0.60}←→{ 24.34,  24.33,   0.60} (8.80 mm)>
-;    Thread (157.16°):  <{ 33.27,  21.60,   0.00}←→{-48.21,  64.09,   0.00} (91.89 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.363 F8000 ;  Ring move by 33.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E85.19215 ; [1008]
 G0 F9000 X24.736 Y24.734 ; [1009]
 ; [1010] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E85.51145 ; [1011]
 G1 X15.136 Y15.134 E85.83074 ; [1012]
 G1 X15.136 Y24.734 E86.15004 ; [1013]
-;  Move thread to avoid head during bed move for [1014]
-;    Segment: <{ 15.14,  24.73,   0.60}←→{ 24.74,  24.73,   0.60} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E86.46934 ; [1014]
 G0 F9000 X24.466 Y24.464 ; [1015]
 G0 X24.236 Y23.974 ; [1016]
@@ -1462,16 +1029,6 @@ G0 X23.976 Y23.974 ; [1017]
 G1 F1500 X23.976 Y15.894 E86.73808 ; [1019]
 G1 X15.896 Y15.894 E87.00682 ; [1020]
 G1 X15.896 Y23.974 E87.27556 ; [1021]
-;  Move thread to avoid head during bed move for [1022]
-;    Segment: <{ 15.90,  23.97,   0.60}←→{ 23.98,  23.97,   0.60} (8.08 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.615 F8000 ;  Ring move by 1.54° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y23.974 E87.54431 ; [1022]
 G0 F9000 X24.236 Y23.974 ; [1023]
 G0 X24.236 Y16.421 ; [1024]
@@ -1542,32 +1099,12 @@ G1 F1500 E92.45451 ; [1088]
 G1 X39.336 Y15.534 E92.7472 ; [1089]
 G1 X30.536 Y15.534 E93.03989 ; [1090]
 G1 X30.536 Y24.334 E93.33258 ; [1091]
-;  Move thread to avoid head during bed move for [1092]
-;    Segment: <{ 30.54,  24.33,   0.60}←→{ 39.34,  24.33,   0.60} (8.80 mm)>
-;    Thread (191.48°):  <{ 33.27,  21.60,   0.00}←→{-53.64,   9.50,   0.00} (87.75 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-16.363 F8000 ;  Ring move by -41.09° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E93.62527 ; [1092]
 G0 F9000 X39.736 Y24.734 ; [1093]
 ; [1094] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E93.94457 ; [1095]
 G1 X30.136 Y15.134 E94.26387 ; [1096]
 G1 X30.136 Y24.734 E94.58316 ; [1097]
-;  Move thread to avoid head during bed move for [1098]
-;    Segment: <{ 30.14,  24.73,   0.60}←→{ 39.74,  24.73,   0.60} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E94.90246 ; [1098]
 G0 F9000 X39.466 Y24.464 ; [1099]
 G0 X39.236 Y23.974 ; [1100]
@@ -1576,16 +1113,6 @@ G0 X38.976 Y23.974 ; [1101]
 G1 F1500 X38.976 Y15.894 E95.1712 ; [1103]
 G1 X30.896 Y15.894 E95.43994 ; [1104]
 G1 X30.896 Y23.974 E95.70869 ; [1105]
-;  Move thread to avoid head during bed move for [1106]
-;    Segment: <{ 30.90,  23.97,   0.60}←→{ 38.98,  23.97,   0.60} (8.08 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.14 F8000 ;  Ring move by -0.35° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y23.974 E95.97743 ; [1106]
 G0 F9000 X39.236 Y23.974 ; [1107]
 G0 X39.236 Y16.713 ; [1108]
@@ -1651,82 +1178,22 @@ G0 X39.336 Y39.334 ; [1167]
 ; [1168] TYPE:WALL-INNER
 G1 F1500 E100.87315 ; [1169]
 G1 X39.336 Y30.534 E101.16584 ; [1170]
-;  Move thread to avoid head during bed move for [1171]
-;    Segment: <{ 39.34,  30.53,   0.60}←→{ 30.54,  30.53,   0.60} (8.80 mm)>
-;    Thread (150.22°):  <{ 33.27,  21.60,   0.00}←→{-43.22,  74.19,   0.00} (92.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.856 F8000 ;  Ring move by -105.10° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E101.45853 ; [1171]
 G1 X30.536 Y39.334 E101.75122 ; [1172]
-;  Move thread to avoid head during bed move for [1173]
-;    Segment: <{ 30.54,  39.33,   0.60}←→{ 39.34,  39.33,   0.60} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E102.04391 ; [1173]
 G0 F9000 X39.736 Y39.734 ; [1174]
 ; [1175] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E102.3632 ; [1176]
-;  Move thread to avoid head during bed move for [1177]
-;    Segment: <{ 39.74,  30.13,   0.60}←→{ 30.14,  30.13,   0.60} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E102.6825 ; [1177]
 G1 X30.136 Y39.734 E103.0018 ; [1178]
-;  Move thread to avoid head during bed move for [1179]
-;    Segment: <{ 30.14,  39.73,   0.60}←→{ 39.74,  39.73,   0.60} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E103.3211 ; [1179]
 G0 F9000 X39.466 Y39.464 ; [1180]
 G0 X39.236 Y38.974 ; [1181]
 G0 X38.976 Y38.974 ; [1182]
 ; [1183] TYPE:SKIN
 G1 F1500 X38.976 Y30.894 E103.58984 ; [1184]
-;  Move thread to avoid head during bed move for [1185]
-;    Segment: <{ 38.98,  30.89,   0.60}←→{ 30.90,  30.89,   0.60} (8.08 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-23.353 F8000 ;  Ring move by -58.64° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.896 Y30.894 E103.85858 ; [1185]
 G1 X30.896 Y38.974 E104.12732 ; [1186]
-;  Move thread to avoid head during bed move for [1187]
-;    Segment: <{ 30.90,  38.97,   0.60}←→{ 38.98,  38.97,   0.60} (8.08 mm)>
-;    Thread (48.59°):  <{ 33.27,  21.60,   0.00}←→{ 99.02,  97.75,   0.00} (100.61 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E22.128 F8000 ;  Ring move by 55.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y38.974 E104.39606 ; [1187]
 G0 F9000 X39.236 Y38.974 ; [1188]
 G0 X39.236 Y31.421 ; [1189]
@@ -1794,82 +1261,22 @@ G0 X24.336 Y39.334 ; [1250]
 ; [1251] TYPE:WALL-INNER
 G1 F1500 E109.30651 ; [1252]
 G1 X24.336 Y30.534 E109.5992 ; [1253]
-;  Move thread to avoid head during bed move for [1254]
-;    Segment: <{ 24.34,  30.53,   0.60}←→{ 15.54,  30.53,   0.60} (8.80 mm)>
-;    Thread (104.15°):  <{ 33.27,  21.60,   0.00}←→{ 14.76, 118.18,   0.00} (98.34 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E19.549 F8000 ;  Ring move by 49.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E109.89189 ; [1254]
 G1 X15.536 Y39.334 E110.18458 ; [1255]
-;  Move thread to avoid head during bed move for [1256]
-;    Segment: <{ 15.54,  39.33,   0.60}←→{ 24.34,  39.33,   0.60} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E110.47726 ; [1256]
 G0 F9000 X24.736 Y39.734 ; [1257]
 ; [1258] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E110.79656 ; [1259]
-;  Move thread to avoid head during bed move for [1260]
-;    Segment: <{ 24.74,  30.13,   0.60}←→{ 15.14,  30.13,   0.60} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E111.11586 ; [1260]
 G1 X15.136 Y39.734 E111.43516 ; [1261]
-;  Move thread to avoid head during bed move for [1262]
-;    Segment: <{ 15.14,  39.73,   0.60}←→{ 24.74,  39.73,   0.60} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E111.75445 ; [1262]
 G0 F9000 X24.466 Y39.464 ; [1263]
 G0 X24.236 Y38.974 ; [1264]
 G0 X23.976 Y38.974 ; [1265]
 ; [1266] TYPE:SKIN
 G1 F1500 X23.976 Y30.894 E112.0232 ; [1267]
-;  Move thread to avoid head during bed move for [1268]
-;    Segment: <{ 23.98,  30.89,   0.60}←→{ 15.90,  30.89,   0.60} (8.08 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.639 F8000 ;  Ring move by -4.12° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.896 Y30.894 E112.29194 ; [1268]
 G1 X15.896 Y38.974 E112.56068 ; [1269]
-;  Move thread to avoid head during bed move for [1270]
-;    Segment: <{ 15.90,  38.97,   0.60}←→{ 23.98,  38.97,   0.60} (8.08 mm)>
-;    Thread (153.40°):  <{ 33.27,  21.60,   0.00}←→{-45.66,  69.64,   0.00} (92.40 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.497 F8000 ;  Ring move by 3.76° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y38.974 E112.82942 ; [1270]
 G0 F9000 X24.236 Y38.974 ; [1271]
 G0 X24.236 Y31.695 ; [1272]
@@ -1930,7 +1337,6 @@ G1 F1500 E111.22441 ; [1325]
 ;  ::: End layer 2 postamble :::
 ;  ====== End layer 2 ====
 ;  ==== Start layer 3 ====
-;  Layer 3 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 3 postamble :::
 G0 F300 X16.711 Y38.772 Z0.8 ; [1327]
 G0 F9000 X16.711 Y39.234 ; [1328]
@@ -1948,32 +1354,12 @@ G1 F1500 E117.72441 ; [1339]
 G1 X24.336 Y15.534 E118.0171 ; [1340]
 G1 X15.536 Y15.534 E118.30979 ; [1341]
 G1 X15.536 Y24.334 E118.60248 ; [1342]
-;  Move thread to avoid head during bed move for [1343]
-;    Segment: <{ 15.54,  24.33,   0.80}←→{ 24.34,  24.33,   0.80} (8.80 mm)>
-;    Thread (157.16°):  <{ 33.27,  21.60,   0.00}←→{-48.21,  64.09,   0.00} (91.89 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.363 F8000 ;  Ring move by 33.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E118.89517 ; [1343]
 G0 F9000 X24.736 Y24.734 ; [1344]
 ; [1345] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E119.21447 ; [1346]
 G1 X15.136 Y15.134 E119.53377 ; [1347]
 G1 X15.136 Y24.734 E119.85306 ; [1348]
-;  Move thread to avoid head during bed move for [1349]
-;    Segment: <{ 15.14,  24.73,   0.80}←→{ 24.74,  24.73,   0.80} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E120.17236 ; [1349]
 G0 F9000 X24.466 Y24.464 ; [1350]
 G0 X24.236 Y23.974 ; [1351]
@@ -1982,16 +1368,6 @@ G0 X23.976 Y23.974 ; [1352]
 G1 F1500 X23.976 Y15.894 E120.4411 ; [1354]
 G1 X15.896 Y15.894 E120.70984 ; [1355]
 G1 X15.896 Y23.974 E120.97859 ; [1356]
-;  Move thread to avoid head during bed move for [1357]
-;    Segment: <{ 15.90,  23.97,   0.80}←→{ 23.98,  23.97,   0.80} (8.08 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.615 F8000 ;  Ring move by 1.54° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y23.974 E121.24733 ; [1357]
 G0 F9000 X23.178 Y23.773 ; [1358]
 G1 F1500 X23.775 Y23.176 E121.27541 ; [1359]
@@ -2058,32 +1434,12 @@ G1 F1500 E126.1426 ; [1419]
 G1 X39.336 Y15.534 E126.43529 ; [1420]
 G1 X30.536 Y15.534 E126.72798 ; [1421]
 G1 X30.536 Y24.334 E127.02067 ; [1422]
-;  Move thread to avoid head during bed move for [1423]
-;    Segment: <{ 30.54,  24.33,   0.80}←→{ 39.34,  24.33,   0.80} (8.80 mm)>
-;    Thread (191.48°):  <{ 33.27,  21.60,   0.00}←→{-53.64,   9.50,   0.00} (87.75 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-16.363 F8000 ;  Ring move by -41.09° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E127.31336 ; [1423]
 G0 F9000 X39.736 Y24.734 ; [1424]
 ; [1425] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E127.63266 ; [1426]
 G1 X30.136 Y15.134 E127.95195 ; [1427]
 G1 X30.136 Y24.734 E128.27125 ; [1428]
-;  Move thread to avoid head during bed move for [1429]
-;    Segment: <{ 30.14,  24.73,   0.80}←→{ 39.74,  24.73,   0.80} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E128.59055 ; [1429]
 G0 F9000 X39.466 Y24.464 ; [1430]
 G0 X39.236 Y23.974 ; [1431]
@@ -2092,16 +1448,6 @@ G0 X38.976 Y23.974 ; [1432]
 G1 F1500 X38.976 Y15.894 E128.85929 ; [1434]
 G1 X30.896 Y15.894 E129.12803 ; [1435]
 G1 X30.896 Y23.974 E129.39677 ; [1436]
-;  Move thread to avoid head during bed move for [1437]
-;    Segment: <{ 30.90,  23.97,   0.80}←→{ 38.98,  23.97,   0.80} (8.08 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.14 F8000 ;  Ring move by -0.35° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y23.974 E129.66552 ; [1437]
 G0 F9000 X38.774 Y23.45 ; [1438]
 G1 F1500 X38.451 Y23.773 E129.68071 ; [1439]
@@ -2168,82 +1514,22 @@ G0 X39.336 Y39.334 ; [1499]
 ; [1500] TYPE:WALL-INNER
 G1 F1500 E134.57565 ; [1501]
 G1 X39.336 Y30.534 E134.86834 ; [1502]
-;  Move thread to avoid head during bed move for [1503]
-;    Segment: <{ 39.34,  30.53,   0.80}←→{ 30.54,  30.53,   0.80} (8.80 mm)>
-;    Thread (150.22°):  <{ 33.27,  21.60,   0.00}←→{-43.22,  74.19,   0.00} (92.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.856 F8000 ;  Ring move by -105.10° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E135.16103 ; [1503]
 G1 X30.536 Y39.334 E135.45372 ; [1504]
-;  Move thread to avoid head during bed move for [1505]
-;    Segment: <{ 30.54,  39.33,   0.80}←→{ 39.34,  39.33,   0.80} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E135.74641 ; [1505]
 G0 F9000 X39.736 Y39.734 ; [1506]
 ; [1507] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E136.06571 ; [1508]
-;  Move thread to avoid head during bed move for [1509]
-;    Segment: <{ 39.74,  30.13,   0.80}←→{ 30.14,  30.13,   0.80} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E136.38501 ; [1509]
 G1 X30.136 Y39.734 E136.7043 ; [1510]
-;  Move thread to avoid head during bed move for [1511]
-;    Segment: <{ 30.14,  39.73,   0.80}←→{ 39.74,  39.73,   0.80} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E137.0236 ; [1511]
 G0 F9000 X39.466 Y39.464 ; [1512]
 G0 X39.236 Y38.974 ; [1513]
 G0 X38.976 Y38.974 ; [1514]
 ; [1515] TYPE:SKIN
 G1 F1500 X38.976 Y30.894 E137.29234 ; [1516]
-;  Move thread to avoid head during bed move for [1517]
-;    Segment: <{ 38.98,  30.89,   0.80}←→{ 30.90,  30.89,   0.80} (8.08 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-23.353 F8000 ;  Ring move by -58.64° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.896 Y30.894 E137.56108 ; [1517]
 G1 X30.896 Y38.974 E137.82983 ; [1518]
-;  Move thread to avoid head during bed move for [1519]
-;    Segment: <{ 30.90,  38.97,   0.80}←→{ 38.98,  38.97,   0.80} (8.08 mm)>
-;    Thread (48.59°):  <{ 33.27,  21.60,   0.00}←→{ 99.02,  97.75,   0.00} (100.61 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E22.128 F8000 ;  Ring move by 55.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X38.976 Y38.974 E138.09857 ; [1519]
 G0 F9000 X38.774 Y38.158 ; [1520]
 G1 F1500 X38.159 Y38.774 E138.12752 ; [1521]
@@ -2308,82 +1594,22 @@ G0 X24.336 Y39.334 ; [1579]
 ; [1580] TYPE:WALL-INNER
 G1 F1500 E142.99408 ; [1581]
 G1 X24.336 Y30.534 E143.28677 ; [1582]
-;  Move thread to avoid head during bed move for [1583]
-;    Segment: <{ 24.34,  30.53,   0.80}←→{ 15.54,  30.53,   0.80} (8.80 mm)>
-;    Thread (104.15°):  <{ 33.27,  21.60,   0.00}←→{ 14.76, 118.18,   0.00} (98.34 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E19.549 F8000 ;  Ring move by 49.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E143.57946 ; [1583]
 G1 X15.536 Y39.334 E143.87215 ; [1584]
-;  Move thread to avoid head during bed move for [1585]
-;    Segment: <{ 15.54,  39.33,   0.80}←→{ 24.34,  39.33,   0.80} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E144.16483 ; [1585]
 G0 F9000 X24.736 Y39.734 ; [1586]
 ; [1587] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E144.48413 ; [1588]
-;  Move thread to avoid head during bed move for [1589]
-;    Segment: <{ 24.74,  30.13,   0.80}←→{ 15.14,  30.13,   0.80} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E144.80343 ; [1589]
 G1 X15.136 Y39.734 E145.12273 ; [1590]
-;  Move thread to avoid head during bed move for [1591]
-;    Segment: <{ 15.14,  39.73,   0.80}←→{ 24.74,  39.73,   0.80} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E145.44202 ; [1591]
 G0 F9000 X24.466 Y39.464 ; [1592]
 G0 X24.236 Y38.974 ; [1593]
 G0 X23.976 Y38.974 ; [1594]
 ; [1595] TYPE:SKIN
 G1 F1500 X23.976 Y30.894 E145.71077 ; [1596]
-;  Move thread to avoid head during bed move for [1597]
-;    Segment: <{ 23.98,  30.89,   0.80}←→{ 15.90,  30.89,   0.80} (8.08 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.639 F8000 ;  Ring move by -4.12° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.896 Y30.894 E145.97951 ; [1597]
 G1 X15.896 Y38.974 E146.24825 ; [1598]
-;  Move thread to avoid head during bed move for [1599]
-;    Segment: <{ 15.90,  38.97,   0.80}←→{ 23.98,  38.97,   0.80} (8.08 mm)>
-;    Thread (153.40°):  <{ 33.27,  21.60,   0.00}←→{-45.66,  69.64,   0.00} (92.40 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.497 F8000 ;  Ring move by 3.76° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X23.976 Y38.974 E146.51699 ; [1599]
 G0 F9000 X23.451 Y38.773 ; [1600]
 G1 F1500 X23.775 Y38.449 E146.53223 ; [1601]
@@ -2444,7 +1670,6 @@ G1 F1500 E144.92826 ; [1654]
 ;  ::: End layer 3 postamble :::
 ;  ====== End layer 3 ====
 ;  ==== Start layer 4 ====
-;  Layer 4 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 4 postamble :::
 G0 F300 X16.424 Y31.092 Z1 ; [1656]
 G0 F9000 X16.424 Y30.634 ; [1657]
@@ -2460,32 +1685,12 @@ G1 F1500 E151.42826 ; [1666]
 G1 X24.336 Y15.534 E151.72095 ; [1667]
 G1 X15.536 Y15.534 E152.01364 ; [1668]
 G1 X15.536 Y24.334 E152.30633 ; [1669]
-;  Move thread to avoid head during bed move for [1670]
-;    Segment: <{ 15.54,  24.33,   1.00}←→{ 24.34,  24.33,   1.00} (8.80 mm)>
-;    Thread (157.16°):  <{ 33.27,  21.60,   0.00}←→{-48.21,  64.09,   0.00} (91.89 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.363 F8000 ;  Ring move by 33.56° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E152.59902 ; [1670]
 G0 F9000 X24.736 Y24.734 ; [1671]
 ; [1672] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E152.91831 ; [1673]
 G1 X15.136 Y15.134 E153.23761 ; [1674]
 G1 X15.136 Y24.734 E153.55691 ; [1675]
-;  Move thread to avoid head during bed move for [1676]
-;    Segment: <{ 15.14,  24.73,   1.00}←→{ 24.74,  24.73,   1.00} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E153.8762 ; [1676]
 G0 F9000 X24.255 Y24.253 ; [1677]
 ; [1678] TYPE:FILL
@@ -2538,32 +1743,12 @@ G0 F9000 X39.336 Y24.334 ; [1723]
 G1 F1500 X39.336 Y15.534 E157.30384 ; [1725]
 G1 X30.536 Y15.534 E157.59652 ; [1726]
 G1 X30.536 Y24.334 E157.88921 ; [1727]
-;  Move thread to avoid head during bed move for [1728]
-;    Segment: <{ 30.54,  24.33,   1.00}←→{ 39.34,  24.33,   1.00} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E158.1819 ; [1728]
 G0 F9000 X39.736 Y24.734 ; [1729]
 ; [1730] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E158.5012 ; [1731]
 G1 X30.136 Y15.134 E158.8205 ; [1732]
 G1 X30.136 Y24.734 E159.13979 ; [1733]
-;  Move thread to avoid head during bed move for [1734]
-;    Segment: <{ 30.14,  24.73,   1.00}←→{ 39.74,  24.73,   1.00} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E159.45909 ; [1734]
 G0 F9000 X39.255 Y24.253 ; [1735]
 ; [1736] TYPE:FILL
@@ -2614,54 +1799,14 @@ G1 F1500 E162.59441 ; [1780]
 G0 F9000 X39.336 Y39.334 ; [1781]
 ; [1782] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E162.8871 ; [1783]
-;  Move thread to avoid head during bed move for [1784]
-;    Segment: <{ 39.34,  30.53,   1.00}←→{ 30.54,  30.53,   1.00} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E163.17979 ; [1784]
 G1 X30.536 Y39.334 E163.47248 ; [1785]
-;  Move thread to avoid head during bed move for [1786]
-;    Segment: <{ 30.54,  39.33,   1.00}←→{ 39.34,  39.33,   1.00} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E163.76517 ; [1786]
 G0 F9000 X39.736 Y39.734 ; [1787]
 ; [1788] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E164.08446 ; [1789]
-;  Move thread to avoid head during bed move for [1790]
-;    Segment: <{ 39.74,  30.13,   1.00}←→{ 30.14,  30.13,   1.00} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E164.40376 ; [1790]
 G1 X30.136 Y39.734 E164.72306 ; [1791]
-;  Move thread to avoid head during bed move for [1792]
-;    Segment: <{ 30.14,  39.73,   1.00}←→{ 39.74,  39.73,   1.00} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E165.04236 ; [1792]
 G0 F9000 X39.255 Y39.253 ; [1793]
 ; [1794] TYPE:FILL
@@ -2712,54 +1857,14 @@ G1 F1500 E168.17694 ; [1838]
 G0 F9000 X24.336 Y39.334 ; [1839]
 ; [1840] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E168.46963 ; [1841]
-;  Move thread to avoid head during bed move for [1842]
-;    Segment: <{ 24.34,  30.53,   1.00}←→{ 15.54,  30.53,   1.00} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E168.76232 ; [1842]
 G1 X15.536 Y39.334 E169.05501 ; [1843]
-;  Move thread to avoid head during bed move for [1844]
-;    Segment: <{ 15.54,  39.33,   1.00}←→{ 24.34,  39.33,   1.00} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E169.3477 ; [1844]
 G0 F9000 X24.736 Y39.734 ; [1845]
 ; [1846] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E169.667 ; [1847]
-;  Move thread to avoid head during bed move for [1848]
-;    Segment: <{ 24.74,  30.13,   1.00}←→{ 15.14,  30.13,   1.00} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E169.98629 ; [1848]
 G1 X15.136 Y39.734 E170.30559 ; [1849]
-;  Move thread to avoid head during bed move for [1850]
-;    Segment: <{ 15.14,  39.73,   1.00}←→{ 24.74,  39.73,   1.00} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E170.62489 ; [1850]
 G0 F9000 X24.255 Y39.253 ; [1851]
 ; [1852] TYPE:FILL
@@ -2804,7 +1909,6 @@ G1 F1500 E167.26016 ; [1889]
 ;  ::: End layer 4 postamble :::
 ;  ====== End layer 4 ====
 ;  ==== Start layer 5 ====
-;  Layer 5 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 5 postamble :::
 G0 F300 X23.736 Y31.016 Z1.2 ; [1891]
 G0 F9000 X24.066 Y30.354 ; [1892]
@@ -2821,32 +1925,12 @@ G0 F9000 X24.336 Y24.334 ; [1898]
 G1 F1500 X24.336 Y15.534 E174.05285 ; [1903]
 G1 X15.536 Y15.534 E174.34554 ; [1904]
 G1 X15.536 Y24.334 E174.63823 ; [1905]
-;  Move thread to avoid head during bed move for [1906]
-;    Segment: <{ 15.54,  24.33,   1.20}←→{ 24.34,  24.33,   1.20} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E174.93092 ; [1906]
 G0 F9000 X24.736 Y24.734 ; [1907]
 ; [1908] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E175.25021 ; [1909]
 G1 X15.136 Y15.134 E175.56951 ; [1910]
 G1 X15.136 Y24.734 E175.88881 ; [1911]
-;  Move thread to avoid head during bed move for [1912]
-;    Segment: <{ 15.14,  24.73,   1.20}←→{ 24.74,  24.73,   1.20} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E176.20811 ; [1912]
 G0 F9000 X24.255 Y24.253 ; [1913]
 ; [1914] TYPE:FILL
@@ -2899,32 +1983,12 @@ G0 F9000 X39.336 Y24.334 ; [1959]
 G1 F1500 X39.336 Y15.534 E179.63574 ; [1961]
 G1 X30.536 Y15.534 E179.92843 ; [1962]
 G1 X30.536 Y24.334 E180.22111 ; [1963]
-;  Move thread to avoid head during bed move for [1964]
-;    Segment: <{ 30.54,  24.33,   1.20}←→{ 39.34,  24.33,   1.20} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E180.5138 ; [1964]
 G0 F9000 X39.736 Y24.734 ; [1965]
 ; [1966] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E180.8331 ; [1967]
 G1 X30.136 Y15.134 E181.1524 ; [1968]
 G1 X30.136 Y24.734 E181.4717 ; [1969]
-;  Move thread to avoid head during bed move for [1970]
-;    Segment: <{ 30.14,  24.73,   1.20}←→{ 39.74,  24.73,   1.20} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E181.79099 ; [1970]
 G0 F9000 X39.255 Y24.253 ; [1971]
 ; [1972] TYPE:FILL
@@ -2975,54 +2039,14 @@ G1 F1500 E184.92631 ; [2016]
 G0 F9000 X39.336 Y39.334 ; [2017]
 ; [2018] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E185.219 ; [2019]
-;  Move thread to avoid head during bed move for [2020]
-;    Segment: <{ 39.34,  30.53,   1.20}←→{ 30.54,  30.53,   1.20} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E185.51169 ; [2020]
 G1 X30.536 Y39.334 E185.80438 ; [2021]
-;  Move thread to avoid head during bed move for [2022]
-;    Segment: <{ 30.54,  39.33,   1.20}←→{ 39.34,  39.33,   1.20} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E186.09707 ; [2022]
 G0 F9000 X39.736 Y39.734 ; [2023]
 ; [2024] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E186.41636 ; [2025]
-;  Move thread to avoid head during bed move for [2026]
-;    Segment: <{ 39.74,  30.13,   1.20}←→{ 30.14,  30.13,   1.20} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E186.73566 ; [2026]
 G1 X30.136 Y39.734 E187.05496 ; [2027]
-;  Move thread to avoid head during bed move for [2028]
-;    Segment: <{ 30.14,  39.73,   1.20}←→{ 39.74,  39.73,   1.20} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E187.37426 ; [2028]
 G0 F9000 X39.255 Y39.253 ; [2029]
 ; [2030] TYPE:FILL
@@ -3073,54 +2097,14 @@ G1 F1500 E190.50884 ; [2074]
 G0 F9000 X24.336 Y39.334 ; [2075]
 ; [2076] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E190.80153 ; [2077]
-;  Move thread to avoid head during bed move for [2078]
-;    Segment: <{ 24.34,  30.53,   1.20}←→{ 15.54,  30.53,   1.20} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E191.09422 ; [2078]
 G1 X15.536 Y39.334 E191.38691 ; [2079]
-;  Move thread to avoid head during bed move for [2080]
-;    Segment: <{ 15.54,  39.33,   1.20}←→{ 24.34,  39.33,   1.20} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E191.6796 ; [2080]
 G0 F9000 X24.736 Y39.734 ; [2081]
 ; [2082] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E191.9989 ; [2083]
-;  Move thread to avoid head during bed move for [2084]
-;    Segment: <{ 24.74,  30.13,   1.20}←→{ 15.14,  30.13,   1.20} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E192.3182 ; [2084]
 G1 X15.136 Y39.734 E192.63749 ; [2085]
-;  Move thread to avoid head during bed move for [2086]
-;    Segment: <{ 15.14,  39.73,   1.20}←→{ 24.74,  39.73,   1.20} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E192.95679 ; [2086]
 G0 F9000 X24.255 Y39.253 ; [2087]
 ; [2088] TYPE:FILL
@@ -3165,7 +2149,6 @@ G1 F1500 E189.59206 ; [2125]
 ;  ::: End layer 5 postamble :::
 ;  ====== End layer 5 ====
 ;  ==== Start layer 6 ====
-;  Layer 6 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 6 postamble :::
 G0 F300 X23.736 Y31.016 Z1.4 ; [2127]
 G0 F9000 X24.066 Y30.354 ; [2128]
@@ -3182,32 +2165,12 @@ G0 F9000 X24.336 Y24.334 ; [2134]
 G1 F1500 X24.336 Y15.534 E196.38475 ; [2139]
 G1 X15.536 Y15.534 E196.67744 ; [2140]
 G1 X15.536 Y24.334 E196.97013 ; [2141]
-;  Move thread to avoid head during bed move for [2142]
-;    Segment: <{ 15.54,  24.33,   1.40}←→{ 24.34,  24.33,   1.40} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E197.26282 ; [2142]
 G0 F9000 X24.736 Y24.734 ; [2143]
 ; [2144] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E197.58211 ; [2145]
 G1 X15.136 Y15.134 E197.90141 ; [2146]
 G1 X15.136 Y24.734 E198.22071 ; [2147]
-;  Move thread to avoid head during bed move for [2148]
-;    Segment: <{ 15.14,  24.73,   1.40}←→{ 24.74,  24.73,   1.40} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E198.54001 ; [2148]
 G0 F9000 X24.255 Y24.253 ; [2149]
 ; [2150] TYPE:FILL
@@ -3260,32 +2223,12 @@ G0 F9000 X39.336 Y24.334 ; [2195]
 G1 F1500 X39.336 Y15.534 E201.96764 ; [2197]
 G1 X30.536 Y15.534 E202.26033 ; [2198]
 G1 X30.536 Y24.334 E202.55302 ; [2199]
-;  Move thread to avoid head during bed move for [2200]
-;    Segment: <{ 30.54,  24.33,   1.40}←→{ 39.34,  24.33,   1.40} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E202.8457 ; [2200]
 G0 F9000 X39.736 Y24.734 ; [2201]
 ; [2202] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E203.165 ; [2203]
 G1 X30.136 Y15.134 E203.4843 ; [2204]
 G1 X30.136 Y24.734 E203.8036 ; [2205]
-;  Move thread to avoid head during bed move for [2206]
-;    Segment: <{ 30.14,  24.73,   1.40}←→{ 39.74,  24.73,   1.40} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E204.12289 ; [2206]
 G0 F9000 X39.255 Y24.253 ; [2207]
 ; [2208] TYPE:FILL
@@ -3336,54 +2279,14 @@ G1 F1500 E207.25821 ; [2252]
 G0 F9000 X39.336 Y39.334 ; [2253]
 ; [2254] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E207.5509 ; [2255]
-;  Move thread to avoid head during bed move for [2256]
-;    Segment: <{ 39.34,  30.53,   1.40}←→{ 30.54,  30.53,   1.40} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E207.84359 ; [2256]
 G1 X30.536 Y39.334 E208.13628 ; [2257]
-;  Move thread to avoid head during bed move for [2258]
-;    Segment: <{ 30.54,  39.33,   1.40}←→{ 39.34,  39.33,   1.40} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E208.42897 ; [2258]
 G0 F9000 X39.736 Y39.734 ; [2259]
 ; [2260] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E208.74827 ; [2261]
-;  Move thread to avoid head during bed move for [2262]
-;    Segment: <{ 39.74,  30.13,   1.40}←→{ 30.14,  30.13,   1.40} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E209.06756 ; [2262]
 G1 X30.136 Y39.734 E209.38686 ; [2263]
-;  Move thread to avoid head during bed move for [2264]
-;    Segment: <{ 30.14,  39.73,   1.40}←→{ 39.74,  39.73,   1.40} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E209.70616 ; [2264]
 G0 F9000 X39.255 Y39.253 ; [2265]
 ; [2266] TYPE:FILL
@@ -3434,54 +2337,14 @@ G1 F1500 E212.84075 ; [2310]
 G0 F9000 X24.336 Y39.334 ; [2311]
 ; [2312] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E213.13343 ; [2313]
-;  Move thread to avoid head during bed move for [2314]
-;    Segment: <{ 24.34,  30.53,   1.40}←→{ 15.54,  30.53,   1.40} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E213.42612 ; [2314]
 G1 X15.536 Y39.334 E213.71881 ; [2315]
-;  Move thread to avoid head during bed move for [2316]
-;    Segment: <{ 15.54,  39.33,   1.40}←→{ 24.34,  39.33,   1.40} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E214.0115 ; [2316]
 G0 F9000 X24.736 Y39.734 ; [2317]
 ; [2318] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E214.3308 ; [2319]
-;  Move thread to avoid head during bed move for [2320]
-;    Segment: <{ 24.74,  30.13,   1.40}←→{ 15.14,  30.13,   1.40} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E214.6501 ; [2320]
 G1 X15.136 Y39.734 E214.96939 ; [2321]
-;  Move thread to avoid head during bed move for [2322]
-;    Segment: <{ 15.14,  39.73,   1.40}←→{ 24.74,  39.73,   1.40} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E215.28869 ; [2322]
 G0 F9000 X24.255 Y39.253 ; [2323]
 ; [2324] TYPE:FILL
@@ -3526,7 +2389,6 @@ G1 F1500 E211.92396 ; [2361]
 ;  ::: End layer 6 postamble :::
 ;  ====== End layer 6 ====
 ;  ==== Start layer 7 ====
-;  Layer 7 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 7 postamble :::
 G0 F300 X23.736 Y31.016 Z1.6 ; [2363]
 G0 F9000 X24.066 Y30.354 ; [2364]
@@ -3543,32 +2405,12 @@ G0 F9000 X24.336 Y24.334 ; [2370]
 G1 F1500 X24.336 Y15.534 E218.71665 ; [2375]
 G1 X15.536 Y15.534 E219.00934 ; [2376]
 G1 X15.536 Y24.334 E219.30203 ; [2377]
-;  Move thread to avoid head during bed move for [2378]
-;    Segment: <{ 15.54,  24.33,   1.60}←→{ 24.34,  24.33,   1.60} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E219.59472 ; [2378]
 G0 F9000 X24.736 Y24.734 ; [2379]
 ; [2380] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E219.91402 ; [2381]
 G1 X15.136 Y15.134 E220.23331 ; [2382]
 G1 X15.136 Y24.734 E220.55261 ; [2383]
-;  Move thread to avoid head during bed move for [2384]
-;    Segment: <{ 15.14,  24.73,   1.60}←→{ 24.74,  24.73,   1.60} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E220.87191 ; [2384]
 G0 F9000 X24.255 Y24.253 ; [2385]
 ; [2386] TYPE:FILL
@@ -3621,32 +2463,12 @@ G0 F9000 X39.336 Y24.334 ; [2431]
 G1 F1500 X39.336 Y15.534 E224.29954 ; [2433]
 G1 X30.536 Y15.534 E224.59223 ; [2434]
 G1 X30.536 Y24.334 E224.88492 ; [2435]
-;  Move thread to avoid head during bed move for [2436]
-;    Segment: <{ 30.54,  24.33,   1.60}←→{ 39.34,  24.33,   1.60} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E225.17761 ; [2436]
 G0 F9000 X39.736 Y24.734 ; [2437]
 ; [2438] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E225.4969 ; [2439]
 G1 X30.136 Y15.134 E225.8162 ; [2440]
 G1 X30.136 Y24.734 E226.1355 ; [2441]
-;  Move thread to avoid head during bed move for [2442]
-;    Segment: <{ 30.14,  24.73,   1.60}←→{ 39.74,  24.73,   1.60} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E226.45479 ; [2442]
 G0 F9000 X39.255 Y24.253 ; [2443]
 ; [2444] TYPE:FILL
@@ -3697,54 +2519,14 @@ G1 F1500 E229.59011 ; [2488]
 G0 F9000 X39.336 Y39.334 ; [2489]
 ; [2490] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E229.8828 ; [2491]
-;  Move thread to avoid head during bed move for [2492]
-;    Segment: <{ 39.34,  30.53,   1.60}←→{ 30.54,  30.53,   1.60} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E230.17549 ; [2492]
 G1 X30.536 Y39.334 E230.46818 ; [2493]
-;  Move thread to avoid head during bed move for [2494]
-;    Segment: <{ 30.54,  39.33,   1.60}←→{ 39.34,  39.33,   1.60} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E230.76087 ; [2494]
 G0 F9000 X39.736 Y39.734 ; [2495]
 ; [2496] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E231.08017 ; [2497]
-;  Move thread to avoid head during bed move for [2498]
-;    Segment: <{ 39.74,  30.13,   1.60}←→{ 30.14,  30.13,   1.60} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E231.39946 ; [2498]
 G1 X30.136 Y39.734 E231.71876 ; [2499]
-;  Move thread to avoid head during bed move for [2500]
-;    Segment: <{ 30.14,  39.73,   1.60}←→{ 39.74,  39.73,   1.60} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E232.03806 ; [2500]
 G0 F9000 X39.255 Y39.253 ; [2501]
 ; [2502] TYPE:FILL
@@ -3795,54 +2577,14 @@ G1 F1500 E235.17265 ; [2546]
 G0 F9000 X24.336 Y39.334 ; [2547]
 ; [2548] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E235.46534 ; [2549]
-;  Move thread to avoid head during bed move for [2550]
-;    Segment: <{ 24.34,  30.53,   1.60}←→{ 15.54,  30.53,   1.60} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E235.75802 ; [2550]
 G1 X15.536 Y39.334 E236.05071 ; [2551]
-;  Move thread to avoid head during bed move for [2552]
-;    Segment: <{ 15.54,  39.33,   1.60}←→{ 24.34,  39.33,   1.60} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E236.3434 ; [2552]
 G0 F9000 X24.736 Y39.734 ; [2553]
 ; [2554] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E236.6627 ; [2555]
-;  Move thread to avoid head during bed move for [2556]
-;    Segment: <{ 24.74,  30.13,   1.60}←→{ 15.14,  30.13,   1.60} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E236.982 ; [2556]
 G1 X15.136 Y39.734 E237.3013 ; [2557]
-;  Move thread to avoid head during bed move for [2558]
-;    Segment: <{ 15.14,  39.73,   1.60}←→{ 24.74,  39.73,   1.60} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E237.62059 ; [2558]
 G0 F9000 X24.255 Y39.253 ; [2559]
 ; [2560] TYPE:FILL
@@ -3887,7 +2629,6 @@ G1 F1500 E234.25586 ; [2597]
 ;  ::: End layer 7 postamble :::
 ;  ====== End layer 7 ====
 ;  ==== Start layer 8 ====
-;  Layer 8 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 8 postamble :::
 G0 F300 X23.736 Y31.016 Z1.8 ; [2599]
 G0 F9000 X24.066 Y30.354 ; [2600]
@@ -3904,32 +2645,12 @@ G0 F9000 X24.336 Y24.334 ; [2606]
 G1 F1500 X24.336 Y15.534 E241.04855 ; [2611]
 G1 X15.536 Y15.534 E241.34124 ; [2612]
 G1 X15.536 Y24.334 E241.63393 ; [2613]
-;  Move thread to avoid head during bed move for [2614]
-;    Segment: <{ 15.54,  24.33,   1.80}←→{ 24.34,  24.33,   1.80} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E241.92662 ; [2614]
 G0 F9000 X24.736 Y24.734 ; [2615]
 ; [2616] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E242.24592 ; [2617]
 G1 X15.136 Y15.134 E242.56521 ; [2618]
 G1 X15.136 Y24.734 E242.88451 ; [2619]
-;  Move thread to avoid head during bed move for [2620]
-;    Segment: <{ 15.14,  24.73,   1.80}←→{ 24.74,  24.73,   1.80} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E243.20381 ; [2620]
 G0 F9000 X24.255 Y24.253 ; [2621]
 ; [2622] TYPE:FILL
@@ -3982,32 +2703,12 @@ G0 F9000 X39.336 Y24.334 ; [2667]
 G1 F1500 X39.336 Y15.534 E246.63144 ; [2669]
 G1 X30.536 Y15.534 E246.92413 ; [2670]
 G1 X30.536 Y24.334 E247.21682 ; [2671]
-;  Move thread to avoid head during bed move for [2672]
-;    Segment: <{ 30.54,  24.33,   1.80}←→{ 39.34,  24.33,   1.80} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E247.50951 ; [2672]
 G0 F9000 X39.736 Y24.734 ; [2673]
 ; [2674] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E247.8288 ; [2675]
 G1 X30.136 Y15.134 E248.1481 ; [2676]
 G1 X30.136 Y24.734 E248.4674 ; [2677]
-;  Move thread to avoid head during bed move for [2678]
-;    Segment: <{ 30.14,  24.73,   1.80}←→{ 39.74,  24.73,   1.80} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E248.7867 ; [2678]
 G0 F9000 X39.255 Y24.253 ; [2679]
 ; [2680] TYPE:FILL
@@ -4058,54 +2759,14 @@ G1 F1500 E251.92201 ; [2724]
 G0 F9000 X39.336 Y39.334 ; [2725]
 ; [2726] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E252.2147 ; [2727]
-;  Move thread to avoid head during bed move for [2728]
-;    Segment: <{ 39.34,  30.53,   1.80}←→{ 30.54,  30.53,   1.80} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E252.50739 ; [2728]
 G1 X30.536 Y39.334 E252.80008 ; [2729]
-;  Move thread to avoid head during bed move for [2730]
-;    Segment: <{ 30.54,  39.33,   1.80}←→{ 39.34,  39.33,   1.80} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E253.09277 ; [2730]
 G0 F9000 X39.736 Y39.734 ; [2731]
 ; [2732] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E253.41207 ; [2733]
-;  Move thread to avoid head during bed move for [2734]
-;    Segment: <{ 39.74,  30.13,   1.80}←→{ 30.14,  30.13,   1.80} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E253.73136 ; [2734]
 G1 X30.136 Y39.734 E254.05066 ; [2735]
-;  Move thread to avoid head during bed move for [2736]
-;    Segment: <{ 30.14,  39.73,   1.80}←→{ 39.74,  39.73,   1.80} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E254.36996 ; [2736]
 G0 F9000 X39.255 Y39.253 ; [2737]
 ; [2738] TYPE:FILL
@@ -4156,54 +2817,14 @@ G1 F1500 E257.50455 ; [2782]
 G0 F9000 X24.336 Y39.334 ; [2783]
 ; [2784] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E257.79724 ; [2785]
-;  Move thread to avoid head during bed move for [2786]
-;    Segment: <{ 24.34,  30.53,   1.80}←→{ 15.54,  30.53,   1.80} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E258.08993 ; [2786]
 G1 X15.536 Y39.334 E258.38262 ; [2787]
-;  Move thread to avoid head during bed move for [2788]
-;    Segment: <{ 15.54,  39.33,   1.80}←→{ 24.34,  39.33,   1.80} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E258.6753 ; [2788]
 G0 F9000 X24.736 Y39.734 ; [2789]
 ; [2790] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E258.9946 ; [2791]
-;  Move thread to avoid head during bed move for [2792]
-;    Segment: <{ 24.74,  30.13,   1.80}←→{ 15.14,  30.13,   1.80} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E259.3139 ; [2792]
 G1 X15.136 Y39.734 E259.6332 ; [2793]
-;  Move thread to avoid head during bed move for [2794]
-;    Segment: <{ 15.14,  39.73,   1.80}←→{ 24.74,  39.73,   1.80} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E259.95249 ; [2794]
 G0 F9000 X24.255 Y39.253 ; [2795]
 ; [2796] TYPE:FILL
@@ -4248,7 +2869,6 @@ G1 F1500 E256.58776 ; [2833]
 ;  ::: End layer 8 postamble :::
 ;  ====== End layer 8 ====
 ;  ==== Start layer 9 ====
-;  Layer 9 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 9 postamble :::
 G0 F300 X23.736 Y31.016 Z2 ; [2835]
 G0 F9000 X24.066 Y30.354 ; [2836]
@@ -4265,32 +2885,12 @@ G0 F9000 X24.336 Y24.334 ; [2842]
 G1 F1500 X24.336 Y15.534 E263.38045 ; [2847]
 G1 X15.536 Y15.534 E263.67314 ; [2848]
 G1 X15.536 Y24.334 E263.96583 ; [2849]
-;  Move thread to avoid head during bed move for [2850]
-;    Segment: <{ 15.54,  24.33,   2.00}←→{ 24.34,  24.33,   2.00} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E264.25852 ; [2850]
 G0 F9000 X24.736 Y24.734 ; [2851]
 ; [2852] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E264.57782 ; [2853]
 G1 X15.136 Y15.134 E264.89712 ; [2854]
 G1 X15.136 Y24.734 E265.21641 ; [2855]
-;  Move thread to avoid head during bed move for [2856]
-;    Segment: <{ 15.14,  24.73,   2.00}←→{ 24.74,  24.73,   2.00} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E265.53571 ; [2856]
 G0 F9000 X24.255 Y24.253 ; [2857]
 ; [2858] TYPE:FILL
@@ -4343,32 +2943,12 @@ G0 F9000 X39.336 Y24.334 ; [2903]
 G1 F1500 X39.336 Y15.534 E268.96334 ; [2905]
 G1 X30.536 Y15.534 E269.25603 ; [2906]
 G1 X30.536 Y24.334 E269.54872 ; [2907]
-;  Move thread to avoid head during bed move for [2908]
-;    Segment: <{ 30.54,  24.33,   2.00}←→{ 39.34,  24.33,   2.00} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E269.84141 ; [2908]
 G0 F9000 X39.736 Y24.734 ; [2909]
 ; [2910] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E270.1607 ; [2911]
 G1 X30.136 Y15.134 E270.48 ; [2912]
 G1 X30.136 Y24.734 E270.7993 ; [2913]
-;  Move thread to avoid head during bed move for [2914]
-;    Segment: <{ 30.14,  24.73,   2.00}←→{ 39.74,  24.73,   2.00} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E271.1186 ; [2914]
 G0 F9000 X39.255 Y24.253 ; [2915]
 ; [2916] TYPE:FILL
@@ -4419,54 +2999,14 @@ G1 F1500 E274.25391 ; [2960]
 G0 F9000 X39.336 Y39.334 ; [2961]
 ; [2962] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E274.5466 ; [2963]
-;  Move thread to avoid head during bed move for [2964]
-;    Segment: <{ 39.34,  30.53,   2.00}←→{ 30.54,  30.53,   2.00} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E274.83929 ; [2964]
 G1 X30.536 Y39.334 E275.13198 ; [2965]
-;  Move thread to avoid head during bed move for [2966]
-;    Segment: <{ 30.54,  39.33,   2.00}←→{ 39.34,  39.33,   2.00} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E275.42467 ; [2966]
 G0 F9000 X39.736 Y39.734 ; [2967]
 ; [2968] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E275.74397 ; [2969]
-;  Move thread to avoid head during bed move for [2970]
-;    Segment: <{ 39.74,  30.13,   2.00}←→{ 30.14,  30.13,   2.00} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E276.06327 ; [2970]
 G1 X30.136 Y39.734 E276.38256 ; [2971]
-;  Move thread to avoid head during bed move for [2972]
-;    Segment: <{ 30.14,  39.73,   2.00}←→{ 39.74,  39.73,   2.00} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E276.70186 ; [2972]
 G0 F9000 X39.255 Y39.253 ; [2973]
 ; [2974] TYPE:FILL
@@ -4517,54 +3057,14 @@ G1 F1500 E279.83645 ; [3018]
 G0 F9000 X24.336 Y39.334 ; [3019]
 ; [3020] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E280.12914 ; [3021]
-;  Move thread to avoid head during bed move for [3022]
-;    Segment: <{ 24.34,  30.53,   2.00}←→{ 15.54,  30.53,   2.00} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E280.42183 ; [3022]
 G1 X15.536 Y39.334 E280.71452 ; [3023]
-;  Move thread to avoid head during bed move for [3024]
-;    Segment: <{ 15.54,  39.33,   2.00}←→{ 24.34,  39.33,   2.00} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E281.00721 ; [3024]
 G0 F9000 X24.736 Y39.734 ; [3025]
 ; [3026] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E281.3265 ; [3027]
-;  Move thread to avoid head during bed move for [3028]
-;    Segment: <{ 24.74,  30.13,   2.00}←→{ 15.14,  30.13,   2.00} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E281.6458 ; [3028]
 G1 X15.136 Y39.734 E281.9651 ; [3029]
-;  Move thread to avoid head during bed move for [3030]
-;    Segment: <{ 15.14,  39.73,   2.00}←→{ 24.74,  39.73,   2.00} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E282.28439 ; [3030]
 G0 F9000 X24.255 Y39.253 ; [3031]
 ; [3032] TYPE:FILL
@@ -4609,7 +3109,6 @@ G1 F1500 E278.91966 ; [3069]
 ;  ::: End layer 9 postamble :::
 ;  ====== End layer 9 ====
 ;  ==== Start layer 10 ====
-;  Layer 10 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 10 postamble :::
 G0 F300 X23.736 Y31.016 Z2.2 ; [3071]
 G0 F9000 X24.066 Y30.354 ; [3072]
@@ -4626,32 +3125,12 @@ G0 F9000 X24.336 Y24.334 ; [3078]
 G1 F1500 X24.336 Y15.534 E285.71235 ; [3083]
 G1 X15.536 Y15.534 E286.00504 ; [3084]
 G1 X15.536 Y24.334 E286.29773 ; [3085]
-;  Move thread to avoid head during bed move for [3086]
-;    Segment: <{ 15.54,  24.33,   2.20}←→{ 24.34,  24.33,   2.20} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E286.59042 ; [3086]
 G0 F9000 X24.736 Y24.734 ; [3087]
 ; [3088] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E286.90972 ; [3089]
 G1 X15.136 Y15.134 E287.22902 ; [3090]
 G1 X15.136 Y24.734 E287.54831 ; [3091]
-;  Move thread to avoid head during bed move for [3092]
-;    Segment: <{ 15.14,  24.73,   2.20}←→{ 24.74,  24.73,   2.20} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E287.86761 ; [3092]
 G0 F9000 X24.255 Y24.253 ; [3093]
 ; [3094] TYPE:FILL
@@ -4704,32 +3183,12 @@ G0 F9000 X39.336 Y24.334 ; [3139]
 G1 F1500 X39.336 Y15.534 E291.29524 ; [3141]
 G1 X30.536 Y15.534 E291.58793 ; [3142]
 G1 X30.536 Y24.334 E291.88062 ; [3143]
-;  Move thread to avoid head during bed move for [3144]
-;    Segment: <{ 30.54,  24.33,   2.20}←→{ 39.34,  24.33,   2.20} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E292.17331 ; [3144]
 G0 F9000 X39.736 Y24.734 ; [3145]
 ; [3146] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E292.49261 ; [3147]
 G1 X30.136 Y15.134 E292.8119 ; [3148]
 G1 X30.136 Y24.734 E293.1312 ; [3149]
-;  Move thread to avoid head during bed move for [3150]
-;    Segment: <{ 30.14,  24.73,   2.20}←→{ 39.74,  24.73,   2.20} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E293.4505 ; [3150]
 G0 F9000 X39.255 Y24.253 ; [3151]
 ; [3152] TYPE:FILL
@@ -4780,54 +3239,14 @@ G1 F1500 E296.58582 ; [3196]
 G0 F9000 X39.336 Y39.334 ; [3197]
 ; [3198] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E296.8785 ; [3199]
-;  Move thread to avoid head during bed move for [3200]
-;    Segment: <{ 39.34,  30.53,   2.20}←→{ 30.54,  30.53,   2.20} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E297.17119 ; [3200]
 G1 X30.536 Y39.334 E297.46388 ; [3201]
-;  Move thread to avoid head during bed move for [3202]
-;    Segment: <{ 30.54,  39.33,   2.20}←→{ 39.34,  39.33,   2.20} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E297.75657 ; [3202]
 G0 F9000 X39.736 Y39.734 ; [3203]
 ; [3204] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E298.07587 ; [3205]
-;  Move thread to avoid head during bed move for [3206]
-;    Segment: <{ 39.74,  30.13,   2.20}←→{ 30.14,  30.13,   2.20} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E298.39517 ; [3206]
 G1 X30.136 Y39.734 E298.71446 ; [3207]
-;  Move thread to avoid head during bed move for [3208]
-;    Segment: <{ 30.14,  39.73,   2.20}←→{ 39.74,  39.73,   2.20} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E299.03376 ; [3208]
 G0 F9000 X39.255 Y39.253 ; [3209]
 ; [3210] TYPE:FILL
@@ -4878,54 +3297,14 @@ G1 F1500 E302.16835 ; [3254]
 G0 F9000 X24.336 Y39.334 ; [3255]
 ; [3256] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E302.46104 ; [3257]
-;  Move thread to avoid head during bed move for [3258]
-;    Segment: <{ 24.34,  30.53,   2.20}←→{ 15.54,  30.53,   2.20} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E302.75373 ; [3258]
 G1 X15.536 Y39.334 E303.04642 ; [3259]
-;  Move thread to avoid head during bed move for [3260]
-;    Segment: <{ 15.54,  39.33,   2.20}←→{ 24.34,  39.33,   2.20} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E303.33911 ; [3260]
 G0 F9000 X24.736 Y39.734 ; [3261]
 ; [3262] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E303.6584 ; [3263]
-;  Move thread to avoid head during bed move for [3264]
-;    Segment: <{ 24.74,  30.13,   2.20}←→{ 15.14,  30.13,   2.20} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E303.9777 ; [3264]
 G1 X15.136 Y39.734 E304.297 ; [3265]
-;  Move thread to avoid head during bed move for [3266]
-;    Segment: <{ 15.14,  39.73,   2.20}←→{ 24.74,  39.73,   2.20} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E304.6163 ; [3266]
 G0 F9000 X24.255 Y39.253 ; [3267]
 ; [3268] TYPE:FILL
@@ -4970,7 +3349,6 @@ G1 F1500 E301.25157 ; [3305]
 ;  ::: End layer 10 postamble :::
 ;  ====== End layer 10 ====
 ;  ==== Start layer 11 ====
-;  Layer 11 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 11 postamble :::
 G0 F300 X23.736 Y31.016 Z2.4 ; [3307]
 G0 F9000 X24.066 Y30.354 ; [3308]
@@ -4987,32 +3365,12 @@ G0 F9000 X24.336 Y24.334 ; [3314]
 G1 F1500 X24.336 Y15.534 E308.04425 ; [3319]
 G1 X15.536 Y15.534 E308.33694 ; [3320]
 G1 X15.536 Y24.334 E308.62963 ; [3321]
-;  Move thread to avoid head during bed move for [3322]
-;    Segment: <{ 15.54,  24.33,   2.40}←→{ 24.34,  24.33,   2.40} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E308.92232 ; [3322]
 G0 F9000 X24.736 Y24.734 ; [3323]
 ; [3324] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E309.24162 ; [3325]
 G1 X15.136 Y15.134 E309.56092 ; [3326]
 G1 X15.136 Y24.734 E309.88021 ; [3327]
-;  Move thread to avoid head during bed move for [3328]
-;    Segment: <{ 15.14,  24.73,   2.40}←→{ 24.74,  24.73,   2.40} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E310.19951 ; [3328]
 G0 F9000 X24.255 Y24.253 ; [3329]
 ; [3330] TYPE:FILL
@@ -5065,32 +3423,12 @@ G0 F9000 X39.336 Y24.334 ; [3375]
 G1 F1500 X39.336 Y15.534 E313.62714 ; [3377]
 G1 X30.536 Y15.534 E313.91983 ; [3378]
 G1 X30.536 Y24.334 E314.21252 ; [3379]
-;  Move thread to avoid head during bed move for [3380]
-;    Segment: <{ 30.54,  24.33,   2.40}←→{ 39.34,  24.33,   2.40} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E314.50521 ; [3380]
 G0 F9000 X39.736 Y24.734 ; [3381]
 ; [3382] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E314.82451 ; [3383]
 G1 X30.136 Y15.134 E315.1438 ; [3384]
 G1 X30.136 Y24.734 E315.4631 ; [3385]
-;  Move thread to avoid head during bed move for [3386]
-;    Segment: <{ 30.14,  24.73,   2.40}←→{ 39.74,  24.73,   2.40} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E315.7824 ; [3386]
 G0 F9000 X39.255 Y24.253 ; [3387]
 ; [3388] TYPE:FILL
@@ -5141,54 +3479,14 @@ G1 F1500 E318.91772 ; [3432]
 G0 F9000 X39.336 Y39.334 ; [3433]
 ; [3434] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E319.21041 ; [3435]
-;  Move thread to avoid head during bed move for [3436]
-;    Segment: <{ 39.34,  30.53,   2.40}←→{ 30.54,  30.53,   2.40} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E319.50309 ; [3436]
 G1 X30.536 Y39.334 E319.79578 ; [3437]
-;  Move thread to avoid head during bed move for [3438]
-;    Segment: <{ 30.54,  39.33,   2.40}←→{ 39.34,  39.33,   2.40} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E320.08847 ; [3438]
 G0 F9000 X39.736 Y39.734 ; [3439]
 ; [3440] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E320.40777 ; [3441]
-;  Move thread to avoid head during bed move for [3442]
-;    Segment: <{ 39.74,  30.13,   2.40}←→{ 30.14,  30.13,   2.40} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E320.72707 ; [3442]
 G1 X30.136 Y39.734 E321.04636 ; [3443]
-;  Move thread to avoid head during bed move for [3444]
-;    Segment: <{ 30.14,  39.73,   2.40}←→{ 39.74,  39.73,   2.40} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E321.36566 ; [3444]
 G0 F9000 X39.255 Y39.253 ; [3445]
 ; [3446] TYPE:FILL
@@ -5239,54 +3537,14 @@ G1 F1500 E324.50025 ; [3490]
 G0 F9000 X24.336 Y39.334 ; [3491]
 ; [3492] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E324.79294 ; [3493]
-;  Move thread to avoid head during bed move for [3494]
-;    Segment: <{ 24.34,  30.53,   2.40}←→{ 15.54,  30.53,   2.40} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E325.08563 ; [3494]
 G1 X15.536 Y39.334 E325.37832 ; [3495]
-;  Move thread to avoid head during bed move for [3496]
-;    Segment: <{ 15.54,  39.33,   2.40}←→{ 24.34,  39.33,   2.40} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E325.67101 ; [3496]
 G0 F9000 X24.736 Y39.734 ; [3497]
 ; [3498] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E325.9903 ; [3499]
-;  Move thread to avoid head during bed move for [3500]
-;    Segment: <{ 24.74,  30.13,   2.40}←→{ 15.14,  30.13,   2.40} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E326.3096 ; [3500]
 G1 X15.136 Y39.734 E326.6289 ; [3501]
-;  Move thread to avoid head during bed move for [3502]
-;    Segment: <{ 15.14,  39.73,   2.40}←→{ 24.74,  39.73,   2.40} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E326.9482 ; [3502]
 G0 F9000 X24.255 Y39.253 ; [3503]
 ; [3504] TYPE:FILL
@@ -5331,7 +3589,6 @@ G1 F1500 E323.58347 ; [3541]
 ;  ::: End layer 11 postamble :::
 ;  ====== End layer 11 ====
 ;  ==== Start layer 12 ====
-;  Layer 12 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 12 postamble :::
 G0 F300 X23.736 Y31.016 Z2.6 ; [3543]
 G0 F9000 X24.066 Y30.354 ; [3544]
@@ -5348,32 +3605,12 @@ G0 F9000 X24.336 Y24.334 ; [3550]
 G1 F1500 X24.336 Y15.534 E330.37616 ; [3555]
 G1 X15.536 Y15.534 E330.66885 ; [3556]
 G1 X15.536 Y24.334 E330.96153 ; [3557]
-;  Move thread to avoid head during bed move for [3558]
-;    Segment: <{ 15.54,  24.33,   2.60}←→{ 24.34,  24.33,   2.60} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E331.25422 ; [3558]
 G0 F9000 X24.736 Y24.734 ; [3559]
 ; [3560] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E331.57352 ; [3561]
 G1 X15.136 Y15.134 E331.89282 ; [3562]
 G1 X15.136 Y24.734 E332.21212 ; [3563]
-;  Move thread to avoid head during bed move for [3564]
-;    Segment: <{ 15.14,  24.73,   2.60}←→{ 24.74,  24.73,   2.60} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E332.53141 ; [3564]
 G0 F9000 X24.255 Y24.253 ; [3565]
 ; [3566] TYPE:FILL
@@ -5426,32 +3663,12 @@ G0 F9000 X39.336 Y24.334 ; [3611]
 G1 F1500 X39.336 Y15.534 E335.95904 ; [3613]
 G1 X30.536 Y15.534 E336.25173 ; [3614]
 G1 X30.536 Y24.334 E336.54442 ; [3615]
-;  Move thread to avoid head during bed move for [3616]
-;    Segment: <{ 30.54,  24.33,   2.60}←→{ 39.34,  24.33,   2.60} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E336.83711 ; [3616]
 G0 F9000 X39.736 Y24.734 ; [3617]
 ; [3618] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E337.15641 ; [3619]
 G1 X30.136 Y15.134 E337.47571 ; [3620]
 G1 X30.136 Y24.734 E337.795 ; [3621]
-;  Move thread to avoid head during bed move for [3622]
-;    Segment: <{ 30.14,  24.73,   2.60}←→{ 39.74,  24.73,   2.60} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E338.1143 ; [3622]
 G0 F9000 X39.255 Y24.253 ; [3623]
 ; [3624] TYPE:FILL
@@ -5502,54 +3719,14 @@ G1 F1500 E341.24962 ; [3668]
 G0 F9000 X39.336 Y39.334 ; [3669]
 ; [3670] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E341.54231 ; [3671]
-;  Move thread to avoid head during bed move for [3672]
-;    Segment: <{ 39.34,  30.53,   2.60}←→{ 30.54,  30.53,   2.60} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E341.835 ; [3672]
 G1 X30.536 Y39.334 E342.12768 ; [3673]
-;  Move thread to avoid head during bed move for [3674]
-;    Segment: <{ 30.54,  39.33,   2.60}←→{ 39.34,  39.33,   2.60} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E342.42037 ; [3674]
 G0 F9000 X39.736 Y39.734 ; [3675]
 ; [3676] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E342.73967 ; [3677]
-;  Move thread to avoid head during bed move for [3678]
-;    Segment: <{ 39.74,  30.13,   2.60}←→{ 30.14,  30.13,   2.60} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E343.05897 ; [3678]
 G1 X30.136 Y39.734 E343.37827 ; [3679]
-;  Move thread to avoid head during bed move for [3680]
-;    Segment: <{ 30.14,  39.73,   2.60}←→{ 39.74,  39.73,   2.60} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E343.69756 ; [3680]
 G0 F9000 X39.255 Y39.253 ; [3681]
 ; [3682] TYPE:FILL
@@ -5600,56 +3777,16 @@ G1 F1500 E346.83215 ; [3726]
 G0 F9000 X24.336 Y39.334 ; [3727]
 ; [3728] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E347.12484 ; [3729]
-;  Move thread to avoid head during bed move for [3730]
-;    Segment: <{ 24.34,  30.53,   2.60}←→{ 15.54,  30.53,   2.60} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E347.41753 ; [3730]
 G1 X15.536 Y34.934 E347.56387 ; [3731]
 G1 X15.536 Y39.334 E347.71022 ; [3732]
-;  Move thread to avoid head during bed move for [3733]
-;    Segment: <{ 15.54,  39.33,   2.60}←→{ 24.34,  39.33,   2.60} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E348.00291 ; [3733]
 G0 F9000 X24.736 Y39.734 ; [3734]
 ; [3735] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E348.32221 ; [3736]
-;  Move thread to avoid head during bed move for [3737]
-;    Segment: <{ 24.74,  30.13,   2.60}←→{ 15.14,  30.13,   2.60} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E348.6415 ; [3737]
 G1 X15.136 Y34.934 E348.80115 ; [3738]
 G1 X15.136 Y39.734 E348.9608 ; [3739]
-;  Move thread to avoid head during bed move for [3740]
-;    Segment: <{ 15.14,  39.73,   2.60}←→{ 24.74,  39.73,   2.60} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E349.2801 ; [3740]
 G0 F9000 X24.255 Y39.253 ; [3741]
 ; [3742] TYPE:FILL
@@ -5694,7 +3831,6 @@ G1 F1500 E345.91537 ; [3779]
 ;  ::: End layer 12 postamble :::
 ;  ====== End layer 12 ====
 ;  ==== Start layer 13 ====
-;  Layer 13 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 13 postamble :::
 G0 F300 X23.736 Y31.016 Z2.8 ; [3781]
 G0 F9000 X24.066 Y30.354 ; [3782]
@@ -5711,32 +3847,12 @@ G0 F9000 X24.336 Y24.334 ; [3788]
 G1 F1500 X24.336 Y15.534 E352.70806 ; [3793]
 G1 X15.536 Y15.534 E353.00075 ; [3794]
 G1 X15.536 Y24.334 E353.29344 ; [3795]
-;  Move thread to avoid head during bed move for [3796]
-;    Segment: <{ 15.54,  24.33,   2.80}←→{ 24.34,  24.33,   2.80} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E353.58612 ; [3796]
 G0 F9000 X24.736 Y24.734 ; [3797]
 ; [3798] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E353.90542 ; [3799]
 G1 X15.136 Y15.134 E354.22472 ; [3800]
 G1 X15.136 Y24.734 E354.54402 ; [3801]
-;  Move thread to avoid head during bed move for [3802]
-;    Segment: <{ 15.14,  24.73,   2.80}←→{ 24.74,  24.73,   2.80} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E354.86331 ; [3802]
 G0 F9000 X24.255 Y24.253 ; [3803]
 ; [3804] TYPE:FILL
@@ -5789,32 +3905,12 @@ G0 F9000 X39.336 Y24.334 ; [3849]
 G1 F1500 X39.336 Y15.534 E358.29094 ; [3851]
 G1 X30.536 Y15.534 E358.58363 ; [3852]
 G1 X30.536 Y24.334 E358.87632 ; [3853]
-;  Move thread to avoid head during bed move for [3854]
-;    Segment: <{ 30.54,  24.33,   2.80}←→{ 39.34,  24.33,   2.80} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E359.16901 ; [3854]
 G0 F9000 X39.736 Y24.734 ; [3855]
 ; [3856] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E359.48831 ; [3857]
 G1 X30.136 Y15.134 E359.80761 ; [3858]
 G1 X30.136 Y24.734 E360.1269 ; [3859]
-;  Move thread to avoid head during bed move for [3860]
-;    Segment: <{ 30.14,  24.73,   2.80}←→{ 39.74,  24.73,   2.80} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E360.4462 ; [3860]
 G0 F9000 X39.255 Y24.253 ; [3861]
 ; [3862] TYPE:FILL
@@ -5865,54 +3961,14 @@ G1 F1500 E363.58152 ; [3906]
 G0 F9000 X39.336 Y39.334 ; [3907]
 ; [3908] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E363.87421 ; [3909]
-;  Move thread to avoid head during bed move for [3910]
-;    Segment: <{ 39.34,  30.53,   2.80}←→{ 30.54,  30.53,   2.80} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E364.1669 ; [3910]
 G1 X30.536 Y39.334 E364.45959 ; [3911]
-;  Move thread to avoid head during bed move for [3912]
-;    Segment: <{ 30.54,  39.33,   2.80}←→{ 39.34,  39.33,   2.80} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E364.75227 ; [3912]
 G0 F9000 X39.736 Y39.734 ; [3913]
 ; [3914] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E365.07157 ; [3915]
-;  Move thread to avoid head during bed move for [3916]
-;    Segment: <{ 39.74,  30.13,   2.80}←→{ 30.14,  30.13,   2.80} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E365.39087 ; [3916]
 G1 X30.136 Y39.734 E365.71017 ; [3917]
-;  Move thread to avoid head during bed move for [3918]
-;    Segment: <{ 30.14,  39.73,   2.80}←→{ 39.74,  39.73,   2.80} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E366.02946 ; [3918]
 G0 F9000 X39.255 Y39.253 ; [3919]
 ; [3920] TYPE:FILL
@@ -5963,54 +4019,14 @@ G1 F1500 E369.16405 ; [3964]
 G0 F9000 X24.336 Y39.334 ; [3965]
 ; [3966] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E369.45674 ; [3967]
-;  Move thread to avoid head during bed move for [3968]
-;    Segment: <{ 24.34,  30.53,   2.80}←→{ 15.54,  30.53,   2.80} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E369.74943 ; [3968]
 G1 X15.536 Y39.334 E370.04212 ; [3969]
-;  Move thread to avoid head during bed move for [3970]
-;    Segment: <{ 15.54,  39.33,   2.80}←→{ 24.34,  39.33,   2.80} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E370.33481 ; [3970]
 G0 F9000 X24.736 Y39.734 ; [3971]
 ; [3972] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E370.65411 ; [3973]
-;  Move thread to avoid head during bed move for [3974]
-;    Segment: <{ 24.74,  30.13,   2.80}←→{ 15.14,  30.13,   2.80} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E370.9734 ; [3974]
 G1 X15.136 Y39.734 E371.2927 ; [3975]
-;  Move thread to avoid head during bed move for [3976]
-;    Segment: <{ 15.14,  39.73,   2.80}←→{ 24.74,  39.73,   2.80} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E371.612 ; [3976]
 G0 F9000 X24.255 Y39.253 ; [3977]
 ; [3978] TYPE:FILL
@@ -6055,7 +4071,6 @@ G1 F1500 E368.24727 ; [4015]
 ;  ::: End layer 13 postamble :::
 ;  ====== End layer 13 ====
 ;  ==== Start layer 14 ====
-;  Layer 14 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 14 postamble :::
 G0 F300 X23.736 Y31.016 Z3 ; [4017]
 G0 F9000 X24.066 Y30.354 ; [4018]
@@ -6072,32 +4087,12 @@ G0 F9000 X24.336 Y24.334 ; [4024]
 G1 F1500 X24.336 Y15.534 E375.03996 ; [4029]
 G1 X15.536 Y15.534 E375.33265 ; [4030]
 G1 X15.536 Y24.334 E375.62534 ; [4031]
-;  Move thread to avoid head during bed move for [4032]
-;    Segment: <{ 15.54,  24.33,   3.00}←→{ 24.34,  24.33,   3.00} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E375.91803 ; [4032]
 G0 F9000 X24.736 Y24.734 ; [4033]
 ; [4034] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E376.23732 ; [4035]
 G1 X15.136 Y15.134 E376.55662 ; [4036]
 G1 X15.136 Y24.734 E376.87592 ; [4037]
-;  Move thread to avoid head during bed move for [4038]
-;    Segment: <{ 15.14,  24.73,   3.00}←→{ 24.74,  24.73,   3.00} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E377.19521 ; [4038]
 G0 F9000 X24.255 Y24.253 ; [4039]
 ; [4040] TYPE:FILL
@@ -6150,32 +4145,12 @@ G0 F9000 X39.336 Y24.334 ; [4085]
 G1 F1500 X39.336 Y15.534 E380.62284 ; [4087]
 G1 X30.536 Y15.534 E380.91553 ; [4088]
 G1 X30.536 Y24.334 E381.20822 ; [4089]
-;  Move thread to avoid head during bed move for [4090]
-;    Segment: <{ 30.54,  24.33,   3.00}←→{ 39.34,  24.33,   3.00} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E381.50091 ; [4090]
 G0 F9000 X39.736 Y24.734 ; [4091]
 ; [4092] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E381.82021 ; [4093]
 G1 X30.136 Y15.134 E382.13951 ; [4094]
 G1 X30.136 Y24.734 E382.4588 ; [4095]
-;  Move thread to avoid head during bed move for [4096]
-;    Segment: <{ 30.14,  24.73,   3.00}←→{ 39.74,  24.73,   3.00} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E382.7781 ; [4096]
 G0 F9000 X39.255 Y24.253 ; [4097]
 ; [4098] TYPE:FILL
@@ -6226,54 +4201,14 @@ G1 F1500 E385.91342 ; [4142]
 G0 F9000 X39.336 Y39.334 ; [4143]
 ; [4144] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E386.20611 ; [4145]
-;  Move thread to avoid head during bed move for [4146]
-;    Segment: <{ 39.34,  30.53,   3.00}←→{ 30.54,  30.53,   3.00} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E386.4988 ; [4146]
 G1 X30.536 Y39.334 E386.79149 ; [4147]
-;  Move thread to avoid head during bed move for [4148]
-;    Segment: <{ 30.54,  39.33,   3.00}←→{ 39.34,  39.33,   3.00} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E387.08418 ; [4148]
 G0 F9000 X39.736 Y39.734 ; [4149]
 ; [4150] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E387.40347 ; [4151]
-;  Move thread to avoid head during bed move for [4152]
-;    Segment: <{ 39.74,  30.13,   3.00}←→{ 30.14,  30.13,   3.00} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E387.72277 ; [4152]
 G1 X30.136 Y39.734 E388.04207 ; [4153]
-;  Move thread to avoid head during bed move for [4154]
-;    Segment: <{ 30.14,  39.73,   3.00}←→{ 39.74,  39.73,   3.00} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E388.36137 ; [4154]
 G0 F9000 X39.255 Y39.253 ; [4155]
 ; [4156] TYPE:FILL
@@ -6324,54 +4259,14 @@ G1 F1500 E391.49595 ; [4200]
 G0 F9000 X24.336 Y39.334 ; [4201]
 ; [4202] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E391.78864 ; [4203]
-;  Move thread to avoid head during bed move for [4204]
-;    Segment: <{ 24.34,  30.53,   3.00}←→{ 15.54,  30.53,   3.00} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E392.08133 ; [4204]
 G1 X15.536 Y39.334 E392.37402 ; [4205]
-;  Move thread to avoid head during bed move for [4206]
-;    Segment: <{ 15.54,  39.33,   3.00}←→{ 24.34,  39.33,   3.00} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E392.66671 ; [4206]
 G0 F9000 X24.736 Y39.734 ; [4207]
 ; [4208] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E392.98601 ; [4209]
-;  Move thread to avoid head during bed move for [4210]
-;    Segment: <{ 24.74,  30.13,   3.00}←→{ 15.14,  30.13,   3.00} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E393.3053 ; [4210]
 G1 X15.136 Y39.734 E393.6246 ; [4211]
-;  Move thread to avoid head during bed move for [4212]
-;    Segment: <{ 15.14,  39.73,   3.00}←→{ 24.74,  39.73,   3.00} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E393.9439 ; [4212]
 G0 F9000 X24.255 Y39.253 ; [4213]
 ; [4214] TYPE:FILL
@@ -6416,7 +4311,6 @@ G1 F1500 E390.57917 ; [4251]
 ;  ::: End layer 14 postamble :::
 ;  ====== End layer 14 ====
 ;  ==== Start layer 15 ====
-;  Layer 15 - <Step 0> Move thread to avoid layer extents> -------------------------
 ;  ::: Layer 15 postamble :::
 G0 F300 X23.736 Y31.016 Z3.2 ; [4253]
 G0 F9000 X24.066 Y30.354 ; [4254]
@@ -6433,32 +4327,12 @@ G0 F9000 X24.336 Y24.334 ; [4260]
 G1 F1500 X24.336 Y15.534 E397.37186 ; [4265]
 G1 X15.536 Y15.534 E397.66455 ; [4266]
 G1 X15.536 Y24.334 E397.95724 ; [4267]
-;  Move thread to avoid head during bed move for [4268]
-;    Segment: <{ 15.54,  24.33,   3.20}←→{ 24.34,  24.33,   3.20} (8.80 mm)>
-;    Thread (157.52°):  <{ 33.27,  21.60,   0.00}←→{-48.43,  63.56,   0.00} (91.85 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E13.221 F8000 ;  Ring move by 33.20° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y24.334 E398.24993 ; [4268]
 G0 F9000 X24.736 Y24.734 ; [4269]
 ; [4270] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E398.56922 ; [4271]
 G1 X15.136 Y15.134 E398.88852 ; [4272]
 G1 X15.136 Y24.734 E399.20782 ; [4273]
-;  Move thread to avoid head during bed move for [4274]
-;    Segment: <{ 15.14,  24.73,   3.20}←→{ 24.74,  24.73,   3.20} (9.60 mm)>
-;    Thread (190.72°):  <{ 33.27,  21.60,   0.00}←→{-53.88,  10.70,   0.00} (87.82 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.313 F8000 ;  Ring move by -0.79° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y24.734 E399.52712 ; [4274]
 G0 F9000 X24.255 Y24.253 ; [4275]
 ; [4276] TYPE:FILL
@@ -6511,32 +4385,12 @@ G0 F9000 X39.336 Y24.334 ; [4321]
 G1 F1500 X39.336 Y15.534 E402.95475 ; [4323]
 G1 X30.536 Y15.534 E403.24744 ; [4324]
 G1 X30.536 Y24.334 E403.54012 ; [4325]
-;  Move thread to avoid head during bed move for [4326]
-;    Segment: <{ 30.54,  24.33,   3.20}←→{ 39.34,  24.33,   3.20} (8.80 mm)>
-;    Thread (189.93°):  <{ 33.27,  21.60,   0.00}←→{-54.11,  11.96,   0.00} (87.90 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-15.748 F8000 ;  Ring move by -39.54° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y24.334 E403.83281 ; [4326]
 G0 F9000 X39.736 Y24.734 ; [4327]
 ; [4328] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E404.15211 ; [4329]
 G1 X30.136 Y15.134 E404.47141 ; [4330]
 G1 X30.136 Y24.734 E404.79071 ; [4331]
-;  Move thread to avoid head during bed move for [4332]
-;    Segment: <{ 30.14,  24.73,   3.20}←→{ 39.74,  24.73,   3.20} (9.60 mm)>
-;    Thread (150.39°):  <{ 33.27,  21.60,   0.00}←→{-43.35,  73.95,   0.00} (92.80 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.073 F8000 ;  Ring move by 0.18° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y24.734 E405.11 ; [4332]
 G0 F9000 X39.255 Y24.253 ; [4333]
 ; [4334] TYPE:FILL
@@ -6587,54 +4441,14 @@ G1 F1500 E408.24532 ; [4378]
 G0 F9000 X39.336 Y39.334 ; [4379]
 ; [4380] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E408.53801 ; [4381]
-;  Move thread to avoid head during bed move for [4382]
-;    Segment: <{ 39.34,  30.53,   3.20}←→{ 30.54,  30.53,   3.20} (8.80 mm)>
-;    Thread (150.57°):  <{ 33.27,  21.60,   0.00}←→{-43.50,  73.69,   0.00} (92.77 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-41.996 F8000 ;  Ring move by -105.45° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.536 Y30.534 E408.8307 ; [4382]
 G1 X30.536 Y39.334 E409.12339 ; [4383]
-;  Move thread to avoid head during bed move for [4384]
-;    Segment: <{ 30.54,  39.33,   3.20}←→{ 39.34,  39.33,   3.20} (8.80 mm)>
-;    Thread (45.12°):  <{ 33.27,  21.60,   0.00}←→{103.12,  93.90,   0.00} (100.53 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E24.103 F8000 ;  Ring move by 60.52° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.336 Y39.334 E409.41608 ; [4384]
 G0 F9000 X39.736 Y39.734 ; [4385]
 ; [4386] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E409.73537 ; [4387]
-;  Move thread to avoid head during bed move for [4388]
-;    Segment: <{ 39.74,  30.13,   3.20}←→{ 30.14,  30.13,   3.20} (9.60 mm)>
-;    Thread (105.64°):  <{ 33.27,  21.60,   0.00}←→{ 12.42, 117.56,   0.00} (98.19 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-25.648 F8000 ;  Ring move by -64.40° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X30.136 Y30.134 E410.05467 ; [4388]
 G1 X30.136 Y39.734 E410.37397 ; [4389]
-;  Move thread to avoid head during bed move for [4390]
-;    Segment: <{ 30.14,  39.73,   3.20}←→{ 39.74,  39.73,   3.20} (9.60 mm)>
-;    Thread (41.24°):  <{ 33.27,  21.60,   0.00}←→{107.43,  89.31,   0.00} (100.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E26.279 F8000 ;  Ring move by 65.99° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X39.736 Y39.734 E410.69327 ; [4390]
 G0 F9000 X39.255 Y39.253 ; [4391]
 ; [4392] TYPE:FILL
@@ -6685,54 +4499,14 @@ G1 F1500 E413.82785 ; [4436]
 G0 F9000 X24.336 Y39.334 ; [4437]
 ; [4438] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E414.12054 ; [4439]
-;  Move thread to avoid head during bed move for [4440]
-;    Segment: <{ 24.34,  30.53,   3.20}←→{ 15.54,  30.53,   3.20} (8.80 mm)>
-;    Thread (107.23°):  <{ 33.27,  21.60,   0.00}←→{  9.96, 116.83,   0.00} (98.04 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E18.324 F8000 ;  Ring move by 46.01° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.536 Y30.534 E414.41323 ; [4440]
 G1 X15.536 Y39.334 E414.70592 ; [4441]
-;  Move thread to avoid head during bed move for [4442]
-;    Segment: <{ 15.54,  39.33,   3.20}←→{ 24.34,  39.33,   3.20} (8.80 mm)>
-;    Thread (153.24°):  <{ 33.27,  21.60,   0.00}←→{-45.54,  69.88,   0.00} (92.42 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.63 F8000 ;  Ring move by 4.09° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.336 Y39.334 E414.99861 ; [4442]
 G0 F9000 X24.736 Y39.734 ; [4443]
 ; [4444] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E415.31791 ; [4445]
-;  Move thread to avoid head during bed move for [4446]
-;    Segment: <{ 24.74,  30.13,   3.20}←→{ 15.14,  30.13,   3.20} (9.60 mm)>
-;    Thread (157.33°):  <{ 33.27,  21.60,   0.00}←→{-48.32,  63.84,   0.00} (91.87 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-1.703 F8000 ;  Ring move by -4.28° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X15.136 Y30.134 E415.63721 ; [4446]
 G1 X15.136 Y39.734 E415.9565 ; [4447]
-;  Move thread to avoid head during bed move for [4448]
-;    Segment: <{ 15.14,  39.73,   3.20}←→{ 24.74,  39.73,   3.20} (9.60 mm)>
-;    Thread (153.05°):  <{ 33.27,  21.60,   0.00}←→{-45.40,  70.14,   0.00} (92.44 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E1.778 F8000 ;  Ring move by 4.46° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
 G1 X24.736 Y39.734 E416.2758 ; [4448]
 G0 F9000 X24.255 Y39.253 ; [4449]
 ; [4450] TYPE:FILL
@@ -6815,31 +4589,11 @@ G1 F1500 E424.99396 ; [4556]
 G0 F9000 X39.336 Y24.334 ; [4557]
 ; [4558] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E425.28665 ; [4559]
-;  Move thread to avoid head during bed move for [4560]
-;    Segment: <{ 39.34,  15.53,   3.40}←→{ 30.54,  15.53,   3.40} (8.80 mm)>
-;    Thread (157.52°):  <{  0.00,   0.00,   0.00}←→{-48.43,  63.56,   0.00} (79.91 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-60.802 F8000 ;  Ring move by -152.67° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X30.536 Y15.534 E421.15031 ; [4560]
+G1 X30.536 Y15.534 E425.57934 ; [4560]
 G0 F9000 X39.736 Y24.734 ; [4563]
 ; [4564] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E426.48401 ; [4565]
-;  Move thread to avoid head during bed move for [4566]
-;    Segment: <{ 39.74,  15.13,   3.40}←→{ 30.14,  15.13,   3.40} (9.60 mm)>
-;    Thread (4.85°):  <{  0.00,   0.00,   0.00}←→{130.17,  35.86,   0.00} (135.02 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-0.34 F8000 ;  Ring move by -0.85° (CW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X30.136 Y15.134 E421.78891 ; [4566]
+G1 X30.136 Y15.134 E426.80331 ; [4566]
 G0 F9000 X30.806 Y15.804 ; [4572]
 G0 X30.836 Y17.464 ; [4573]
 G0 X30.615 Y17.464 ; [4574]
@@ -6867,32 +4621,12 @@ G0 F9000 X39.336 Y39.334 ; [4615]
 ; [4616] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E430.86991 ; [4617]
 G0 X30.536 Y39.334 ;  [4619] (fake)
-;  Move thread to avoid head during bed move for [4620]
-;    Segment: <{ 30.54,  39.33,   3.40}←→{ 39.34,  39.33,   3.40} (8.80 mm)>
-;    Thread (3.99°):  <{  0.00,   0.00,   0.00}←→{130.27,  34.48,   0.00} (134.76 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E16.317 F8000 ;  Ring move by 40.97° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X39.336 Y39.334 E423.10983 ; [4620]
+G1 X39.336 Y39.334 E431.74798 ; [4620]
 G0 F9000 X39.736 Y39.734 ; [4621]
 ; [4622] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E432.06728 ; [4623]
 G0 X30.136 Y39.734 ;  [4625] (fake)
-;  Move thread to avoid head during bed move for [4626]
-;    Segment: <{ 30.14,  39.73,   3.40}←→{ 39.74,  39.73,   3.40} (9.60 mm)>
-;    Thread (44.96°):  <{  0.00,   0.00,   0.00}←→{103.30,  93.72,   0.00} (139.48 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.41 F8000 ;  Ring move by 1.03° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X39.736 Y39.734 E423.74843 ; [4626]
+G1 X39.736 Y39.734 E433.02517 ; [4626]
 G0 F9000 X30.806 Y30.804 ; [4630]
 G0 X30.836 Y32.464 ; [4631]
 G0 X30.616 Y32.464 ; [4632]
@@ -6911,30 +4645,10 @@ G0 F9000 X32.466 Y39.252 ; [4658]
 G1 F3000 X30.615 Y37.402 E435.75343 ; [4659]
 G0 X15.536 Y30.534 ;  [4676] (fake)
 G1 X15.536 Y39.334 E437.03782 ; [4677]
-;  Move thread to avoid head during bed move for [4678]
-;    Segment: <{ 15.54,  39.33,   3.40}←→{ 24.34,  39.33,   3.40} (8.80 mm)>
-;    Thread (45.99°):  <{  0.00,   0.00,   0.00}←→{102.11,  94.89,   0.00} (139.40 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E11.436 F8000 ;  Ring move by 28.72° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X24.336 Y39.334 E425.06903 ; [4678]
+G1 X24.336 Y39.334 E437.33051 ; [4678]
 G0 X15.136 Y30.134 ;  [4682] (fake)
 G1 X15.136 Y39.734 E438.2884 ; [4683]
-;  Move thread to avoid head during bed move for [4684]
-;    Segment: <{ 15.14,  39.73,   3.40}←→{ 24.74,  39.73,   3.40} (9.60 mm)>
-;    Thread (74.71°):  <{  0.00,   0.00,   0.00}←→{ 62.02, 117.71,   0.00} (133.05 mm)>
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E0.473 F8000 ;  Ring move by 1.19° (CCW)
-T0 ;  Switch to main extruder
-M82 ; [12] absolute extrusion mode
-M302 P0 ;  Prevent cold extrusion
-G1 X24.736 Y39.734 E425.70762 ; [4684]
+G1 X24.736 Y39.734 E438.6077 ; [4684]
 G0 F9000 X15.806 Y30.804 ; [4688]
 G0 X15.836 Y32.464 ; [4689]
 G0 X15.615 Y32.464 ; [4690]
@@ -6953,7 +4667,10 @@ G1 F3000 X15.615 Y37.401 E441.33657 ; [4717]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E16.365 F8000 ;  Ring move by 41.09° (CCW)
+G1 E16.365 F8000 ;  Ring move by 41.09° CCW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
 ;  Layer 16 - <Step 2 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F1500 X24.736 Y15.134 ;  [4507] (fake)
 G1 X15.136 Y15.134 E421.22042 ; [4508]
@@ -6961,13 +4678,16 @@ G1 X15.136 Y15.134 E421.22042 ; [4508]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E24.233 F8000 ;  Ring move by 60.85° (CCW)
-;  Layer 16 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> from 41.09° → 101.94°(60.85°)  -------------------------
+G1 E24.233 F8000 ;  Ring move by 60.85° CCW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 16 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X15.836 Y37.401 ; [4718]
 G0 X15.806 Y39.064 ; [4719]
 G0 X15.615 Y39.252 ; [4720]
 G1 F3000 X24.255 Y30.612 E441.74297 ; [4721]
-;  Layer 16 - <Step 5 (13 segments)>: Print 13 segments thread doesn't intersect> from 41.09° → 101.94°(60.85°)  -------------------------
+;  Layer 16 - <Step 5 (13 segments)>: Print 13 segments thread doesn't intersect> -------------------------
 G0 F1500 X24.336 Y15.534 ;  [4501] (fake)
 G1 X15.536 Y15.534 E419.99645 ; [4502]
 G0 X15.536 Y24.334 ;  [4503] (fake)
@@ -7007,12 +4727,15 @@ G1 F3000 X21.993 Y30.612 E440.86239 ; [4711]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-38.483 F8000 ;  Ring move by -96.63° (CW)
-;  Layer 16 - <Step 7 (1 segments)>: Print 1 segment to fix anchor> from 101.94° → 5.31°(-96.63°)  -------------------------
+G1 E-38.483 F8000 ;  Ring move by -96.63° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 16 - <Step 7 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X39.255 Y39.253 ; [4627]
 ; [4628] TYPE:FILL
 G1 F3000 X30.615 Y30.614 E433.43154 ; [4629]
-;  Layer 16 - <Step 8 (11 segments)>: Print 11 segments thread doesn't intersect> from 101.94° → 5.31°(-96.63°)  -------------------------
+;  Layer 16 - <Step 8 (11 segments)>: Print 11 segments thread doesn't intersect> -------------------------
 G0 X30.536 Y30.534 ;  [4618] (fake)
 G1 X30.536 Y39.334 E431.45529 ; [4619]
 G0 X30.136 Y30.134 ;  [4624] (fake)
@@ -7051,13 +4774,16 @@ G1 F3000 X17.877 Y39.253 E441.24951 ; [4715]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-38.18 F8000 ;  Ring move by -95.87° (CW)
-;  Layer 16 - <Step 10 (1 segments)>: Print 1 segment to fix anchor> from 5.31° → -90.56°(-95.87°)  -------------------------
+G1 E-38.18 F8000 ;  Ring move by -95.87° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 16 - <Step 10 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X30.836 Y22.401 ; [4602]
 G0 X30.806 Y24.064 ; [4603]
 G0 X30.614 Y24.253 ; [4604]
 G1 F3000 X39.255 Y15.613 E430.57722 ; [4605]
-;  Layer 16 - <Step 11 (11 segments)>: Print 11 segments thread doesn't intersect> from 5.31° → -90.56°(-95.87°)  -------------------------
+;  Layer 16 - <Step 11 (11 segments)>: Print 11 segments thread doesn't intersect> -------------------------
 G0 X30.536 Y24.334 ;  [4561] (fake)
 G1 X39.336 Y24.334 E426.16471 ; [4562]
 G0 X30.136 Y24.734 ;  [4567] (fake)
@@ -7088,13 +4814,16 @@ G1 F3000 X39.255 Y30.614 E436.15976 ; [4663]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-33.228 F8000 ;  Ring move by -83.44° (CW)
-;  Layer 16 - <Step 13 (1 segments)>: Print 1 segment to fix anchor> from -90.56° → -173.99°(-83.44°)  -------------------------
+G1 E-33.228 F8000 ;  Ring move by -83.44° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 16 - <Step 13 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X15.836 Y22.402 ; [4544]
 G0 X15.806 Y24.064 ; [4545]
 G0 X15.616 Y24.253 ; [4546]
 G1 F3000 X24.255 Y15.614 E424.99396 ; [4547]
-;  Layer 16 - <Step 14 (11 segments)>: Print 11 segments thread doesn't intersect> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 16 - <Step 14 (11 segments)>: Print 11 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [4496]
 ; [4497] TIME_ELAPSED:657.513732
 ; [4498] LAYER:16
@@ -7143,37 +4872,27 @@ G0 X24.066 Y24.514 ; [4729]
 G0 X24.066 Y24.064 ; [4730]
 G1 F1500 E441.74297 ; [4731]
 ;  ::: End layer 17 preamble :::
-;  Layer 17 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -90.56° → -173.99°(-83.44°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.228 F8000 ;  Ring move by -83.44° (CW)
-;  Layer 17 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 17 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 17 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X15.836 Y22.402 ; [4780]
 G0 X15.806 Y24.064 ; [4781]
 G0 X15.616 Y24.253 ; [4782]
 G1 F3000 X24.255 Y15.614 E447.32586 ; [4783]
-;  Layer 17 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 17 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [4732]
 ; [4733] TIME_ELAPSED:690.029021
 ; [4734] LAYER:17
 ; [4735] TYPE:WALL-INNER
 ; [4736] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E442.03566 ; [4737]
-G0 F1500 X24.336 Y15.534 ;  [4737] (fake)
 G1 X15.536 Y15.534 E442.32835 ; [4738]
-G0 X15.536 Y15.534 ;  [4738] (fake)
 G1 X15.536 Y24.334 E442.62104 ; [4739]
-G0 X15.536 Y24.334 ;  [4739] (fake)
 G1 X24.336 Y24.334 E442.91373 ; [4740]
 G0 F9000 X24.736 Y24.734 ; [4741]
 ; [4742] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E443.23303 ; [4743]
-G0 F1500 X24.736 Y15.134 ;  [4743] (fake)
 G1 X15.136 Y15.134 E443.55232 ; [4744]
-G0 X15.136 Y15.134 ;  [4744] (fake)
 G1 X15.136 Y24.734 E443.87162 ; [4745]
-G0 X15.136 Y24.734 ;  [4745] (fake)
 G1 X24.736 Y24.734 E444.19092 ; [4746]
 G0 F9000 X24.255 Y24.253 ; [4747]
 ; [4748] TYPE:FILL
@@ -7220,20 +4939,14 @@ G1 F1500 E447.32586 ; [4792]
 G0 F9000 X39.336 Y24.334 ; [4793]
 ; [4794] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E447.61855 ; [4795]
-G0 F1500 X39.336 Y15.534 ;  [4795] (fake)
 G1 X30.536 Y15.534 E447.91124 ; [4796]
-G0 X30.536 Y15.534 ;  [4796] (fake)
 G1 X30.536 Y24.334 E448.20393 ; [4797]
-G0 X30.536 Y24.334 ;  [4797] (fake)
 G1 X39.336 Y24.334 E448.49662 ; [4798]
 G0 F9000 X39.736 Y24.734 ; [4799]
 ; [4800] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E448.81591 ; [4801]
-G0 F1500 X39.736 Y15.134 ;  [4801] (fake)
 G1 X30.136 Y15.134 E449.13521 ; [4802]
-G0 X30.136 Y15.134 ;  [4802] (fake)
 G1 X30.136 Y24.734 E449.45451 ; [4803]
-G0 X30.136 Y24.734 ;  [4803] (fake)
 G1 X39.736 Y24.734 E449.7738 ; [4804]
 G0 F9000 X39.255 Y24.253 ; [4805]
 ; [4806] TYPE:FILL
@@ -7284,20 +4997,14 @@ G1 F1500 E452.90912 ; [4850]
 G0 F9000 X39.336 Y39.334 ; [4851]
 ; [4852] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E453.20181 ; [4853]
-G0 F1500 X39.336 Y30.534 ;  [4853] (fake)
 G1 X30.536 Y30.534 E453.4945 ; [4854]
-G0 X30.536 Y30.534 ;  [4854] (fake)
 G1 X30.536 Y39.334 E453.78719 ; [4855]
-G0 X30.536 Y39.334 ;  [4855] (fake)
 G1 X39.336 Y39.334 E454.07988 ; [4856]
 G0 F9000 X39.736 Y39.734 ; [4857]
 ; [4858] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E454.39918 ; [4859]
-G0 F1500 X39.736 Y30.134 ;  [4859] (fake)
 G1 X30.136 Y30.134 E454.71847 ; [4860]
-G0 X30.136 Y30.134 ;  [4860] (fake)
 G1 X30.136 Y39.734 E455.03777 ; [4861]
-G0 X30.136 Y39.734 ;  [4861] (fake)
 G1 X39.736 Y39.734 E455.35707 ; [4862]
 G0 F9000 X39.255 Y39.253 ; [4863]
 ; [4864] TYPE:FILL
@@ -7348,20 +5055,14 @@ G1 F1500 E458.49166 ; [4908]
 G0 F9000 X24.336 Y39.334 ; [4909]
 ; [4910] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E458.78435 ; [4911]
-G0 F1500 X24.336 Y30.534 ;  [4911] (fake)
 G1 X15.536 Y30.534 E459.07703 ; [4912]
-G0 X15.536 Y30.534 ;  [4912] (fake)
 G1 X15.536 Y39.334 E459.36972 ; [4913]
-G0 X15.536 Y39.334 ;  [4913] (fake)
 G1 X24.336 Y39.334 E459.66241 ; [4914]
 G0 F9000 X24.736 Y39.734 ; [4915]
 ; [4916] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E459.98171 ; [4917]
-G0 F1500 X24.736 Y30.134 ;  [4917] (fake)
 G1 X15.136 Y30.134 E460.30101 ; [4918]
-G0 X15.136 Y30.134 ;  [4918] (fake)
 G1 X15.136 Y39.734 E460.6203 ; [4919]
-G0 X15.136 Y39.734 ;  [4919] (fake)
 G1 X24.736 Y39.734 E460.9396 ; [4920]
 G0 F9000 X24.255 Y39.253 ; [4921]
 ; [4922] TYPE:FILL
@@ -7416,37 +5117,27 @@ G0 X24.066 Y24.514 ; [4965]
 G0 X24.066 Y24.064 ; [4966]
 G1 F1500 E464.07487 ; [4967]
 ;  ::: End layer 18 preamble :::
-;  Layer 18 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -90.56° → -173.99°(-83.44°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.228 F8000 ;  Ring move by -83.44° (CW)
-;  Layer 18 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 18 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 18 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X15.836 Y22.402 ; [5016]
 G0 X15.806 Y24.064 ; [5017]
 G0 X15.616 Y24.253 ; [5018]
 G1 F3000 X24.255 Y15.614 E469.65776 ; [5019]
-;  Layer 18 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 18 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [4968]
 ; [4969] TIME_ELAPSED:722.544311
 ; [4970] LAYER:18
 ; [4971] TYPE:WALL-INNER
 ; [4972] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E464.36756 ; [4973]
-G0 F1500 X24.336 Y15.534 ;  [4973] (fake)
 G1 X15.536 Y15.534 E464.66025 ; [4974]
-G0 X15.536 Y15.534 ;  [4974] (fake)
 G1 X15.536 Y24.334 E464.95294 ; [4975]
-G0 X15.536 Y24.334 ;  [4975] (fake)
 G1 X24.336 Y24.334 E465.24563 ; [4976]
 G0 F9000 X24.736 Y24.734 ; [4977]
 ; [4978] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E465.56493 ; [4979]
-G0 F1500 X24.736 Y15.134 ;  [4979] (fake)
 G1 X15.136 Y15.134 E465.88422 ; [4980]
-G0 X15.136 Y15.134 ;  [4980] (fake)
 G1 X15.136 Y24.734 E466.20352 ; [4981]
-G0 X15.136 Y24.734 ;  [4981] (fake)
 G1 X24.736 Y24.734 E466.52282 ; [4982]
 G0 F9000 X24.255 Y24.253 ; [4983]
 ; [4984] TYPE:FILL
@@ -7493,20 +5184,14 @@ G1 F1500 E469.65776 ; [5028]
 G0 F9000 X39.336 Y24.334 ; [5029]
 ; [5030] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E469.95045 ; [5031]
-G0 F1500 X39.336 Y15.534 ;  [5031] (fake)
 G1 X30.536 Y15.534 E470.24314 ; [5032]
-G0 X30.536 Y15.534 ;  [5032] (fake)
 G1 X30.536 Y24.334 E470.53583 ; [5033]
-G0 X30.536 Y24.334 ;  [5033] (fake)
 G1 X39.336 Y24.334 E470.82852 ; [5034]
 G0 F9000 X39.736 Y24.734 ; [5035]
 ; [5036] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E471.14781 ; [5037]
-G0 F1500 X39.736 Y15.134 ;  [5037] (fake)
 G1 X30.136 Y15.134 E471.46711 ; [5038]
-G0 X30.136 Y15.134 ;  [5038] (fake)
 G1 X30.136 Y24.734 E471.78641 ; [5039]
-G0 X30.136 Y24.734 ;  [5039] (fake)
 G1 X39.736 Y24.734 E472.10571 ; [5040]
 G0 F9000 X39.255 Y24.253 ; [5041]
 ; [5042] TYPE:FILL
@@ -7557,20 +5242,14 @@ G1 F1500 E475.24102 ; [5086]
 G0 F9000 X39.336 Y39.334 ; [5087]
 ; [5088] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E475.53371 ; [5089]
-G0 F1500 X39.336 Y30.534 ;  [5089] (fake)
 G1 X30.536 Y30.534 E475.8264 ; [5090]
-G0 X30.536 Y30.534 ;  [5090] (fake)
 G1 X30.536 Y39.334 E476.11909 ; [5091]
-G0 X30.536 Y39.334 ;  [5091] (fake)
 G1 X39.336 Y39.334 E476.41178 ; [5092]
 G0 F9000 X39.736 Y39.734 ; [5093]
 ; [5094] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E476.73108 ; [5095]
-G0 F1500 X39.736 Y30.134 ;  [5095] (fake)
 G1 X30.136 Y30.134 E477.05037 ; [5096]
-G0 X30.136 Y30.134 ;  [5096] (fake)
 G1 X30.136 Y39.734 E477.36967 ; [5097]
-G0 X30.136 Y39.734 ;  [5097] (fake)
 G1 X39.736 Y39.734 E477.68897 ; [5098]
 G0 F9000 X39.255 Y39.253 ; [5099]
 ; [5100] TYPE:FILL
@@ -7621,20 +5300,14 @@ G1 F1500 E480.82356 ; [5144]
 G0 F9000 X24.336 Y39.334 ; [5145]
 ; [5146] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E481.11625 ; [5147]
-G0 F1500 X24.336 Y30.534 ;  [5147] (fake)
 G1 X15.536 Y30.534 E481.40894 ; [5148]
-G0 X15.536 Y30.534 ;  [5148] (fake)
 G1 X15.536 Y39.334 E481.70162 ; [5149]
-G0 X15.536 Y39.334 ;  [5149] (fake)
 G1 X24.336 Y39.334 E481.99431 ; [5150]
 G0 F9000 X24.736 Y39.734 ; [5151]
 ; [5152] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E482.31361 ; [5153]
-G0 F1500 X24.736 Y30.134 ;  [5153] (fake)
 G1 X15.136 Y30.134 E482.63291 ; [5154]
-G0 X15.136 Y30.134 ;  [5154] (fake)
 G1 X15.136 Y39.734 E482.95221 ; [5155]
-G0 X15.136 Y39.734 ;  [5155] (fake)
 G1 X24.736 Y39.734 E483.2715 ; [5156]
 G0 F9000 X24.255 Y39.253 ; [5157]
 ; [5158] TYPE:FILL
@@ -7689,37 +5362,27 @@ G0 X24.066 Y24.514 ; [5201]
 G0 X24.066 Y24.064 ; [5202]
 G1 F1500 E486.40677 ; [5203]
 ;  ::: End layer 19 preamble :::
-;  Layer 19 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -90.56° → -173.99°(-83.44°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.228 F8000 ;  Ring move by -83.44° (CW)
-;  Layer 19 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 19 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 19 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X15.836 Y22.402 ; [5252]
 G0 X15.806 Y24.064 ; [5253]
 G0 X15.616 Y24.253 ; [5254]
 G1 F3000 X24.255 Y15.614 E491.98966 ; [5255]
-;  Layer 19 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 19 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [5204]
 ; [5205] TIME_ELAPSED:755.059600
 ; [5206] LAYER:19
 ; [5207] TYPE:WALL-INNER
 ; [5208] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E486.69946 ; [5209]
-G0 F1500 X24.336 Y15.534 ;  [5209] (fake)
 G1 X15.536 Y15.534 E486.99215 ; [5210]
-G0 X15.536 Y15.534 ;  [5210] (fake)
 G1 X15.536 Y24.334 E487.28484 ; [5211]
-G0 X15.536 Y24.334 ;  [5211] (fake)
 G1 X24.336 Y24.334 E487.57753 ; [5212]
 G0 F9000 X24.736 Y24.734 ; [5213]
 ; [5214] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E487.89683 ; [5215]
-G0 F1500 X24.736 Y15.134 ;  [5215] (fake)
 G1 X15.136 Y15.134 E488.21612 ; [5216]
-G0 X15.136 Y15.134 ;  [5216] (fake)
 G1 X15.136 Y24.734 E488.53542 ; [5217]
-G0 X15.136 Y24.734 ;  [5217] (fake)
 G1 X24.736 Y24.734 E488.85472 ; [5218]
 G0 F9000 X24.255 Y24.253 ; [5219]
 ; [5220] TYPE:FILL
@@ -7766,20 +5429,14 @@ G1 F1500 E491.98966 ; [5264]
 G0 F9000 X39.336 Y24.334 ; [5265]
 ; [5266] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E492.28235 ; [5267]
-G0 F1500 X39.336 Y15.534 ;  [5267] (fake)
 G1 X30.536 Y15.534 E492.57504 ; [5268]
-G0 X30.536 Y15.534 ;  [5268] (fake)
 G1 X30.536 Y24.334 E492.86773 ; [5269]
-G0 X30.536 Y24.334 ;  [5269] (fake)
 G1 X39.336 Y24.334 E493.16042 ; [5270]
 G0 F9000 X39.736 Y24.734 ; [5271]
 ; [5272] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E493.47971 ; [5273]
-G0 F1500 X39.736 Y15.134 ;  [5273] (fake)
 G1 X30.136 Y15.134 E493.79901 ; [5274]
-G0 X30.136 Y15.134 ;  [5274] (fake)
 G1 X30.136 Y24.734 E494.11831 ; [5275]
-G0 X30.136 Y24.734 ;  [5275] (fake)
 G1 X39.736 Y24.734 E494.43761 ; [5276]
 G0 F9000 X39.255 Y24.253 ; [5277]
 ; [5278] TYPE:FILL
@@ -7830,20 +5487,14 @@ G1 F1500 E497.57292 ; [5322]
 G0 F9000 X39.336 Y39.334 ; [5323]
 ; [5324] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E497.86561 ; [5325]
-G0 F1500 X39.336 Y30.534 ;  [5325] (fake)
 G1 X30.536 Y30.534 E498.1583 ; [5326]
-G0 X30.536 Y30.534 ;  [5326] (fake)
 G1 X30.536 Y39.334 E498.45099 ; [5327]
-G0 X30.536 Y39.334 ;  [5327] (fake)
 G1 X39.336 Y39.334 E498.74368 ; [5328]
 G0 F9000 X39.736 Y39.734 ; [5329]
 ; [5330] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E499.06298 ; [5331]
-G0 F1500 X39.736 Y30.134 ;  [5331] (fake)
 G1 X30.136 Y30.134 E499.38228 ; [5332]
-G0 X30.136 Y30.134 ;  [5332] (fake)
 G1 X30.136 Y39.734 E499.70157 ; [5333]
-G0 X30.136 Y39.734 ;  [5333] (fake)
 G1 X39.736 Y39.734 E500.02087 ; [5334]
 G0 F9000 X39.255 Y39.253 ; [5335]
 ; [5336] TYPE:FILL
@@ -7894,20 +5545,14 @@ G1 F1500 E503.15546 ; [5380]
 G0 F9000 X24.336 Y39.334 ; [5381]
 ; [5382] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E503.44815 ; [5383]
-G0 F1500 X24.336 Y30.534 ;  [5383] (fake)
 G1 X15.536 Y30.534 E503.74084 ; [5384]
-G0 X15.536 Y30.534 ;  [5384] (fake)
 G1 X15.536 Y39.334 E504.03353 ; [5385]
-G0 X15.536 Y39.334 ;  [5385] (fake)
 G1 X24.336 Y39.334 E504.32621 ; [5386]
 G0 F9000 X24.736 Y39.734 ; [5387]
 ; [5388] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E504.64551 ; [5389]
-G0 F1500 X24.736 Y30.134 ;  [5389] (fake)
 G1 X15.136 Y30.134 E504.96481 ; [5390]
-G0 X15.136 Y30.134 ;  [5390] (fake)
 G1 X15.136 Y39.734 E505.28411 ; [5391]
-G0 X15.136 Y39.734 ;  [5391] (fake)
 G1 X24.736 Y39.734 E505.6034 ; [5392]
 G0 F9000 X24.255 Y39.253 ; [5393]
 ; [5394] TYPE:FILL
@@ -7962,37 +5607,27 @@ G0 X24.066 Y24.514 ; [5437]
 G0 X24.066 Y24.064 ; [5438]
 G1 F1500 E508.73867 ; [5439]
 ;  ::: End layer 20 preamble :::
-;  Layer 20 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -90.56° → -173.99°(-83.44°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.228 F8000 ;  Ring move by -83.44° (CW)
-;  Layer 20 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 20 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 20 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X15.836 Y22.402 ; [5488]
 G0 X15.806 Y24.064 ; [5489]
 G0 X15.616 Y24.253 ; [5490]
 G1 F3000 X24.255 Y15.614 E514.32156 ; [5491]
-;  Layer 20 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> from -90.56° → -173.99°(-83.44°)  -------------------------
+;  Layer 20 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [5440]
 ; [5441] TIME_ELAPSED:787.574889
 ; [5442] LAYER:20
 ; [5443] TYPE:WALL-INNER
 ; [5444] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E509.03136 ; [5445]
-G0 F1500 X24.336 Y15.534 ;  [5445] (fake)
 G1 X15.536 Y15.534 E509.32405 ; [5446]
-G0 X15.536 Y15.534 ;  [5446] (fake)
 G1 X15.536 Y24.334 E509.61674 ; [5447]
-G0 X15.536 Y24.334 ;  [5447] (fake)
 G1 X24.336 Y24.334 E509.90943 ; [5448]
 G0 F9000 X24.736 Y24.734 ; [5449]
 ; [5450] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E510.22873 ; [5451]
-G0 F1500 X24.736 Y15.134 ;  [5451] (fake)
 G1 X15.136 Y15.134 E510.54803 ; [5452]
-G0 X15.136 Y15.134 ;  [5452] (fake)
 G1 X15.136 Y24.734 E510.86732 ; [5453]
-G0 X15.136 Y24.734 ;  [5453] (fake)
 G1 X24.736 Y24.734 E511.18662 ; [5454]
 G0 F9000 X24.255 Y24.253 ; [5455]
 ; [5456] TYPE:FILL
@@ -8037,20 +5672,14 @@ G1 F1500 E514.32156 ; [5500]
 G0 F9000 X39.336 Y24.334 ; [5501]
 ; [5502] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E514.61425 ; [5503]
-G0 F1500 X39.336 Y15.534 ;  [5503] (fake)
 G1 X30.536 Y15.534 E514.90694 ; [5504]
-G0 X30.536 Y15.534 ;  [5504] (fake)
 G1 X30.536 Y24.334 E515.19963 ; [5505]
-G0 X30.536 Y24.334 ;  [5505] (fake)
 G1 X39.336 Y24.334 E515.49232 ; [5506]
 G0 F9000 X39.736 Y24.734 ; [5507]
 ; [5508] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E515.81162 ; [5509]
-G0 F1500 X39.736 Y15.134 ;  [5509] (fake)
 G1 X30.136 Y15.134 E516.13091 ; [5510]
-G0 X30.136 Y15.134 ;  [5510] (fake)
 G1 X30.136 Y24.734 E516.45021 ; [5511]
-G0 X30.136 Y24.734 ;  [5511] (fake)
 G1 X39.736 Y24.734 E516.76951 ; [5512]
 G0 F9000 X39.255 Y24.253 ; [5513]
 ; [5514] TYPE:FILL
@@ -8101,20 +5730,14 @@ G1 F1500 E519.90482 ; [5558]
 G0 F9000 X39.336 Y39.334 ; [5559]
 ; [5560] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E520.19751 ; [5561]
-G0 F1500 X39.336 Y30.534 ;  [5561] (fake)
 G1 X30.536 Y30.534 E520.4902 ; [5562]
-G0 X30.536 Y30.534 ;  [5562] (fake)
 G1 X30.536 Y39.334 E520.78289 ; [5563]
-G0 X30.536 Y39.334 ;  [5563] (fake)
 G1 X39.336 Y39.334 E521.07558 ; [5564]
 G0 F9000 X39.736 Y39.734 ; [5565]
 ; [5566] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E521.39488 ; [5567]
-G0 F1500 X39.736 Y30.134 ;  [5567] (fake)
 G1 X30.136 Y30.134 E521.71418 ; [5568]
-G0 X30.136 Y30.134 ;  [5568] (fake)
 G1 X30.136 Y39.734 E522.03347 ; [5569]
-G0 X30.136 Y39.734 ;  [5569] (fake)
 G1 X39.736 Y39.734 E522.35277 ; [5570]
 G0 F9000 X39.255 Y39.253 ; [5571]
 ; [5572] TYPE:FILL
@@ -8165,20 +5788,14 @@ G1 F1500 E525.48736 ; [5616]
 G0 F9000 X24.336 Y39.334 ; [5617]
 ; [5618] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E525.78005 ; [5619]
-G0 F1500 X24.336 Y30.534 ;  [5619] (fake)
 G1 X15.536 Y30.534 E526.07274 ; [5620]
-G0 X15.536 Y30.534 ;  [5620] (fake)
 G1 X15.536 Y39.334 E526.36543 ; [5621]
-G0 X15.536 Y39.334 ;  [5621] (fake)
 G1 X24.336 Y39.334 E526.65812 ; [5622]
 G0 F9000 X24.736 Y39.734 ; [5623]
 ; [5624] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E526.97741 ; [5625]
-G0 F1500 X24.736 Y30.134 ;  [5625] (fake)
 G1 X15.136 Y30.134 E527.29671 ; [5626]
-G0 X15.136 Y30.134 ;  [5626] (fake)
 G1 X15.136 Y39.734 E527.61601 ; [5627]
-G0 X15.136 Y39.734 ;  [5627] (fake)
 G1 X24.736 Y39.734 E527.93531 ; [5628]
 G0 F9000 X24.255 Y39.253 ; [5629]
 ; [5630] TYPE:FILL
@@ -8221,8 +5838,11 @@ G1 F3000 X24.255 Y30.612 E531.07058 ; [5665]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-33.032 F8000 ;  Ring move by -82.94° (CW)
-;  Layer 20 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> from -173.99° → 103.06°(-82.94°)  -------------------------
+G1 E-33.032 F8000 ;  Ring move by -82.94° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 20 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X17.878 Y15.614 ; [5462]
 G1 F3000 X24.255 Y21.991 E511.98009 ; [5463]
 ;  ::: Layer 20 postamble :::
@@ -8241,35 +5861,35 @@ G0 X24.066 Y24.514 ; [5673]
 G0 X24.066 Y24.064 ; [5674]
 G1 F1500 E531.07058 ; [5675]
 ;  ::: End layer 21 preamble :::
-;  Layer 21 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -173.99° → 103.06°(-82.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.032 F8000 ;  Ring move by -82.94° (CW)
-;  Layer 21 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 21 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 21 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X17.878 Y15.614 ; [5698]
 G1 F3000 X24.255 Y21.991 E534.31199 ; [5699]
-;  Layer 21 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 21 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [5676]
 ; [5677] TIME_ELAPSED:820.090179
 ; [5678] LAYER:21
 ; [5679] TYPE:WALL-INNER
 ; [5680] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E531.36326 ; [5681]
-G0 F1500 X24.336 Y15.534 ;  [5681] (fake)
 G1 X15.536 Y15.534 E531.65595 ; [5682]
-G0 X15.536 Y15.534 ;  [5682] (fake)
 G1 X15.536 Y24.334 E531.94864 ; [5683]
-G0 X15.536 Y24.334 ;  [5683] (fake)
-G1 X24.336 Y24.334 E532.24133 ; [5684]
+;  Move thread to avoid head during bed move for [5684]
+;    Segment: <{ 15.54,  24.33,   4.40}←→{ 24.34,  24.33,   4.40} (8.80 mm)>
+;    Thread (-256.94°):  <{ 21.55,  19.29,   0.00}←→{ 16.48, 118.59,   0.00} (99.44 mm)>
+T1 ;  Switch to ring extruder
+M83 ;  Set relative extrusion mode
+M302 P1 ;  Allow cold extrusion
+G1 E23.663 F8000 ;  Ring move by 59.42° CCW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+G1 X24.336 Y24.334 E532.54129 ; [5684]
 G0 F9000 X24.736 Y24.734 ; [5685]
 ; [5686] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E532.56063 ; [5687]
-G0 F1500 X24.736 Y15.134 ;  [5687] (fake)
 G1 X15.136 Y15.134 E532.87993 ; [5688]
-G0 X15.136 Y15.134 ;  [5688] (fake)
 G1 X15.136 Y24.734 E533.19922 ; [5689]
-G0 X15.136 Y24.734 ;  [5689] (fake)
 G1 X24.736 Y24.734 E533.51852 ; [5690]
 G0 F9000 X24.255 Y24.253 ; [5691]
 ; [5692] TYPE:FILL
@@ -8318,20 +5938,14 @@ G1 F1500 E536.65346 ; [5736]
 G0 F9000 X39.336 Y24.334 ; [5737]
 ; [5738] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E536.94615 ; [5739]
-G0 F1500 X39.336 Y15.534 ;  [5739] (fake)
 G1 X30.536 Y15.534 E537.23884 ; [5740]
-G0 X30.536 Y15.534 ;  [5740] (fake)
 G1 X30.536 Y24.334 E537.53153 ; [5741]
-G0 X30.536 Y24.334 ;  [5741] (fake)
 G1 X39.336 Y24.334 E537.82422 ; [5742]
 G0 F9000 X39.736 Y24.734 ; [5743]
 ; [5744] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E538.14352 ; [5745]
-G0 F1500 X39.736 Y15.134 ;  [5745] (fake)
 G1 X30.136 Y15.134 E538.46281 ; [5746]
-G0 X30.136 Y15.134 ;  [5746] (fake)
 G1 X30.136 Y24.734 E538.78211 ; [5747]
-G0 X30.136 Y24.734 ;  [5747] (fake)
 G1 X39.736 Y24.734 E539.10141 ; [5748]
 G0 F9000 X39.255 Y24.253 ; [5749]
 ; [5750] TYPE:FILL
@@ -8382,20 +5996,14 @@ G1 F1500 E542.23673 ; [5794]
 G0 F9000 X39.336 Y39.334 ; [5795]
 ; [5796] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E542.52942 ; [5797]
-G0 F1500 X39.336 Y30.534 ;  [5797] (fake)
 G1 X30.536 Y30.534 E542.8221 ; [5798]
-G0 X30.536 Y30.534 ;  [5798] (fake)
 G1 X30.536 Y39.334 E543.11479 ; [5799]
-G0 X30.536 Y39.334 ;  [5799] (fake)
 G1 X39.336 Y39.334 E543.40748 ; [5800]
 G0 F9000 X39.736 Y39.734 ; [5801]
 ; [5802] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E543.72678 ; [5803]
-G0 F1500 X39.736 Y30.134 ;  [5803] (fake)
 G1 X30.136 Y30.134 E544.04608 ; [5804]
-G0 X30.136 Y30.134 ;  [5804] (fake)
 G1 X30.136 Y39.734 E544.36537 ; [5805]
-G0 X30.136 Y39.734 ;  [5805] (fake)
 G1 X39.736 Y39.734 E544.68467 ; [5806]
 G0 F9000 X39.255 Y39.253 ; [5807]
 ; [5808] TYPE:FILL
@@ -8446,20 +6054,14 @@ G1 F1500 E547.81926 ; [5852]
 G0 F9000 X24.336 Y39.334 ; [5853]
 ; [5854] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E548.11195 ; [5855]
-G0 F1500 X24.336 Y30.534 ;  [5855] (fake)
 G1 X15.536 Y30.534 E548.40464 ; [5856]
-G0 X15.536 Y30.534 ;  [5856] (fake)
 G1 X15.536 Y39.334 E548.69733 ; [5857]
-G0 X15.536 Y39.334 ;  [5857] (fake)
 G1 X24.336 Y39.334 E548.99002 ; [5858]
 G0 F9000 X24.736 Y39.734 ; [5859]
 ; [5860] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E549.30931 ; [5861]
-G0 F1500 X24.736 Y30.134 ;  [5861] (fake)
 G1 X15.136 Y30.134 E549.62861 ; [5862]
-G0 X15.136 Y30.134 ;  [5862] (fake)
 G1 X15.136 Y39.734 E549.94791 ; [5863]
-G0 X15.136 Y39.734 ;  [5863] (fake)
 G1 X24.736 Y39.734 E550.26721 ; [5864]
 G0 F9000 X24.255 Y39.253 ; [5865]
 ; [5866] TYPE:FILL
@@ -8514,35 +6116,25 @@ G0 X24.066 Y24.514 ; [5909]
 G0 X24.066 Y24.064 ; [5910]
 G1 F1500 E553.40248 ; [5911]
 ;  ::: End layer 22 preamble :::
-;  Layer 22 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -173.99° → 103.06°(-82.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.032 F8000 ;  Ring move by -82.94° (CW)
-;  Layer 22 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 22 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 22 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X17.878 Y15.614 ; [5934]
 G1 F3000 X24.255 Y21.991 E556.64389 ; [5935]
-;  Layer 22 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 22 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [5912]
 ; [5913] TIME_ELAPSED:852.605468
 ; [5914] LAYER:22
 ; [5915] TYPE:WALL-INNER
 ; [5916] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E553.69517 ; [5917]
-G0 F1500 X24.336 Y15.534 ;  [5917] (fake)
 G1 X15.536 Y15.534 E553.98785 ; [5918]
-G0 X15.536 Y15.534 ;  [5918] (fake)
 G1 X15.536 Y24.334 E554.28054 ; [5919]
-G0 X15.536 Y24.334 ;  [5919] (fake)
 G1 X24.336 Y24.334 E554.57323 ; [5920]
 G0 F9000 X24.736 Y24.734 ; [5921]
 ; [5922] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E554.89253 ; [5923]
-G0 F1500 X24.736 Y15.134 ;  [5923] (fake)
 G1 X15.136 Y15.134 E555.21183 ; [5924]
-G0 X15.136 Y15.134 ;  [5924] (fake)
 G1 X15.136 Y24.734 E555.53113 ; [5925]
-G0 X15.136 Y24.734 ;  [5925] (fake)
 G1 X24.736 Y24.734 E555.85042 ; [5926]
 G0 F9000 X24.255 Y24.253 ; [5927]
 ; [5928] TYPE:FILL
@@ -8591,20 +6183,14 @@ G1 F1500 E558.98536 ; [5972]
 G0 F9000 X39.336 Y24.334 ; [5973]
 ; [5974] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E559.27805 ; [5975]
-G0 F1500 X39.336 Y15.534 ;  [5975] (fake)
 G1 X30.536 Y15.534 E559.57074 ; [5976]
-G0 X30.536 Y15.534 ;  [5976] (fake)
 G1 X30.536 Y24.334 E559.86343 ; [5977]
-G0 X30.536 Y24.334 ;  [5977] (fake)
 G1 X39.336 Y24.334 E560.15612 ; [5978]
 G0 F9000 X39.736 Y24.734 ; [5979]
 ; [5980] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E560.47542 ; [5981]
-G0 F1500 X39.736 Y15.134 ;  [5981] (fake)
 G1 X30.136 Y15.134 E560.79471 ; [5982]
-G0 X30.136 Y15.134 ;  [5982] (fake)
 G1 X30.136 Y24.734 E561.11401 ; [5983]
-G0 X30.136 Y24.734 ;  [5983] (fake)
 G1 X39.736 Y24.734 E561.43331 ; [5984]
 G0 F9000 X39.255 Y24.253 ; [5985]
 ; [5986] TYPE:FILL
@@ -8655,20 +6241,14 @@ G1 F1500 E564.56863 ; [6030]
 G0 F9000 X39.336 Y39.334 ; [6031]
 ; [6032] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E564.86132 ; [6033]
-G0 F1500 X39.336 Y30.534 ;  [6033] (fake)
 G1 X30.536 Y30.534 E565.15401 ; [6034]
-G0 X30.536 Y30.534 ;  [6034] (fake)
 G1 X30.536 Y39.334 E565.44669 ; [6035]
-G0 X30.536 Y39.334 ;  [6035] (fake)
 G1 X39.336 Y39.334 E565.73938 ; [6036]
 G0 F9000 X39.736 Y39.734 ; [6037]
 ; [6038] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E566.05868 ; [6039]
-G0 F1500 X39.736 Y30.134 ;  [6039] (fake)
 G1 X30.136 Y30.134 E566.37798 ; [6040]
-G0 X30.136 Y30.134 ;  [6040] (fake)
 G1 X30.136 Y39.734 E566.69728 ; [6041]
-G0 X30.136 Y39.734 ;  [6041] (fake)
 G1 X39.736 Y39.734 E567.01657 ; [6042]
 G0 F9000 X39.255 Y39.253 ; [6043]
 ; [6044] TYPE:FILL
@@ -8719,20 +6299,14 @@ G1 F1500 E570.15116 ; [6088]
 G0 F9000 X24.336 Y39.334 ; [6089]
 ; [6090] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E570.44385 ; [6091]
-G0 F1500 X24.336 Y30.534 ;  [6091] (fake)
 G1 X15.536 Y30.534 E570.73654 ; [6092]
-G0 X15.536 Y30.534 ;  [6092] (fake)
 G1 X15.536 Y39.334 E571.02923 ; [6093]
-G0 X15.536 Y39.334 ;  [6093] (fake)
 G1 X24.336 Y39.334 E571.32192 ; [6094]
 G0 F9000 X24.736 Y39.734 ; [6095]
 ; [6096] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E571.64122 ; [6097]
-G0 F1500 X24.736 Y30.134 ;  [6097] (fake)
 G1 X15.136 Y30.134 E571.96051 ; [6098]
-G0 X15.136 Y30.134 ;  [6098] (fake)
 G1 X15.136 Y39.734 E572.27981 ; [6099]
-G0 X15.136 Y39.734 ;  [6099] (fake)
 G1 X24.736 Y39.734 E572.59911 ; [6100]
 G0 F9000 X24.255 Y39.253 ; [6101]
 ; [6102] TYPE:FILL
@@ -8787,35 +6361,25 @@ G0 X24.066 Y24.514 ; [6145]
 G0 X24.066 Y24.064 ; [6146]
 G1 F1500 E575.73438 ; [6147]
 ;  ::: End layer 23 preamble :::
-;  Layer 23 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -173.99° → 103.06°(-82.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.032 F8000 ;  Ring move by -82.94° (CW)
-;  Layer 23 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 23 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 23 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X17.878 Y15.614 ; [6170]
 G1 F3000 X24.255 Y21.991 E578.97579 ; [6171]
-;  Layer 23 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 23 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [6148]
 ; [6149] TIME_ELAPSED:885.120757
 ; [6150] LAYER:23
 ; [6151] TYPE:WALL-INNER
 ; [6152] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E576.02707 ; [6153]
-G0 F1500 X24.336 Y15.534 ;  [6153] (fake)
 G1 X15.536 Y15.534 E576.31976 ; [6154]
-G0 X15.536 Y15.534 ;  [6154] (fake)
 G1 X15.536 Y24.334 E576.61245 ; [6155]
-G0 X15.536 Y24.334 ;  [6155] (fake)
 G1 X24.336 Y24.334 E576.90513 ; [6156]
 G0 F9000 X24.736 Y24.734 ; [6157]
 ; [6158] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E577.22443 ; [6159]
-G0 F1500 X24.736 Y15.134 ;  [6159] (fake)
 G1 X15.136 Y15.134 E577.54373 ; [6160]
-G0 X15.136 Y15.134 ;  [6160] (fake)
 G1 X15.136 Y24.734 E577.86303 ; [6161]
-G0 X15.136 Y24.734 ;  [6161] (fake)
 G1 X24.736 Y24.734 E578.18232 ; [6162]
 G0 F9000 X24.255 Y24.253 ; [6163]
 ; [6164] TYPE:FILL
@@ -8864,20 +6428,14 @@ G1 F1500 E581.31726 ; [6208]
 G0 F9000 X39.336 Y24.334 ; [6209]
 ; [6210] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E581.60995 ; [6211]
-G0 F1500 X39.336 Y15.534 ;  [6211] (fake)
 G1 X30.536 Y15.534 E581.90264 ; [6212]
-G0 X30.536 Y15.534 ;  [6212] (fake)
 G1 X30.536 Y24.334 E582.19533 ; [6213]
-G0 X30.536 Y24.334 ;  [6213] (fake)
 G1 X39.336 Y24.334 E582.48802 ; [6214]
 G0 F9000 X39.736 Y24.734 ; [6215]
 ; [6216] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E582.80732 ; [6217]
-G0 F1500 X39.736 Y15.134 ;  [6217] (fake)
 G1 X30.136 Y15.134 E583.12662 ; [6218]
-G0 X30.136 Y15.134 ;  [6218] (fake)
 G1 X30.136 Y24.734 E583.44591 ; [6219]
-G0 X30.136 Y24.734 ;  [6219] (fake)
 G1 X39.736 Y24.734 E583.76521 ; [6220]
 G0 F9000 X39.255 Y24.253 ; [6221]
 ; [6222] TYPE:FILL
@@ -8928,20 +6486,14 @@ G1 F1500 E586.90053 ; [6266]
 G0 F9000 X39.336 Y39.334 ; [6267]
 ; [6268] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E587.19322 ; [6269]
-G0 F1500 X39.336 Y30.534 ;  [6269] (fake)
 G1 X30.536 Y30.534 E587.48591 ; [6270]
-G0 X30.536 Y30.534 ;  [6270] (fake)
 G1 X30.536 Y39.334 E587.7786 ; [6271]
-G0 X30.536 Y39.334 ;  [6271] (fake)
 G1 X39.336 Y39.334 E588.07128 ; [6272]
 G0 F9000 X39.736 Y39.734 ; [6273]
 ; [6274] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E588.39058 ; [6275]
-G0 F1500 X39.736 Y30.134 ;  [6275] (fake)
 G1 X30.136 Y30.134 E588.70988 ; [6276]
-G0 X30.136 Y30.134 ;  [6276] (fake)
 G1 X30.136 Y39.734 E589.02918 ; [6277]
-G0 X30.136 Y39.734 ;  [6277] (fake)
 G1 X39.736 Y39.734 E589.34847 ; [6278]
 G0 F9000 X39.255 Y39.253 ; [6279]
 ; [6280] TYPE:FILL
@@ -8992,20 +6544,14 @@ G1 F1500 E592.48306 ; [6324]
 G0 F9000 X24.336 Y39.334 ; [6325]
 ; [6326] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E592.77575 ; [6327]
-G0 F1500 X24.336 Y30.534 ;  [6327] (fake)
 G1 X15.536 Y30.534 E593.06844 ; [6328]
-G0 X15.536 Y30.534 ;  [6328] (fake)
 G1 X15.536 Y39.334 E593.36113 ; [6329]
-G0 X15.536 Y39.334 ;  [6329] (fake)
 G1 X24.336 Y39.334 E593.65382 ; [6330]
 G0 F9000 X24.736 Y39.734 ; [6331]
 ; [6332] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E593.97312 ; [6333]
-G0 F1500 X24.736 Y30.134 ;  [6333] (fake)
 G1 X15.136 Y30.134 E594.29241 ; [6334]
-G0 X15.136 Y30.134 ;  [6334] (fake)
 G1 X15.136 Y39.734 E594.61171 ; [6335]
-G0 X15.136 Y39.734 ;  [6335] (fake)
 G1 X24.736 Y39.734 E594.93101 ; [6336]
 G0 F9000 X24.255 Y39.253 ; [6337]
 ; [6338] TYPE:FILL
@@ -9060,35 +6606,25 @@ G0 X24.066 Y24.514 ; [6381]
 G0 X24.066 Y24.064 ; [6382]
 G1 F1500 E598.06628 ; [6383]
 ;  ::: End layer 24 preamble :::
-;  Layer 24 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from -173.99° → 103.06°(-82.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-33.032 F8000 ;  Ring move by -82.94° (CW)
-;  Layer 24 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 24 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 24 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X17.878 Y15.614 ; [6406]
 G1 F3000 X24.255 Y21.991 E601.30769 ; [6407]
-;  Layer 24 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> from -173.99° → 103.06°(-82.94°)  -------------------------
+;  Layer 24 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [6384]
 ; [6385] TIME_ELAPSED:917.636047
 ; [6386] LAYER:24
 ; [6387] TYPE:WALL-INNER
 ; [6388] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E598.35897 ; [6389]
-G0 F1500 X24.336 Y15.534 ;  [6389] (fake)
 G1 X15.536 Y15.534 E598.65166 ; [6390]
-G0 X15.536 Y15.534 ;  [6390] (fake)
 G1 X15.536 Y24.334 E598.94435 ; [6391]
-G0 X15.536 Y24.334 ;  [6391] (fake)
 G1 X24.336 Y24.334 E599.23704 ; [6392]
 G0 F9000 X24.736 Y24.734 ; [6393]
 ; [6394] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E599.55633 ; [6395]
-G0 F1500 X24.736 Y15.134 ;  [6395] (fake)
 G1 X15.136 Y15.134 E599.87563 ; [6396]
-G0 X15.136 Y15.134 ;  [6396] (fake)
 G1 X15.136 Y24.734 E600.19493 ; [6397]
-G0 X15.136 Y24.734 ;  [6397] (fake)
 G1 X24.736 Y24.734 E600.51422 ; [6398]
 G0 F9000 X24.255 Y24.253 ; [6399]
 ; [6400] TYPE:FILL
@@ -9135,20 +6671,14 @@ G1 F1500 E603.64917 ; [6444]
 G0 F9000 X39.336 Y24.334 ; [6445]
 ; [6446] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E603.94185 ; [6447]
-G0 F1500 X39.336 Y15.534 ;  [6447] (fake)
 G1 X30.536 Y15.534 E604.23454 ; [6448]
-G0 X30.536 Y15.534 ;  [6448] (fake)
 G1 X30.536 Y24.334 E604.52723 ; [6449]
-G0 X30.536 Y24.334 ;  [6449] (fake)
 G1 X39.336 Y24.334 E604.81992 ; [6450]
 G0 F9000 X39.736 Y24.734 ; [6451]
 ; [6452] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E605.13922 ; [6453]
-G0 F1500 X39.736 Y15.134 ;  [6453] (fake)
 G1 X30.136 Y15.134 E605.45852 ; [6454]
-G0 X30.136 Y15.134 ;  [6454] (fake)
 G1 X30.136 Y24.734 E605.77781 ; [6455]
-G0 X30.136 Y24.734 ;  [6455] (fake)
 G1 X39.736 Y24.734 E606.09711 ; [6456]
 G0 F9000 X39.255 Y24.253 ; [6457]
 ; [6458] TYPE:FILL
@@ -9199,20 +6729,14 @@ G1 F1500 E609.23243 ; [6502]
 G0 F9000 X39.336 Y39.334 ; [6503]
 ; [6504] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E609.52512 ; [6505]
-G0 F1500 X39.336 Y30.534 ;  [6505] (fake)
 G1 X30.536 Y30.534 E609.81781 ; [6506]
-G0 X30.536 Y30.534 ;  [6506] (fake)
 G1 X30.536 Y39.334 E610.1105 ; [6507]
-G0 X30.536 Y39.334 ;  [6507] (fake)
 G1 X39.336 Y39.334 E610.40319 ; [6508]
 G0 F9000 X39.736 Y39.734 ; [6509]
 ; [6510] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E610.72248 ; [6511]
-G0 F1500 X39.736 Y30.134 ;  [6511] (fake)
 G1 X30.136 Y30.134 E611.04178 ; [6512]
-G0 X30.136 Y30.134 ;  [6512] (fake)
 G1 X30.136 Y39.734 E611.36108 ; [6513]
-G0 X30.136 Y39.734 ;  [6513] (fake)
 G1 X39.736 Y39.734 E611.68037 ; [6514]
 G0 F9000 X39.255 Y39.253 ; [6515]
 ; [6516] TYPE:FILL
@@ -9263,20 +6787,14 @@ G1 F1500 E614.81496 ; [6560]
 G0 F9000 X24.336 Y39.334 ; [6561]
 ; [6562] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E615.10765 ; [6563]
-G0 F1500 X24.336 Y30.534 ;  [6563] (fake)
 G1 X15.536 Y30.534 E615.40034 ; [6564]
-G0 X15.536 Y30.534 ;  [6564] (fake)
 G1 X15.536 Y39.334 E615.69303 ; [6565]
-G0 X15.536 Y39.334 ;  [6565] (fake)
 G1 X24.336 Y39.334 E615.98572 ; [6566]
 G0 F9000 X24.736 Y39.734 ; [6567]
 ; [6568] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E616.30502 ; [6569]
-G0 F1500 X24.736 Y30.134 ;  [6569] (fake)
 G1 X15.136 Y30.134 E616.62431 ; [6570]
-G0 X15.136 Y30.134 ;  [6570] (fake)
 G1 X15.136 Y39.734 E616.94361 ; [6571]
-G0 X15.136 Y39.734 ;  [6571] (fake)
 G1 X24.736 Y39.734 E617.26291 ; [6572]
 G0 F9000 X24.255 Y39.253 ; [6573]
 ; [6574] TYPE:FILL
@@ -9319,8 +6837,11 @@ G1 F3000 X24.255 Y30.612 E620.39818 ; [6609]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 24 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
+G1 E-8.738 F8000 ;  Ring move by -21.94° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 24 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X24.255 Y17.877 ; [6428]
 G1 F3000 X17.878 Y24.253 E603.15575 ; [6429]
 ;  ::: Layer 24 postamble :::
@@ -9339,35 +6860,35 @@ G0 X24.066 Y24.514 ; [6617]
 G0 X24.066 Y24.064 ; [6618]
 G1 F1500 E620.39818 ; [6619]
 ;  ::: End layer 25 preamble :::
-;  Layer 25 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 25 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 25 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 25 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [6664]
 G1 F3000 X17.878 Y24.253 E625.48765 ; [6665]
-;  Layer 25 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 25 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [6620]
 ; [6621] TIME_ELAPSED:950.151336
 ; [6622] LAYER:25
 ; [6623] TYPE:WALL-INNER
 ; [6624] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E620.69087 ; [6625]
-G0 F1500 X24.336 Y15.534 ;  [6625] (fake)
 G1 X15.536 Y15.534 E620.98356 ; [6626]
-G0 X15.536 Y15.534 ;  [6626] (fake)
 G1 X15.536 Y24.334 E621.27625 ; [6627]
-G0 X15.536 Y24.334 ;  [6627] (fake)
-G1 X24.336 Y24.334 E621.56894 ; [6628]
+;  Move thread to avoid head during bed move for [6628]
+;    Segment: <{ 15.54,  24.33,   5.20}←→{ 24.34,  24.33,   5.20} (8.80 mm)>
+;    Thread (-219.46°):  <{ 21.85,  20.28,   0.00}←→{-34.30,  87.10,   0.00} (87.28 mm)>
+T1 ;  Switch to ring extruder
+M83 ;  Set relative extrusion mode
+M302 P1 ;  Allow cold extrusion
+G1 E11.615 F8000 ;  Ring move by 29.16° CCW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+G1 X24.336 Y24.334 E621.86887 ; [6628]
 G0 F9000 X24.736 Y24.734 ; [6629]
 ; [6630] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E621.88823 ; [6631]
-G0 F1500 X24.736 Y15.134 ;  [6631] (fake)
 G1 X15.136 Y15.134 E622.20753 ; [6632]
-G0 X15.136 Y15.134 ;  [6632] (fake)
 G1 X15.136 Y24.734 E622.52683 ; [6633]
-G0 X15.136 Y24.734 ;  [6633] (fake)
 G1 X24.736 Y24.734 E622.84613 ; [6634]
 G0 F9000 X24.255 Y24.253 ; [6635]
 ; [6636] TYPE:FILL
@@ -9416,20 +6937,14 @@ G1 F1500 E625.98107 ; [6680]
 G0 F9000 X39.336 Y24.334 ; [6681]
 ; [6682] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E626.27376 ; [6683]
-G0 F1500 X39.336 Y15.534 ;  [6683] (fake)
 G1 X30.536 Y15.534 E626.56644 ; [6684]
-G0 X30.536 Y15.534 ;  [6684] (fake)
 G1 X30.536 Y24.334 E626.85913 ; [6685]
-G0 X30.536 Y24.334 ;  [6685] (fake)
 G1 X39.336 Y24.334 E627.15182 ; [6686]
 G0 F9000 X39.736 Y24.734 ; [6687]
 ; [6688] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E627.47112 ; [6689]
-G0 F1500 X39.736 Y15.134 ;  [6689] (fake)
 G1 X30.136 Y15.134 E627.79042 ; [6690]
-G0 X30.136 Y15.134 ;  [6690] (fake)
 G1 X30.136 Y24.734 E628.10972 ; [6691]
-G0 X30.136 Y24.734 ;  [6691] (fake)
 G1 X39.736 Y24.734 E628.42901 ; [6692]
 G0 F9000 X39.255 Y24.253 ; [6693]
 ; [6694] TYPE:FILL
@@ -9480,20 +6995,14 @@ G1 F1500 E631.56433 ; [6738]
 G0 F9000 X39.336 Y39.334 ; [6739]
 ; [6740] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E631.85702 ; [6741]
-G0 F1500 X39.336 Y30.534 ;  [6741] (fake)
 G1 X30.536 Y30.534 E632.14971 ; [6742]
-G0 X30.536 Y30.534 ;  [6742] (fake)
 G1 X30.536 Y39.334 E632.4424 ; [6743]
-G0 X30.536 Y39.334 ;  [6743] (fake)
 G1 X39.336 Y39.334 E632.73509 ; [6744]
 G0 F9000 X39.736 Y39.734 ; [6745]
 ; [6746] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E633.05438 ; [6747]
-G0 F1500 X39.736 Y30.134 ;  [6747] (fake)
 G1 X30.136 Y30.134 E633.37368 ; [6748]
-G0 X30.136 Y30.134 ;  [6748] (fake)
 G1 X30.136 Y39.734 E633.69298 ; [6749]
-G0 X30.136 Y39.734 ;  [6749] (fake)
 G1 X39.736 Y39.734 E634.01228 ; [6750]
 G0 F9000 X39.255 Y39.253 ; [6751]
 ; [6752] TYPE:FILL
@@ -9544,20 +7053,14 @@ G1 F1500 E637.14686 ; [6796]
 G0 F9000 X24.336 Y39.334 ; [6797]
 ; [6798] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E637.43955 ; [6799]
-G0 F1500 X24.336 Y30.534 ;  [6799] (fake)
 G1 X15.536 Y30.534 E637.73224 ; [6800]
-G0 X15.536 Y30.534 ;  [6800] (fake)
 G1 X15.536 Y39.334 E638.02493 ; [6801]
-G0 X15.536 Y39.334 ;  [6801] (fake)
 G1 X24.336 Y39.334 E638.31762 ; [6802]
 G0 F9000 X24.736 Y39.734 ; [6803]
 ; [6804] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E638.63692 ; [6805]
-G0 F1500 X24.736 Y30.134 ;  [6805] (fake)
 G1 X15.136 Y30.134 E638.95622 ; [6806]
-G0 X15.136 Y30.134 ;  [6806] (fake)
 G1 X15.136 Y39.734 E639.27551 ; [6807]
-G0 X15.136 Y39.734 ;  [6807] (fake)
 G1 X24.736 Y39.734 E639.59481 ; [6808]
 G0 F9000 X24.255 Y39.253 ; [6809]
 ; [6810] TYPE:FILL
@@ -9612,35 +7115,25 @@ G0 X24.066 Y24.514 ; [6853]
 G0 X24.066 Y24.064 ; [6854]
 G1 F1500 E642.73008 ; [6855]
 ;  ::: End layer 26 preamble :::
-;  Layer 26 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 26 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 26 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 26 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [6900]
 G1 F3000 X17.878 Y24.253 E647.81955 ; [6901]
-;  Layer 26 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 26 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [6856]
 ; [6857] TIME_ELAPSED:982.666625
 ; [6858] LAYER:26
 ; [6859] TYPE:WALL-INNER
 ; [6860] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E643.02277 ; [6861]
-G0 F1500 X24.336 Y15.534 ;  [6861] (fake)
 G1 X15.536 Y15.534 E643.31546 ; [6862]
-G0 X15.536 Y15.534 ;  [6862] (fake)
 G1 X15.536 Y24.334 E643.60815 ; [6863]
-G0 X15.536 Y24.334 ;  [6863] (fake)
 G1 X24.336 Y24.334 E643.90084 ; [6864]
 G0 F9000 X24.736 Y24.734 ; [6865]
 ; [6866] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E644.22013 ; [6867]
-G0 F1500 X24.736 Y15.134 ;  [6867] (fake)
 G1 X15.136 Y15.134 E644.53943 ; [6868]
-G0 X15.136 Y15.134 ;  [6868] (fake)
 G1 X15.136 Y24.734 E644.85873 ; [6869]
-G0 X15.136 Y24.734 ;  [6869] (fake)
 G1 X24.736 Y24.734 E645.17803 ; [6870]
 G0 F9000 X24.255 Y24.253 ; [6871]
 ; [6872] TYPE:FILL
@@ -9689,20 +7182,14 @@ G1 F1500 E648.31297 ; [6916]
 G0 F9000 X39.336 Y24.334 ; [6917]
 ; [6918] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E648.60566 ; [6919]
-G0 F1500 X39.336 Y15.534 ;  [6919] (fake)
 G1 X30.536 Y15.534 E648.89835 ; [6920]
-G0 X30.536 Y15.534 ;  [6920] (fake)
 G1 X30.536 Y24.334 E649.19103 ; [6921]
-G0 X30.536 Y24.334 ;  [6921] (fake)
 G1 X39.336 Y24.334 E649.48372 ; [6922]
 G0 F9000 X39.736 Y24.734 ; [6923]
 ; [6924] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E649.80302 ; [6925]
-G0 F1500 X39.736 Y15.134 ;  [6925] (fake)
 G1 X30.136 Y15.134 E650.12232 ; [6926]
-G0 X30.136 Y15.134 ;  [6926] (fake)
 G1 X30.136 Y24.734 E650.44162 ; [6927]
-G0 X30.136 Y24.734 ;  [6927] (fake)
 G1 X39.736 Y24.734 E650.76091 ; [6928]
 G0 F9000 X39.255 Y24.253 ; [6929]
 ; [6930] TYPE:FILL
@@ -9753,20 +7240,14 @@ G1 F1500 E653.89623 ; [6974]
 G0 F9000 X39.336 Y39.334 ; [6975]
 ; [6976] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E654.18892 ; [6977]
-G0 F1500 X39.336 Y30.534 ;  [6977] (fake)
 G1 X30.536 Y30.534 E654.48161 ; [6978]
-G0 X30.536 Y30.534 ;  [6978] (fake)
 G1 X30.536 Y39.334 E654.7743 ; [6979]
-G0 X30.536 Y39.334 ;  [6979] (fake)
 G1 X39.336 Y39.334 E655.06699 ; [6980]
 G0 F9000 X39.736 Y39.734 ; [6981]
 ; [6982] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E655.38628 ; [6983]
-G0 F1500 X39.736 Y30.134 ;  [6983] (fake)
 G1 X30.136 Y30.134 E655.70558 ; [6984]
-G0 X30.136 Y30.134 ;  [6984] (fake)
 G1 X30.136 Y39.734 E656.02488 ; [6985]
-G0 X30.136 Y39.734 ;  [6985] (fake)
 G1 X39.736 Y39.734 E656.34418 ; [6986]
 G0 F9000 X39.255 Y39.253 ; [6987]
 ; [6988] TYPE:FILL
@@ -9817,20 +7298,14 @@ G1 F1500 E659.47877 ; [7032]
 G0 F9000 X24.336 Y39.334 ; [7033]
 ; [7034] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E659.77145 ; [7035]
-G0 F1500 X24.336 Y30.534 ;  [7035] (fake)
 G1 X15.536 Y30.534 E660.06414 ; [7036]
-G0 X15.536 Y30.534 ;  [7036] (fake)
 G1 X15.536 Y39.334 E660.35683 ; [7037]
-G0 X15.536 Y39.334 ;  [7037] (fake)
 G1 X24.336 Y39.334 E660.64952 ; [7038]
 G0 F9000 X24.736 Y39.734 ; [7039]
 ; [7040] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E660.96882 ; [7041]
-G0 F1500 X24.736 Y30.134 ;  [7041] (fake)
 G1 X15.136 Y30.134 E661.28812 ; [7042]
-G0 X15.136 Y30.134 ;  [7042] (fake)
 G1 X15.136 Y39.734 E661.60741 ; [7043]
-G0 X15.136 Y39.734 ;  [7043] (fake)
 G1 X24.736 Y39.734 E661.92671 ; [7044]
 G0 F9000 X24.255 Y39.253 ; [7045]
 ; [7046] TYPE:FILL
@@ -9885,35 +7360,25 @@ G0 X24.066 Y24.514 ; [7089]
 G0 X24.066 Y24.064 ; [7090]
 G1 F1500 E665.06198 ; [7091]
 ;  ::: End layer 27 preamble :::
-;  Layer 27 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 27 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 27 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 27 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [7136]
 G1 F3000 X17.878 Y24.253 E670.15145 ; [7137]
-;  Layer 27 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 27 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [7092]
 ; [7093] TIME_ELAPSED:1015.181914
 ; [7094] LAYER:27
 ; [7095] TYPE:WALL-INNER
 ; [7096] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E665.35467 ; [7097]
-G0 F1500 X24.336 Y15.534 ;  [7097] (fake)
 G1 X15.536 Y15.534 E665.64736 ; [7098]
-G0 X15.536 Y15.534 ;  [7098] (fake)
 G1 X15.536 Y24.334 E665.94005 ; [7099]
-G0 X15.536 Y24.334 ;  [7099] (fake)
 G1 X24.336 Y24.334 E666.23274 ; [7100]
 G0 F9000 X24.736 Y24.734 ; [7101]
 ; [7102] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E666.55204 ; [7103]
-G0 F1500 X24.736 Y15.134 ;  [7103] (fake)
 G1 X15.136 Y15.134 E666.87133 ; [7104]
-G0 X15.136 Y15.134 ;  [7104] (fake)
 G1 X15.136 Y24.734 E667.19063 ; [7105]
-G0 X15.136 Y24.734 ;  [7105] (fake)
 G1 X24.736 Y24.734 E667.50993 ; [7106]
 G0 F9000 X24.255 Y24.253 ; [7107]
 ; [7108] TYPE:FILL
@@ -9962,20 +7427,14 @@ G1 F1500 E670.64487 ; [7152]
 G0 F9000 X39.336 Y24.334 ; [7153]
 ; [7154] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E670.93756 ; [7155]
-G0 F1500 X39.336 Y15.534 ;  [7155] (fake)
 G1 X30.536 Y15.534 E671.23025 ; [7156]
-G0 X30.536 Y15.534 ;  [7156] (fake)
 G1 X30.536 Y24.334 E671.52294 ; [7157]
-G0 X30.536 Y24.334 ;  [7157] (fake)
 G1 X39.336 Y24.334 E671.81563 ; [7158]
 G0 F9000 X39.736 Y24.734 ; [7159]
 ; [7160] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E672.13492 ; [7161]
-G0 F1500 X39.736 Y15.134 ;  [7161] (fake)
 G1 X30.136 Y15.134 E672.45422 ; [7162]
-G0 X30.136 Y15.134 ;  [7162] (fake)
 G1 X30.136 Y24.734 E672.77352 ; [7163]
-G0 X30.136 Y24.734 ;  [7163] (fake)
 G1 X39.736 Y24.734 E673.09281 ; [7164]
 G0 F9000 X39.255 Y24.253 ; [7165]
 ; [7166] TYPE:FILL
@@ -10026,20 +7485,14 @@ G1 F1500 E676.22813 ; [7210]
 G0 F9000 X39.336 Y39.334 ; [7211]
 ; [7212] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E676.52082 ; [7213]
-G0 F1500 X39.336 Y30.534 ;  [7213] (fake)
 G1 X30.536 Y30.534 E676.81351 ; [7214]
-G0 X30.536 Y30.534 ;  [7214] (fake)
 G1 X30.536 Y39.334 E677.1062 ; [7215]
-G0 X30.536 Y39.334 ;  [7215] (fake)
 G1 X39.336 Y39.334 E677.39889 ; [7216]
 G0 F9000 X39.736 Y39.734 ; [7217]
 ; [7218] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E677.71819 ; [7219]
-G0 F1500 X39.736 Y30.134 ;  [7219] (fake)
 G1 X30.136 Y30.134 E678.03748 ; [7220]
-G0 X30.136 Y30.134 ;  [7220] (fake)
 G1 X30.136 Y39.734 E678.35678 ; [7221]
-G0 X30.136 Y39.734 ;  [7221] (fake)
 G1 X39.736 Y39.734 E678.67608 ; [7222]
 G0 F9000 X39.255 Y39.253 ; [7223]
 ; [7224] TYPE:FILL
@@ -10090,20 +7543,14 @@ G1 F1500 E681.81067 ; [7268]
 G0 F9000 X24.336 Y39.334 ; [7269]
 ; [7270] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E682.10336 ; [7271]
-G0 F1500 X24.336 Y30.534 ;  [7271] (fake)
 G1 X15.536 Y30.534 E682.39604 ; [7272]
-G0 X15.536 Y30.534 ;  [7272] (fake)
 G1 X15.536 Y39.334 E682.68873 ; [7273]
-G0 X15.536 Y39.334 ;  [7273] (fake)
 G1 X24.336 Y39.334 E682.98142 ; [7274]
 G0 F9000 X24.736 Y39.734 ; [7275]
 ; [7276] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E683.30072 ; [7277]
-G0 F1500 X24.736 Y30.134 ;  [7277] (fake)
 G1 X15.136 Y30.134 E683.62002 ; [7278]
-G0 X15.136 Y30.134 ;  [7278] (fake)
 G1 X15.136 Y39.734 E683.93931 ; [7279]
-G0 X15.136 Y39.734 ;  [7279] (fake)
 G1 X24.736 Y39.734 E684.25861 ; [7280]
 G0 F9000 X24.255 Y39.253 ; [7281]
 ; [7282] TYPE:FILL
@@ -10158,35 +7605,25 @@ G0 X24.066 Y24.514 ; [7325]
 G0 X24.066 Y24.064 ; [7326]
 G1 F1500 E687.39388 ; [7327]
 ;  ::: End layer 28 preamble :::
-;  Layer 28 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 28 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 28 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 28 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [7372]
 G1 F3000 X17.878 Y24.253 E692.48335 ; [7373]
-;  Layer 28 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 28 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [7328]
 ; [7329] TIME_ELAPSED:1047.697204
 ; [7330] LAYER:28
 ; [7331] TYPE:WALL-INNER
 ; [7332] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E687.68657 ; [7333]
-G0 F1500 X24.336 Y15.534 ;  [7333] (fake)
 G1 X15.536 Y15.534 E687.97926 ; [7334]
-G0 X15.536 Y15.534 ;  [7334] (fake)
 G1 X15.536 Y24.334 E688.27195 ; [7335]
-G0 X15.536 Y24.334 ;  [7335] (fake)
 G1 X24.336 Y24.334 E688.56464 ; [7336]
 G0 F9000 X24.736 Y24.734 ; [7337]
 ; [7338] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E688.88394 ; [7339]
-G0 F1500 X24.736 Y15.134 ;  [7339] (fake)
 G1 X15.136 Y15.134 E689.20323 ; [7340]
-G0 X15.136 Y15.134 ;  [7340] (fake)
 G1 X15.136 Y24.734 E689.52253 ; [7341]
-G0 X15.136 Y24.734 ;  [7341] (fake)
 G1 X24.736 Y24.734 E689.84183 ; [7342]
 G0 F9000 X24.255 Y24.253 ; [7343]
 ; [7344] TYPE:FILL
@@ -10235,20 +7672,14 @@ G1 F1500 E692.97677 ; [7388]
 G0 F9000 X39.336 Y24.334 ; [7389]
 ; [7390] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E693.26946 ; [7391]
-G0 F1500 X39.336 Y15.534 ;  [7391] (fake)
 G1 X30.536 Y15.534 E693.56215 ; [7392]
-G0 X30.536 Y15.534 ;  [7392] (fake)
 G1 X30.536 Y24.334 E693.85484 ; [7393]
-G0 X30.536 Y24.334 ;  [7393] (fake)
 G1 X39.336 Y24.334 E694.14753 ; [7394]
 G0 F9000 X39.736 Y24.734 ; [7395]
 ; [7396] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E694.46682 ; [7397]
-G0 F1500 X39.736 Y15.134 ;  [7397] (fake)
 G1 X30.136 Y15.134 E694.78612 ; [7398]
-G0 X30.136 Y15.134 ;  [7398] (fake)
 G1 X30.136 Y24.734 E695.10542 ; [7399]
-G0 X30.136 Y24.734 ;  [7399] (fake)
 G1 X39.736 Y24.734 E695.42472 ; [7400]
 G0 F9000 X39.255 Y24.253 ; [7401]
 ; [7402] TYPE:FILL
@@ -10299,20 +7730,14 @@ G1 F1500 E698.56003 ; [7446]
 G0 F9000 X39.336 Y39.334 ; [7447]
 ; [7448] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E698.85272 ; [7449]
-G0 F1500 X39.336 Y30.534 ;  [7449] (fake)
 G1 X30.536 Y30.534 E699.14541 ; [7450]
-G0 X30.536 Y30.534 ;  [7450] (fake)
 G1 X30.536 Y39.334 E699.4381 ; [7451]
-G0 X30.536 Y39.334 ;  [7451] (fake)
 G1 X39.336 Y39.334 E699.73079 ; [7452]
 G0 F9000 X39.736 Y39.734 ; [7453]
 ; [7454] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E700.05009 ; [7455]
-G0 F1500 X39.736 Y30.134 ;  [7455] (fake)
 G1 X30.136 Y30.134 E700.36938 ; [7456]
-G0 X30.136 Y30.134 ;  [7456] (fake)
 G1 X30.136 Y39.734 E700.68868 ; [7457]
-G0 X30.136 Y39.734 ;  [7457] (fake)
 G1 X39.736 Y39.734 E701.00798 ; [7458]
 G0 F9000 X39.255 Y39.253 ; [7459]
 ; [7460] TYPE:FILL
@@ -10363,20 +7788,14 @@ G1 F1500 E704.14257 ; [7504]
 G0 F9000 X24.336 Y39.334 ; [7505]
 ; [7506] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E704.43526 ; [7507]
-G0 F1500 X24.336 Y30.534 ;  [7507] (fake)
 G1 X15.536 Y30.534 E704.72795 ; [7508]
-G0 X15.536 Y30.534 ;  [7508] (fake)
 G1 X15.536 Y39.334 E705.02063 ; [7509]
-G0 X15.536 Y39.334 ;  [7509] (fake)
 G1 X24.336 Y39.334 E705.31332 ; [7510]
 G0 F9000 X24.736 Y39.734 ; [7511]
 ; [7512] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E705.63262 ; [7513]
-G0 F1500 X24.736 Y30.134 ;  [7513] (fake)
 G1 X15.136 Y30.134 E705.95192 ; [7514]
-G0 X15.136 Y30.134 ;  [7514] (fake)
 G1 X15.136 Y39.734 E706.27122 ; [7515]
-G0 X15.136 Y39.734 ;  [7515] (fake)
 G1 X24.736 Y39.734 E706.59051 ; [7516]
 G0 F9000 X24.255 Y39.253 ; [7517]
 ; [7518] TYPE:FILL
@@ -10431,35 +7850,25 @@ G0 X24.066 Y24.514 ; [7561]
 G0 X24.066 Y24.064 ; [7562]
 G1 F1500 E709.72578 ; [7563]
 ;  ::: End layer 29 preamble :::
-;  Layer 29 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 29 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 29 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 29 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [7608]
 G1 F3000 X17.878 Y24.253 E714.81525 ; [7609]
-;  Layer 29 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 29 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [7564]
 ; [7565] TIME_ELAPSED:1080.212493
 ; [7566] LAYER:29
 ; [7567] TYPE:WALL-INNER
 ; [7568] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E710.01847 ; [7569]
-G0 F1500 X24.336 Y15.534 ;  [7569] (fake)
 G1 X15.536 Y15.534 E710.31116 ; [7570]
-G0 X15.536 Y15.534 ;  [7570] (fake)
 G1 X15.536 Y24.334 E710.60385 ; [7571]
-G0 X15.536 Y24.334 ;  [7571] (fake)
 G1 X24.336 Y24.334 E710.89654 ; [7572]
 G0 F9000 X24.736 Y24.734 ; [7573]
 ; [7574] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E711.21584 ; [7575]
-G0 F1500 X24.736 Y15.134 ;  [7575] (fake)
 G1 X15.136 Y15.134 E711.53513 ; [7576]
-G0 X15.136 Y15.134 ;  [7576] (fake)
 G1 X15.136 Y24.734 E711.85443 ; [7577]
-G0 X15.136 Y24.734 ;  [7577] (fake)
 G1 X24.736 Y24.734 E712.17373 ; [7578]
 G0 F9000 X24.255 Y24.253 ; [7579]
 ; [7580] TYPE:FILL
@@ -10508,20 +7917,14 @@ G1 F1500 E715.30867 ; [7624]
 G0 F9000 X39.336 Y24.334 ; [7625]
 ; [7626] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E715.60136 ; [7627]
-G0 F1500 X39.336 Y15.534 ;  [7627] (fake)
 G1 X30.536 Y15.534 E715.89405 ; [7628]
-G0 X30.536 Y15.534 ;  [7628] (fake)
 G1 X30.536 Y24.334 E716.18674 ; [7629]
-G0 X30.536 Y24.334 ;  [7629] (fake)
 G1 X39.336 Y24.334 E716.47943 ; [7630]
 G0 F9000 X39.736 Y24.734 ; [7631]
 ; [7632] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E716.79872 ; [7633]
-G0 F1500 X39.736 Y15.134 ;  [7633] (fake)
 G1 X30.136 Y15.134 E717.11802 ; [7634]
-G0 X30.136 Y15.134 ;  [7634] (fake)
 G1 X30.136 Y24.734 E717.43732 ; [7635]
-G0 X30.136 Y24.734 ;  [7635] (fake)
 G1 X39.736 Y24.734 E717.75662 ; [7636]
 G0 F9000 X39.255 Y24.253 ; [7637]
 ; [7638] TYPE:FILL
@@ -10572,20 +7975,14 @@ G1 F1500 E720.89193 ; [7682]
 G0 F9000 X39.336 Y39.334 ; [7683]
 ; [7684] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E721.18462 ; [7685]
-G0 F1500 X39.336 Y30.534 ;  [7685] (fake)
 G1 X30.536 Y30.534 E721.47731 ; [7686]
-G0 X30.536 Y30.534 ;  [7686] (fake)
 G1 X30.536 Y39.334 E721.77 ; [7687]
-G0 X30.536 Y39.334 ;  [7687] (fake)
 G1 X39.336 Y39.334 E722.06269 ; [7688]
 G0 F9000 X39.736 Y39.734 ; [7689]
 ; [7690] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E722.38199 ; [7691]
-G0 F1500 X39.736 Y30.134 ;  [7691] (fake)
 G1 X30.136 Y30.134 E722.70129 ; [7692]
-G0 X30.136 Y30.134 ;  [7692] (fake)
 G1 X30.136 Y39.734 E723.02058 ; [7693]
-G0 X30.136 Y39.734 ;  [7693] (fake)
 G1 X39.736 Y39.734 E723.33988 ; [7694]
 G0 F9000 X39.255 Y39.253 ; [7695]
 ; [7696] TYPE:FILL
@@ -10636,20 +8033,14 @@ G1 F1500 E726.47447 ; [7740]
 G0 F9000 X24.336 Y39.334 ; [7741]
 ; [7742] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E726.76716 ; [7743]
-G0 F1500 X24.336 Y30.534 ;  [7743] (fake)
 G1 X15.536 Y30.534 E727.05985 ; [7744]
-G0 X15.536 Y30.534 ;  [7744] (fake)
 G1 X15.536 Y39.334 E727.35254 ; [7745]
-G0 X15.536 Y39.334 ;  [7745] (fake)
 G1 X24.336 Y39.334 E727.64522 ; [7746]
 G0 F9000 X24.736 Y39.734 ; [7747]
 ; [7748] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E727.96452 ; [7749]
-G0 F1500 X24.736 Y30.134 ;  [7749] (fake)
 G1 X15.136 Y30.134 E728.28382 ; [7750]
-G0 X15.136 Y30.134 ;  [7750] (fake)
 G1 X15.136 Y39.734 E728.60312 ; [7751]
-G0 X15.136 Y39.734 ;  [7751] (fake)
 G1 X24.736 Y39.734 E728.92241 ; [7752]
 G0 F9000 X24.255 Y39.253 ; [7753]
 ; [7754] TYPE:FILL
@@ -10704,35 +8095,25 @@ G0 X24.066 Y24.514 ; [7797]
 G0 X24.066 Y24.064 ; [7798]
 G1 F1500 E732.05768 ; [7799]
 ;  ::: End layer 30 preamble :::
-;  Layer 30 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 103.06° → 81.12°(-21.94°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-8.738 F8000 ;  Ring move by -21.94° (CW)
-;  Layer 30 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 30 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 30 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y17.877 ; [7844]
 G1 F3000 X17.878 Y24.253 E737.14715 ; [7845]
-;  Layer 30 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> from 103.06° → 81.12°(-21.94°)  -------------------------
+;  Layer 30 - <Step 2 (86 segments)>: Print 86 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [7800]
 ; [7801] TIME_ELAPSED:1112.727782
 ; [7802] LAYER:30
 ; [7803] TYPE:WALL-INNER
 ; [7804] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E732.35037 ; [7805]
-G0 F1500 X24.336 Y15.534 ;  [7805] (fake)
 G1 X15.536 Y15.534 E732.64306 ; [7806]
-G0 X15.536 Y15.534 ;  [7806] (fake)
 G1 X15.536 Y24.334 E732.93575 ; [7807]
-G0 X15.536 Y24.334 ;  [7807] (fake)
 G1 X24.336 Y24.334 E733.22844 ; [7808]
 G0 F9000 X24.736 Y24.734 ; [7809]
 ; [7810] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E733.54774 ; [7811]
-G0 F1500 X24.736 Y15.134 ;  [7811] (fake)
 G1 X15.136 Y15.134 E733.86704 ; [7812]
-G0 X15.136 Y15.134 ;  [7812] (fake)
 G1 X15.136 Y24.734 E734.18633 ; [7813]
-G0 X15.136 Y24.734 ;  [7813] (fake)
 G1 X24.736 Y24.734 E734.50563 ; [7814]
 G0 F9000 X15.806 Y15.804 ; [7818]
 G0 X15.836 Y17.465 ; [7819]
@@ -10778,20 +8159,14 @@ G1 F1500 E737.64057 ; [7860]
 G0 F9000 X39.336 Y24.334 ; [7861]
 ; [7862] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E737.93326 ; [7863]
-G0 F1500 X39.336 Y15.534 ;  [7863] (fake)
 G1 X30.536 Y15.534 E738.22595 ; [7864]
-G0 X30.536 Y15.534 ;  [7864] (fake)
 G1 X30.536 Y24.334 E738.51864 ; [7865]
-G0 X30.536 Y24.334 ;  [7865] (fake)
 G1 X39.336 Y24.334 E738.81133 ; [7866]
 G0 F9000 X39.736 Y24.734 ; [7867]
 ; [7868] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E739.13063 ; [7869]
-G0 F1500 X39.736 Y15.134 ;  [7869] (fake)
 G1 X30.136 Y15.134 E739.44992 ; [7870]
-G0 X30.136 Y15.134 ;  [7870] (fake)
 G1 X30.136 Y24.734 E739.76922 ; [7871]
-G0 X30.136 Y24.734 ;  [7871] (fake)
 G1 X39.736 Y24.734 E740.08852 ; [7872]
 G0 F9000 X39.255 Y24.253 ; [7873]
 ; [7874] TYPE:FILL
@@ -10842,20 +8217,14 @@ G1 F1500 E743.22383 ; [7918]
 G0 F9000 X39.336 Y39.334 ; [7919]
 ; [7920] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E743.51652 ; [7921]
-G0 F1500 X39.336 Y30.534 ;  [7921] (fake)
 G1 X30.536 Y30.534 E743.80921 ; [7922]
-G0 X30.536 Y30.534 ;  [7922] (fake)
 G1 X30.536 Y39.334 E744.1019 ; [7923]
-G0 X30.536 Y39.334 ;  [7923] (fake)
 G1 X39.336 Y39.334 E744.39459 ; [7924]
 G0 F9000 X39.736 Y39.734 ; [7925]
 ; [7926] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E744.71389 ; [7927]
-G0 F1500 X39.736 Y30.134 ;  [7927] (fake)
 G1 X30.136 Y30.134 E745.03319 ; [7928]
-G0 X30.136 Y30.134 ;  [7928] (fake)
 G1 X30.136 Y39.734 E745.35248 ; [7929]
-G0 X30.136 Y39.734 ;  [7929] (fake)
 G1 X39.736 Y39.734 E745.67178 ; [7930]
 G0 F9000 X39.255 Y39.253 ; [7931]
 ; [7932] TYPE:FILL
@@ -10906,20 +8275,14 @@ G1 F1500 E748.80637 ; [7976]
 G0 F9000 X24.336 Y39.334 ; [7977]
 ; [7978] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E749.09906 ; [7979]
-G0 F1500 X24.336 Y30.534 ;  [7979] (fake)
 G1 X15.536 Y30.534 E749.39175 ; [7980]
-G0 X15.536 Y30.534 ;  [7980] (fake)
 G1 X15.536 Y39.334 E749.68444 ; [7981]
-G0 X15.536 Y39.334 ;  [7981] (fake)
 G1 X24.336 Y39.334 E749.97713 ; [7982]
 G0 F9000 X24.736 Y39.734 ; [7983]
 ; [7984] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E750.29642 ; [7985]
-G0 F1500 X24.736 Y30.134 ;  [7985] (fake)
 G1 X15.136 Y30.134 E750.61572 ; [7986]
-G0 X15.136 Y30.134 ;  [7986] (fake)
 G1 X15.136 Y39.734 E750.93502 ; [7987]
-G0 X15.136 Y39.734 ;  [7987] (fake)
 G1 X24.736 Y39.734 E751.25431 ; [7988]
 G0 F9000 X24.255 Y39.253 ; [7989]
 ; [7990] TYPE:FILL
@@ -10962,8 +8325,11 @@ G1 F3000 X24.255 Y30.612 E754.38959 ; [8025]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E16.102 F8000 ;  Ring move by 40.43° (CCW)
-;  Layer 30 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> from 81.12° → 121.55°(40.43°)  -------------------------
+G1 E16.102 F8000 ;  Ring move by 40.43° CCW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 30 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X24.255 Y24.253 ; [7815]
 ; [7816] TYPE:FILL
 G1 F3000 X15.615 Y15.613 E734.91203 ; [7817]
@@ -10983,36 +8349,26 @@ G0 X24.066 Y24.514 ; [8033]
 G0 X24.066 Y24.064 ; [8034]
 G1 F1500 E754.38959 ; [8035]
 ;  ::: End layer 31 preamble :::
-;  Layer 31 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 81.12° → 121.55°(40.43°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E16.102 F8000 ;  Ring move by 40.43° (CCW)
-;  Layer 31 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 81.12° → 121.55°(40.43°)  -------------------------
+;  Layer 31 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 31 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y24.253 ; [8051]
 ; [8052] TYPE:FILL
 G1 F3000 X15.615 Y15.613 E757.24393 ; [8053]
-;  Layer 31 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> from 81.12° → 121.55°(40.43°)  -------------------------
+;  Layer 31 - <Step 2 (87 segments)>: Print 87 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [8036]
 ; [8037] TIME_ELAPSED:1145.243072
 ; [8038] LAYER:31
 ; [8039] TYPE:WALL-INNER
 ; [8040] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E754.68227 ; [8041]
-G0 F1500 X24.336 Y15.534 ;  [8041] (fake)
 G1 X15.536 Y15.534 E754.97496 ; [8042]
-G0 X15.536 Y15.534 ;  [8042] (fake)
 G1 X15.536 Y24.334 E755.26765 ; [8043]
-G0 X15.536 Y24.334 ;  [8043] (fake)
 G1 X24.336 Y24.334 E755.56034 ; [8044]
 G0 F9000 X24.736 Y24.734 ; [8045]
 ; [8046] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E755.87964 ; [8047]
-G0 F1500 X24.736 Y15.134 ;  [8047] (fake)
 G1 X15.136 Y15.134 E756.19894 ; [8048]
-G0 X15.136 Y15.134 ;  [8048] (fake)
 G1 X15.136 Y24.734 E756.51823 ; [8049]
-G0 X15.136 Y24.734 ;  [8049] (fake)
 G1 X24.736 Y24.734 E756.83753 ; [8050]
 G0 F9000 X15.806 Y15.804 ; [8054]
 G0 X15.836 Y17.465 ; [8055]
@@ -11060,20 +8416,14 @@ G1 F1500 E759.97247 ; [8096]
 G0 F9000 X39.336 Y24.334 ; [8097]
 ; [8098] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E760.26516 ; [8099]
-G0 F1500 X39.336 Y15.534 ;  [8099] (fake)
 G1 X30.536 Y15.534 E760.55785 ; [8100]
-G0 X30.536 Y15.534 ;  [8100] (fake)
 G1 X30.536 Y24.334 E760.85054 ; [8101]
-G0 X30.536 Y24.334 ;  [8101] (fake)
 G1 X39.336 Y24.334 E761.14323 ; [8102]
 G0 F9000 X39.736 Y24.734 ; [8103]
 ; [8104] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E761.46253 ; [8105]
-G0 F1500 X39.736 Y15.134 ;  [8105] (fake)
 G1 X30.136 Y15.134 E761.78182 ; [8106]
-G0 X30.136 Y15.134 ;  [8106] (fake)
 G1 X30.136 Y24.734 E762.10112 ; [8107]
-G0 X30.136 Y24.734 ;  [8107] (fake)
 G1 X39.736 Y24.734 E762.42042 ; [8108]
 G0 F9000 X39.255 Y24.253 ; [8109]
 ; [8110] TYPE:FILL
@@ -11124,20 +8474,14 @@ G1 F1500 E765.55574 ; [8154]
 G0 F9000 X39.336 Y39.334 ; [8155]
 ; [8156] TYPE:WALL-INNER
 G1 F1500 X39.336 Y30.534 E765.84842 ; [8157]
-G0 F1500 X39.336 Y30.534 ;  [8157] (fake)
 G1 X30.536 Y30.534 E766.14111 ; [8158]
-G0 X30.536 Y30.534 ;  [8158] (fake)
 G1 X30.536 Y39.334 E766.4338 ; [8159]
-G0 X30.536 Y39.334 ;  [8159] (fake)
 G1 X39.336 Y39.334 E766.72649 ; [8160]
 G0 F9000 X39.736 Y39.734 ; [8161]
 ; [8162] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y30.134 E767.04579 ; [8163]
-G0 F1500 X39.736 Y30.134 ;  [8163] (fake)
 G1 X30.136 Y30.134 E767.36509 ; [8164]
-G0 X30.136 Y30.134 ;  [8164] (fake)
 G1 X30.136 Y39.734 E767.68438 ; [8165]
-G0 X30.136 Y39.734 ;  [8165] (fake)
 G1 X39.736 Y39.734 E768.00368 ; [8166]
 G0 F9000 X39.255 Y39.253 ; [8167]
 ; [8168] TYPE:FILL
@@ -11188,20 +8532,14 @@ G1 F1500 E771.13827 ; [8212]
 G0 F9000 X24.336 Y39.334 ; [8213]
 ; [8214] TYPE:WALL-INNER
 G1 F1500 X24.336 Y30.534 E771.43096 ; [8215]
-G0 F1500 X24.336 Y30.534 ;  [8215] (fake)
 G1 X15.536 Y30.534 E771.72365 ; [8216]
-G0 X15.536 Y30.534 ;  [8216] (fake)
 G1 X15.536 Y39.334 E772.01634 ; [8217]
-G0 X15.536 Y39.334 ;  [8217] (fake)
 G1 X24.336 Y39.334 E772.30903 ; [8218]
 G0 F9000 X24.736 Y39.734 ; [8219]
 ; [8220] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y30.134 E772.62832 ; [8221]
-G0 F1500 X24.736 Y30.134 ;  [8221] (fake)
 G1 X15.136 Y30.134 E772.94762 ; [8222]
-G0 X15.136 Y30.134 ;  [8222] (fake)
 G1 X15.136 Y39.734 E773.26692 ; [8223]
-G0 X15.136 Y39.734 ;  [8223] (fake)
 G1 X24.736 Y39.734 E773.58622 ; [8224]
 G0 F9000 X24.255 Y39.253 ; [8225]
 ; [8226] TYPE:FILL
@@ -11256,32 +8594,24 @@ G0 X24.066 Y24.514 ; [8269]
 G0 X24.066 Y24.064 ; [8270]
 G1 F1500 E776.72149 ; [8271]
 ;  ::: End layer 32 preamble :::
-;  Layer 32 - <Step 0> Move thread to avoid 1 segments fixing start anchor> from 81.12° → 121.55°(40.43°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E16.102 F8000 ;  Ring move by 40.43° (CCW)
-;  Layer 32 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> from 81.12° → 121.55°(40.43°)  -------------------------
+;  Layer 32 - <Step 0> Move thread to avoid 1 segments fixing start anchor> -------------------------
+;  Layer 32 - <Step 1 (1 segments)>: Print 1 anchor-fixing segments> -------------------------
 G0 F9000 X24.255 Y24.253 ; [8287]
 ; [8288] TYPE:FILL
 G1 F3000 X15.615 Y15.613 E779.57583 ; [8289]
-;  Layer 32 - <Step 2 (56 segments)>: Print 56 segments thread doesn't intersect> from 81.12° → 121.55°(40.43°)  -------------------------
+;  Layer 32 - <Step 2 (56 segments)>: Print 56 segments thread doesn't intersect> -------------------------
 G0 F9000 X24.336 Y24.334 ; [8272]
 ; [8273] TIME_ELAPSED:1177.758361
 ; [8274] LAYER:32
 ; [8275] TYPE:WALL-INNER
 ; [8276] MESH:Router test.3mf(3)
 G1 F1500 X24.336 Y15.534 E777.01418 ; [8277]
-G0 F1500 X24.336 Y15.534 ;  [8277] (fake)
 G1 X15.536 Y15.534 E777.30686 ; [8278]
-G0 X15.536 Y15.534 ;  [8278] (fake)
 G1 X15.536 Y24.334 E777.59955 ; [8279]
 G0 F9000 X24.736 Y24.734 ; [8281]
 ; [8282] TYPE:WALL-OUTER
 G1 F1500 X24.736 Y15.134 E778.21154 ; [8283]
-G0 F1500 X24.736 Y15.134 ;  [8283] (fake)
 G1 X15.136 Y15.134 E778.53084 ; [8284]
-G0 X15.136 Y15.134 ;  [8284] (fake)
 G1 X15.136 Y24.734 E778.85013 ; [8285]
 G0 F9000 X15.806 Y15.804 ; [8290]
 G0 X15.836 Y17.465 ; [8291]
@@ -11325,16 +8655,12 @@ G1 F1500 E782.30437 ; [8332]
 G0 F9000 X39.336 Y24.334 ; [8333]
 ; [8334] TYPE:WALL-INNER
 G1 F1500 X39.336 Y15.534 E782.59706 ; [8335]
-G0 F1500 X39.336 Y15.534 ;  [8335] (fake)
 G1 X30.536 Y15.534 E782.88975 ; [8336]
-G0 X30.536 Y15.534 ;  [8336] (fake)
 G1 X30.536 Y24.334 E783.18244 ; [8337]
 G0 F9000 X39.736 Y24.734 ; [8339]
 ; [8340] TYPE:WALL-OUTER
 G1 F1500 X39.736 Y15.134 E783.79443 ; [8341]
-G0 F1500 X39.736 Y15.134 ;  [8341] (fake)
 G1 X30.136 Y15.134 E784.11372 ; [8342]
-G0 X30.136 Y15.134 ;  [8342] (fake)
 G1 X30.136 Y24.734 E784.43302 ; [8343]
 G0 F9000 X39.255 Y24.253 ; [8345]
 ; [8346] TYPE:FILL
@@ -11402,11 +8728,9 @@ G0 F9000 X32.466 Y39.252 ; [8434]
 G1 F3000 X30.615 Y37.402 E793.06384 ; [8435]
 G0 X15.536 Y30.534 ;  [8452] (fake)
 G1 X15.536 Y39.334 E794.34824 ; [8453]
-G0 X15.536 Y39.334 ;  [8453] (fake)
 G1 X24.336 Y39.334 E794.64093 ; [8454]
 G0 X15.136 Y30.134 ;  [8458] (fake)
 G1 X15.136 Y39.734 E795.59882 ; [8459]
-G0 X15.136 Y39.734 ;  [8459] (fake)
 G1 X24.736 Y39.734 E795.91812 ; [8460]
 G0 F9000 X15.806 Y30.804 ; [8464]
 G0 X15.836 Y32.464 ; [8465]
@@ -11430,12 +8754,15 @@ G1 F3000 X15.615 Y37.401 E798.64699 ; [8493]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-8.894 F8000 ;  Ring move by -22.33° (CW)
-;  Layer 32 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> from 121.55° → 99.22°(-22.33°)  -------------------------
+G1 E-8.894 F8000 ;  Ring move by -22.33° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 32 - <Step 4 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X24.255 Y39.253 ; [8461]
 ; [8462] TYPE:FILL
 G1 F3000 X15.615 Y30.613 E796.32452 ; [8463]
-;  Layer 32 - <Step 5 (10 segments)>: Print 10 segments thread doesn't intersect> from 121.55° → 99.22°(-22.33°)  -------------------------
+;  Layer 32 - <Step 5 (10 segments)>: Print 10 segments thread doesn't intersect> -------------------------
 G0 X15.536 Y24.334 ;  [8279] (fake)
 G1 X24.336 Y24.334 E777.89224 ; [8280]
 G0 X15.136 Y24.734 ;  [8285] (fake)
@@ -11464,13 +8791,16 @@ G1 F3000 X24.255 Y30.612 E799.05339 ; [8497]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-37.401 F8000 ;  Ring move by -93.91° (CW)
-;  Layer 32 - <Step 7 (1 segments)>: Print 1 segment to fix anchor> from 99.22° → 5.31°(-93.91°)  -------------------------
+G1 E-37.401 F8000 ;  Ring move by -93.91° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 32 - <Step 7 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X30.836 Y37.402 ; [8436]
 G0 X30.806 Y39.064 ; [8437]
 G0 X30.616 Y39.252 ; [8438]
 G1 F3000 X39.255 Y30.614 E793.47017 ; [8439]
-;  Layer 32 - <Step 8 (7 segments)>: Print 7 segments thread doesn't intersect> from 99.22° → 5.31°(-93.91°)  -------------------------
+;  Layer 32 - <Step 8 (7 segments)>: Print 7 segments thread doesn't intersect> -------------------------
 G0 X30.536 Y30.534 ;  [8394] (fake)
 G1 X30.536 Y39.334 E788.7657 ; [8395]
 G0 X30.136 Y30.134 ;  [8400] (fake)
@@ -11500,13 +8830,16 @@ G1 F3000 X20.14 Y39.253 E797.6793 ; [8481]
 T1 ;  Switch to ring extruder
 M83 ;  Set relative extrusion mode
 M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
-;  Layer 32 - <Step 10 (1 segments)>: Print 1 segment to fix anchor> from 5.31° → -92.61°(-97.92°)  -------------------------
+G1 E-38.995 F8000 ;  Ring move by -97.92° CW
+T0 ;  Switch to main extruder
+M82 ; [12] absolute extrusion mode
+M302 P0 ;  Prevent cold extrusion
+;  Layer 32 - <Step 10 (1 segments)>: Print 1 segment to fix anchor> -------------------------
 G0 F9000 X30.836 Y22.401 ; [8378]
 G0 X30.806 Y24.064 ; [8379]
 G0 X30.614 Y24.253 ; [8380]
 G1 F3000 X39.255 Y15.613 E787.88764 ; [8381]
-;  Layer 32 - <Step 11 (11 segments)>: Print 11 segments thread doesn't intersect> from 5.31° → -92.61°(-97.92°)  -------------------------
+;  Layer 32 - <Step 11 (11 segments)>: Print 11 segments thread doesn't intersect> -------------------------
 G0 X30.536 Y24.334 ;  [8337] (fake)
 G1 X39.336 Y24.334 E783.47513 ; [8338]
 G0 X30.136 Y24.734 ;  [8343] (fake)
@@ -11541,11 +8874,6 @@ G1 F1500 E792.55339 ; [8499]
 ;  ::: End layer 32 postamble :::
 ;  ====== End layer 32 ====
 ;  ==== Start layer 33 ====
-;  Layer 33 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 33 postamble :::
 G0 F300 X23.736 Y31.016 Z6.8 ; [8501]
 G0 F9000 X24.066 Y30.354 ; [8502]
@@ -11786,11 +9114,6 @@ G1 F1500 E814.88529 ; [8735]
 ;  ::: End layer 33 postamble :::
 ;  ====== End layer 33 ====
 ;  ==== Start layer 34 ====
-;  Layer 34 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 34 postamble :::
 G0 F300 X23.736 Y31.016 Z7 ; [8737]
 G0 F9000 X24.066 Y30.354 ; [8738]
@@ -12031,11 +9354,6 @@ G1 F1500 E837.21719 ; [8971]
 ;  ::: End layer 34 postamble :::
 ;  ====== End layer 34 ====
 ;  ==== Start layer 35 ====
-;  Layer 35 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 35 postamble :::
 G0 F300 X23.736 Y31.016 Z7.2 ; [8973]
 G0 F9000 X24.066 Y30.354 ; [8974]
@@ -12276,11 +9594,6 @@ G1 F1500 E859.54909 ; [9207]
 ;  ::: End layer 35 postamble :::
 ;  ====== End layer 35 ====
 ;  ==== Start layer 36 ====
-;  Layer 36 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 36 postamble :::
 G0 F300 X23.736 Y31.016 Z7.4 ; [9209]
 G0 F9000 X24.066 Y30.354 ; [9210]
@@ -12521,11 +9834,6 @@ G1 F1500 E881.88099 ; [9443]
 ;  ::: End layer 36 postamble :::
 ;  ====== End layer 36 ====
 ;  ==== Start layer 37 ====
-;  Layer 37 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 37 postamble :::
 G0 F300 X23.736 Y31.016 Z7.6 ; [9445]
 G0 F9000 X24.066 Y30.354 ; [9446]
@@ -12766,11 +10074,6 @@ G1 F1500 E904.21289 ; [9679]
 ;  ::: End layer 37 postamble :::
 ;  ====== End layer 37 ====
 ;  ==== Start layer 38 ====
-;  Layer 38 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 38 postamble :::
 G0 F300 X23.736 Y31.016 Z7.8 ; [9681]
 G0 F9000 X24.066 Y30.354 ; [9682]
@@ -13011,11 +10314,6 @@ G1 F1500 E926.54479 ; [9915]
 ;  ::: End layer 38 postamble :::
 ;  ====== End layer 38 ====
 ;  ==== Start layer 39 ====
-;  Layer 39 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 39 postamble :::
 G0 F300 X23.736 Y31.016 Z8 ; [9917]
 G0 F9000 X24.066 Y30.354 ; [9918]
@@ -13256,11 +10554,6 @@ G1 F1500 E948.87669 ; [10151]
 ;  ::: End layer 39 postamble :::
 ;  ====== End layer 39 ====
 ;  ==== Start layer 40 ====
-;  Layer 40 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 40 postamble :::
 G0 F300 X23.736 Y31.016 Z8.2 ; [10153]
 G0 F9000 X24.066 Y30.354 ; [10154]
@@ -13501,11 +10794,6 @@ G1 F1500 E971.20859 ; [10387]
 ;  ::: End layer 40 postamble :::
 ;  ====== End layer 40 ====
 ;  ==== Start layer 41 ====
-;  Layer 41 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 41 postamble :::
 G0 F300 X23.736 Y31.016 Z8.4 ; [10389]
 G0 F9000 X24.066 Y30.354 ; [10390]
@@ -13746,11 +11034,6 @@ G1 F1500 E993.5405 ; [10623]
 ;  ::: End layer 41 postamble :::
 ;  ====== End layer 41 ====
 ;  ==== Start layer 42 ====
-;  Layer 42 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 42 postamble :::
 G0 F300 X23.736 Y31.016 Z8.6 ; [10625]
 G0 F9000 X24.066 Y30.354 ; [10626]
@@ -13991,11 +11274,6 @@ G1 F1500 E1015.8724 ; [10859]
 ;  ::: End layer 42 postamble :::
 ;  ====== End layer 42 ====
 ;  ==== Start layer 43 ====
-;  Layer 43 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 43 postamble :::
 G0 F300 X23.736 Y31.016 Z8.8 ; [10861]
 G0 F9000 X24.066 Y30.354 ; [10862]
@@ -14236,11 +11514,6 @@ G1 F1500 E1038.2043 ; [11095]
 ;  ::: End layer 43 postamble :::
 ;  ====== End layer 43 ====
 ;  ==== Start layer 44 ====
-;  Layer 44 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 44 postamble :::
 G0 F300 X23.736 Y31.016 Z9 ; [11097]
 G0 F9000 X24.066 Y30.354 ; [11098]
@@ -14481,11 +11754,6 @@ G1 F1500 E1060.5362 ; [11331]
 ;  ::: End layer 44 postamble :::
 ;  ====== End layer 44 ====
 ;  ==== Start layer 45 ====
-;  Layer 45 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 45 postamble :::
 G0 F300 X23.736 Y31.016 Z9.2 ; [11333]
 G0 F9000 X24.066 Y30.354 ; [11334]
@@ -14726,11 +11994,6 @@ G1 F1500 E1082.8681 ; [11567]
 ;  ::: End layer 45 postamble :::
 ;  ====== End layer 45 ====
 ;  ==== Start layer 46 ====
-;  Layer 46 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 46 postamble :::
 G0 F300 X23.736 Y31.016 Z9.4 ; [11569]
 G0 F9000 X24.066 Y30.354 ; [11570]
@@ -15069,11 +12332,6 @@ G1 F1500 E1116.57112 ; [11901]
 ;  ::: End layer 46 postamble :::
 ;  ====== End layer 46 ====
 ;  ==== Start layer 47 ====
-;  Layer 47 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 47 postamble :::
 G0 F300 X16.711 Y38.772 Z9.6 ; [11903]
 G0 F9000 X16.711 Y39.234 ; [11904]
@@ -15406,11 +12664,6 @@ G1 F1500 E1150.27497 ; [12229]
 ;  ::: End layer 47 postamble :::
 ;  ====== End layer 47 ====
 ;  ==== Start layer 48 ====
-;  Layer 48 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 48 postamble :::
 G0 F300 X16.424 Y31.092 Z9.8 ; [12231]
 G0 F9000 X16.424 Y30.634 ; [12232]
@@ -15748,11 +13001,6 @@ G1 F1500 E1183.97799 ; [12562]
 ;  ::: End layer 48 postamble :::
 ;  ====== End layer 48 ====
 ;  ==== Start layer 49 ====
-;  Layer 49 - <Step 0> Move thread to avoid layer extents> from 5.31° → -92.61°(-97.92°)  -------------------------
-T1 ;  Switch to ring extruder
-M83 ;  Set relative extrusion mode
-M302 P1 ;  Allow cold extrusion
-G1 E-38.995 F8000 ;  Ring move by -97.92° (CW)
 ;  ::: Layer 49 postamble :::
 G0 F300 X16.711 Y38.772 Z10 ; [12564]
 G0 F9000 X16.711 Y39.234 ; [12565]
