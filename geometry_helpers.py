@@ -9,12 +9,14 @@ from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import tangent_points, eps, sign
 from geometry.gcast import gcastr
 
+from util import GCodeException
+
 
 Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
 Planes   = make_dataclass('Planes',   ['top', 'bottom'])
 
 
-def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> Dict[GPoint, Set]:
+def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> tuple[dict[GPoint, set], dict[GPoint, set]]:
 	"""Calculate visibility for `origin` with respect to `query`, attempting to
 	ensure `avoid_by` mm of avoidance. For every potential visibility point,
 	return the segments intersected by a ray from `origin` to that point:
@@ -24,9 +26,13 @@ def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> Dict[GP
 	This returned dict is sorted by the number of intersected segments.
 	"""
 	endpoints = set(flatten(query)) - {origin}
+	farpoints = {p for p in endpoints if origin.distance(p) > avoid_by}
+	if not farpoints:
+		# dbg_out = '\n\t'.join([f'{p} -> {origin.distance(p):.2f}' for p in endpoints])
+		# raise GCodeException((origin, query), f"No endpoints from query are > {avoid_by} from origin {origin}:\n\t{dbg_out}")
+		return {origin: set(query)}, {}
 	tanpoints = set(flatten(
-			tangent_points(p, avoid_by, origin) for p in endpoints if
-			origin.distance(p) > avoid_by))
+			tangent_points(p, avoid_by, origin) for p in farpoints))
 	isecs:Dict[GPoint, Set] = {}
 	isec_points:Dict[GPoint, Set] = {}
 
