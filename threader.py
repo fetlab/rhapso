@@ -38,7 +38,7 @@ class Threader:
 			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
 				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
-			f.write('\n'.join([l.construct() for l in self.gcode()]))
+			f.write('\n'.join([l.construct(lineno_in_comment=False) for l in self.gcode()]))
 
 
 	def gcode(self):
