@@ -113,14 +113,16 @@ def str2style(spec, linewidth=1, markersize=4):
 
 @use_kwargs(styles.keys())
 def quickplot(plot3d=False, show=True, **kwargs):
-	fig = go.Figure()
+	fig = kwargs.get('fig', go.Figure())
 	for style in styles:
 		if style in kwargs:
 			if not (data := listify(kwargs[style])): continue
 			if isinstance(data[0], GSegment):
-				plot_segments(fig, data, style=styles[style], plot3d=plot3d)
+				plot_segments(fig, data, style=styles[style], name=style, plot3d=plot3d)
 			elif isinstance(data[0], GPoint):
-				plot_points(fig, data, style=styles[style], plot3d=plot3d)
+				plot_points(fig, data, style=styles[style], name=style, plot3d=plot3d)
+			else:
+				print(f"{style}: I don't know how to plot {type(data[0])}")
 	if show: show_dark(fig)
 	return fig
 
