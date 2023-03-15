@@ -133,6 +133,7 @@ class Threader:
 
 		#Get the thread segments to work on
 		thread = layer.flatten_thread(thread)
+		layer.flattened_thread = thread
 
 		rprint('\nFlattened thread:',
 			[f'  {i}. {tseg}' for i, tseg in enumerate(thread)])
