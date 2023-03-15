@@ -235,4 +235,27 @@ class GSegment(Segment):
 
 
 	def distance(self, other):
+		if isinstance(other, GPoint):
+			return other.distance(self.closest(other))
 		return distance_linelike_point(self, other)
+
+
+	#Source: https://math.stackexchange.com/a/3128850/205121
+	def closest(self, other:GPoint) -> GPoint:
+		"""Return the point on this GSegment that is closest to the given point."""
+		#Convert points to vectors for easy math
+		seg_start = Vector(self.start_point.x, self.start_point.y, 0)
+		seg_end   = Vector(self.end_point.x,   self.end_point.y,   0)
+		p         = Vector(other.x,            other.y,            0)
+
+		v = seg_end - seg_start
+		u = seg_start - p
+
+		vu = v[0]*u[0] + v[1]*u[1]
+		vv = v * v
+
+		t = -vu / vv
+
+		if 0 < t < 1: return GPoint(*(self.line.dv * t + self.start_point))
+		elif t <= 0:  return self.start_point
+		else:         return self.end_point
