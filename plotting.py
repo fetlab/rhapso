@@ -195,8 +195,8 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 	fig_dict['data'] = [dict(x=[0,1], y=[0,1], name='0', **gc_style)]
 	fig_dict['data'].extend(thread)
 	fig_dict['data'].extend([
-		dict(x=anchors[0].x,   y=anchors[0].y,   name='anchor', mode='markers', **styles['anchor']),
-		dict(x=anchors[0].x,   y=anchors[0].y,   name='target', mode='markers', **styles['anchor']),
+		dict(x=[anchors[0].x],   y=[anchors[0].y],   name='anchor', mode='markers', **styles['anchor']),
+		dict(x=[anchors[0].x],   y=[anchors[0].y],   name='target', mode='markers', **styles['anchor']),
 	])
 
 	for line in gclines[i:]:
