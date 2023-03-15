@@ -85,6 +85,14 @@ def point_plane_comp(point:Point, plane:Plane):
 	return sign(Vector(isec, point) * plane.n)
 
 
+def point_line_comp(point:Point, line:Segment|Line):
+	"""Return whether point is on one side (1) or the other (-1) or on (0) the
+	line. Ignores the z coordinate."""
+	a = line.start_point
+	b = line.end_point
+	return sign((b.x - a.x) * (point.y - a.y) - (b.y - a.y) * (point.x - a.x))
+
+
 #Source: https://math.stackexchange.com/questions/543496/
 def tangent_points(center:Point, radius, p:Point):
 	"""Given a circle at center with radius, return the points on the circle that
