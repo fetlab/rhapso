@@ -117,7 +117,7 @@ class GCLine:
 	def xyz(self): return self.x, self.y, self.z
 
 
-	def construct(self, **kwargs):
+	def construct(self, lineno_in_comment=True, **kwargs):
 		"""Construct and return a line of gcode based on self.code,
 		self.args, and self.comment. Pass kwargs to override this line's existing
 		arguments."""
@@ -135,7 +135,7 @@ class GCLine:
 					("" if val is None else
 								str(round(val, 5)) if isinstance(val, (int,float)) else val))
 		comment = ' '.join([
-				f'[{self.lineno}]' if self.lineno else '',
+				f'[{self.lineno}]' if (lineno_in_comment and self.lineno) else '',
 				self.comment or '']).strip()
 		if comment:
 			out.append(f'; {comment}')
