@@ -85,9 +85,8 @@ class GPoint(Point):
 
 	def moved(self, vec=None, x=None, y=None, z=None):
 		"""Return a copy of this point moved by vector vec or by x/y/z."""
-		return GPoint(self.copy().move(
-			vec if vec is not None
-			else Vector(x or 0, y or 0, z or 0)))
+		x, y, z = vec[:] if vec else (x or 0, y or 0, z or 0)
+		return GPoint(self.x + x, self.y + y, self.z + z)
 
 
 
