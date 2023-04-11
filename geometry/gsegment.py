@@ -150,11 +150,11 @@ class GSegment(Segment):
 			z=z, gc_lines=self.gc_lines, is_extrude=self.is_extrude, **kwargs)
 
 
-	def moved(self, vec):
-		"""Return a copy of this GSegment moved by vector vec."""
+	def moved(self, vec=None, x=None, y=None, z=None):
+		"""Return a copy of this GSegment moved by vector vec or coordinates."""
 		sp = self.start_point if isinstance(self.start_point, GPoint) else GPoint(self.start_point)
 		ep = self.end_point   if isinstance(self.end_point,   GPoint) else GPoint(self.end_point)
-		return self.copy(sp.moved(vec), ep.moved(vec))
+		return self.copy(sp.moved(vec, x, y, z), ep.moved(vec, x, y, z))
 
 
 	def parallels2d(self, distance=1, inc_self=False):
