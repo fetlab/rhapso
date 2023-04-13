@@ -144,15 +144,8 @@ class Printer:
 
 
 	#G0, G1, G92
-		#Keep track of current ring angle
-		if self.extruder_no.code == 'T1':
-			if gcline.code in ('G0', 'G1'):
-				if dist := gcline.meta.get('ring_move_deg', None):
-					self.ring_angle += dist
-			return
-
-		#Extruder is T0; track head location
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
+		#Track head location
 		if gcline.x: self.x = gcline.x
 		if gcline.y: self.y = gcline.y
 		if gcline.z: self.z = gcline.z
