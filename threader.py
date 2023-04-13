@@ -1,3 +1,9 @@
+#Monkey-patch Geometry3D to remove its unify_types function, which appears to
+# be unecessary and is extremely slow
+import Geometry3D
+Geometry3D.geometry.point.unify_types = lambda x: x
+Geometry3D.utils.vector.unify_types   = lambda x: x
+
 from copy import deepcopy
 from geometry_helpers import GSegment
 from fastcore.basics import filter_values
