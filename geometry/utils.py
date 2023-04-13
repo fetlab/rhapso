@@ -63,7 +63,7 @@ def ccw_dist(p,a,c):
 
 #Source: https://stackoverflow.com/a/28037434
 def ang_diff(a, b):
-	"""Return the shortest distance to go bewteen angles a and b."""
+	"""Return the shortest distance to go bewteen angles a and b (in degrees)."""
 	diff = (b - a + 180) % 360 - 180
 	return diff + 360 if diff < -180 else diff
 
