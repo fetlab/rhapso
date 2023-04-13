@@ -13,7 +13,7 @@ styles: dict[str, dict] = {
 
 	#Anchors
 	'anchor':          {'marker': dict(color='red',    symbol='x', size=4)},
-	'original_anchor': {'marker': dict(color='coroal', symbol='x', size=4)},
+	'original_anchor': {'marker': dict(color='coral', symbol='x', size=4)},
 
 	#GCode segment styles
 	'gc_segs':    {'line': dict(color='green',     width=2)},
