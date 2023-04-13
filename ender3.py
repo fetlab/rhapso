@@ -78,8 +78,11 @@ esteps_per_degree = stepper_microsteps_per_rotation * ring_gear_teeth / motor_ge
 #Default defined in Marlin for second extruder by Diana
 default_esteps_per_unit = 93
 
-deg_mm_step_ratio = esteps_per_degree / default_esteps_per_unit
+#Slow down when we print over the thread
+thread_overlap_feedrate = 900
 
+#Pause before we move the thread carrier if we just printed over thread
+post_thread_overlap_pause = 2
 
 # --- Actual measured parameters of the printer, in the coordinate system of
 # the printer frame (see comments above) ---
@@ -127,34 +130,62 @@ class Ender3(Printer):
 		"""Add a z-move and a pause in order to attach the thread after homing."""
 		home_idx = next((i for i,l in reversed(list(enumerate(preamble))) if l.code == 'G28'))
 		bed_temp = next((l for l in preamble if l.code == 'M190')).args['S']
-		return preamble[:home_idx+1] + [
-				GCLine(code='M140', args={'S': bed_temp}, comment='Start heating bed'),
-				GCLine(code='G0', args=dict(Z=50, F=5000.0), comment='Raise Z to allow thread attachment'),
-				GCLine('M117 Bed heating, attach thread', comment='Display message'),
+		return [GCLine(code='T0', comment='Ensure main extruder', fake=True),
+						GCLine(code='M82', comment='Ensure absolute extrusion', fake=True),
+						GCLine(code='M302', args={'P':0}, comment='Disallow cold extrusion', fake=True),
+						] + preamble[:home_idx+1] + [
+				GCLine(code='M140', args={'S': bed_temp}, comment='Start heating bed', fake=True),
+				#GCLine(code='G0', args=dict(Z=50, F=5000.0), comment='Raise Z to allow thread attachment'),
+				#GCLine('M117 Bed heating, attach thread', comment='Display message'),
 			] + preamble[home_idx+1:]
 
 
 
-	def gcode_ring_move(self, move_amount) -> list[GCLine]:
+	def gcode_ring_move(self, move_amount, pause_after=False) -> list[GCLine]:
 		with Saver(self, self.save_vars) as saver:
 			gcode = self.execute_gcode(self.ring.gcode_move(move_amount))
+		if pause_after:
+			gcode.extend(self.execute_gcode(
+				GCLine(code='G4', args={'S': post_thread_overlap_pause},
+					comment=f'Pause for {post_thread_overlap_pause} sec before ring move')))
 		gcode.extend(self.execute_gcode(saver.originals.values()))
+
+		#Reset extrusion value back to what it was
+		gcode.append(GCLine(code='G92', args={'E': self.e}))
+
 		return gcode
 
 	# Segment:      <{ 28.66,  50.91,   0.20}←→{ 26.03,  50.91,   0.20} (2.64 mm)>
 	# Thread (0°):  <{ 33.27,  21.60,   0.00}←→{130.50,  28.00,   0.00} (97.44 mm)>
 
 	#Called for G0, G1, G92
-	def gcfunc_set_axis_value(self, gcline: GCLine):
+	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
+		#Keep track of current ring angle
+		if self.extruder_no.code == 'T1':
+			if gcline.code in ('G0', 'G1'):
+				if dist := gcline.meta.get('ring_move_deg', None):
+					self.ring_angle += dist
+			return
+
+		#Keep a copy of the head location since super() might change it
 		cur_loc = self.head_loc.copy()
+
+		#Do super() stuff
 		gclines = super().gcfunc_set_axis_value(gcline)
+
+		#If not printing, don't need to do anything
 		if not gclines or not gcline.is_xyextrude(): return
 
+		#Fixing segment, we *want* interference! See if the anchor's there and if
+		# so we're done.
 		printed_seg = GSegment(cur_loc, self.head_loc)
+		if self.anchor in printed_seg.copy(z=0):
+			if kwargs.get('fixing', False):
+				gcline.args['F'] = thread_overlap_feedrate
+			return [gcline]
 
-		#Fixing segment, we *want* interference!
-		if self.anchor in printed_seg.copy(z=0): return
-
+		#Otherwise we need to see if the head will intersect the thread during a
+		# move.
 		thread_seg  = GSegment(self.anchor, self.ring.angle2point(self.ring_angle))
 		if traj_isec(printed_seg, thread_seg):
 			#Move anchor by negative of endpoint of printed segment's y value, then

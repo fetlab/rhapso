@@ -22,6 +22,7 @@ class Step:
 		self.ring_initial_angle = None
 		self.ring_angle = None
 		self.ring_move = 0
+		self.fixing = False   #Does this step print over a thread to fix it in place?
 
 
 	def __repr__(self):
@@ -59,7 +60,7 @@ class Step:
 			# Save and execute every line, as the XY move will put the head in the
 			# right place for the extrude.
 			if len(seg.gc_lines) > 2:
-				gcode.extend(self.printer.execute_gcode(seg.gc_lines.data[:-1]))
+				gcode.extend(self.printer.execute_gcode(seg.gc_lines.data[:-1], fixing=self.fixing))
 				extrude_line = seg.gc_lines.data[-1]
 
 			#For 2-line Segments
@@ -79,9 +80,14 @@ class Step:
 		return gcode
 
 
-	def add(self, gcsegs:list[GSegment]):
+	def add(self, gcsegs:list[GSegment], fixing=False):
+		"""Add the GSegments in `gcsegs` to the list of segments that should be
+		printed in this step. Set `fixing` to True to add the `fixed` property to
+		each of the passed lines."""
 		rprint(f'Adding {len(unprinted(gcsegs))}/{len(gcsegs)} unprinted gcsegs to Step')
+		if fixing: rprint(f"  -- This is a fixing step (#{self.number})!")
 		for seg in unprinted(gcsegs):
+			self.fixing = fixing
 			self.gcsegs.append(seg)
 			seg.printed = True
 

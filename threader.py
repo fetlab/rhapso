@@ -270,7 +270,7 @@ class Threader:
 					anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if anchor in seg]
 					if not anchorsegs: raise ValueError('No unprinted segments overlap anchor')
 					with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
-						s.add(anchorsegs)
+						s.add(anchorsegs, fixing=True)
 
 					#Get non-printed segments that overlap the current thread segment. We
 					# want to print these to fix the thread in place.
