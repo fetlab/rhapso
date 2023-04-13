@@ -144,10 +144,14 @@ class GSegment(Segment):
 
 
 	def copy(self, start_point=None, end_point=None, z=None, **kwargs):
-		return GSegment(self, None,
+		seg = GSegment(self, None,
 			start_point=start_point or self.start_point,
 			end_point=end_point     or self.end_point,
 			z=z, gc_lines=self.gc_lines, is_extrude=self.is_extrude, **kwargs)
+		seg.gc_line1 = self.gc_line1
+		seg.gc_line2 = self.gc_line2
+
+		return seg
 
 
 	def moved(self, vec=None, x=None, y=None, z=None):
