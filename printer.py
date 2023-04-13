@@ -47,7 +47,7 @@ class Printer:
 
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
-		self.add_codes(None,              action=lambda gcline: [gcline])
+		self.add_codes(None,              action=lambda gcline, **kwargs: [gcline])
 		self.add_codes('G28',             action=self.gcfunc_auto_home)
 		self.add_codes('G0', 'G1', 'G92', action=self.gcfunc_set_axis_value)
 		self.add_codes('M82', 'M83',      action='extrusion_mode')
@@ -121,8 +121,8 @@ class Printer:
 		return self.ring.gcode_move(move_amount)
 
 
-	def _execute_gcline(self, gcline:GCLine) -> list[GCLine]:
-		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline) or [gcline]
+	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
+		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
 
 
 	# def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
@@ -134,17 +134,16 @@ class Printer:
 	# 	return r
 
 
-	def execute_gcode(self, gcline:GCLine|list[GCLine]) -> list[GCLine]:
-		return sum(map(self._execute_gcline, listify(gcline)), [])
+	def execute_gcode(self, gcline:GCLine|list[GCLine], **kwargs) -> list[GCLine]:
+		return sum([self._execute_gcline(l, **kwargs) for l in listify(gcline)], [])
 
 
 	#G28
-	def gcfunc_auto_home(self, gcline: GCLine):
+	def gcfunc_auto_home(self, gcline: GCLine, **kwargs):
 		self.x, self.y, self.z = 0, 0, 0
 
 
 	#G0, G1, G92
-	def gcfunc_set_axis_value(self, gcline: GCLine):
 		#Keep track of current ring angle
 		if self.extruder_no.code == 'T1':
 			if gcline.code in ('G0', 'G1'):
@@ -153,6 +152,7 @@ class Printer:
 			return
 
 		#Extruder is T0; track head location
+	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
 		if gcline.x: self.x = gcline.x
 		if gcline.y: self.y = gcline.y
 		if gcline.z: self.z = gcline.z
