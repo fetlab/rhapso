@@ -64,7 +64,8 @@ from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
 
 # --- Ring gearing ---
-steps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps
+stepper_microsteps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps, 200 steps per rotation
+
 motor_gear_teeth   = 30
 ring_gear_teeth    = 125
 
@@ -72,9 +73,9 @@ ring_gear_teeth    = 125
 rot_mul = 1  # 1 since positive steps make it go CCW
 
 #How many motor steps per CCW degree?
-esteps_per_degree = steps_per_rotation * ring_gear_teeth / motor_gear_teeth / 360
+esteps_per_degree = stepper_microsteps_per_rotation * ring_gear_teeth / motor_gear_teeth / 360
 
-#Default defined for Marlin
+#Default defined in Marlin for second extruder by Diana
 default_esteps_per_unit = 93
 
 deg_mm_step_ratio = esteps_per_degree / default_esteps_per_unit
@@ -82,13 +83,25 @@ deg_mm_step_ratio = esteps_per_degree / default_esteps_per_unit
 
 # --- Actual measured parameters of the printer, in the coordinate system of
 # the printer frame (see comments above) ---
-BedConfig  = TypedDict('BedConfig',  {'zero': GPoint, 'size': tuple[Number, Number], 'anchor': GPoint})
-RingConfig = TypedDict('RingConfig', {'center': GPoint, 'radius': Number,  'rot_mul': Number})
+BedConfig  = TypedDict(
+	'BedConfig',  {
+		'zero':   GPoint,
+		'size':   tuple[Number, Number],
+		'anchor': GPoint,
+	})
+RingConfig = TypedDict(
+	'RingConfig', {
+		'center': GPoint,
+		'radius': Number,
+		'rot_mul': Number,
+		'angle': Number,
+	})
 
 ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
+	'angle': 0,
 }
 bed_config: BedConfig = {
 	'zero': GPoint(-32.5, -65, 0),
@@ -98,7 +111,7 @@ bed_config: BedConfig = {
 
 #Move the zero points so the bed zero is actually 0,0
 ring_config['center'] -= bed_config['zero']
-bed_config ['zero'] -= bed_config['zero']
+bed_config ['zero']   -= bed_config['zero']
 
 
 class Ender3(Printer):
