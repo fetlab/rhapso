@@ -182,32 +182,45 @@ class GSegment(Segment):
 			self.line.dv.normalized() * self.length() * (other-1)))
 
 
-	def _split(self, location:GPoint) -> List:
+	def _split(self, split_loc:GPoint) -> List:
 		"""Return a set of two GSegments resulting from splitting this one into two
 		pieces at `location`."""
-		if location not in self:
-			raise ValueError(f"Requested split location {location} isn't on {self}")
+		if split_loc not in self:
+			raise ValueError(f"Requested split location {split_loc} isn't on {self}")
 
-		seg1 = self.copy(end_point=location)
-		seg2 = self.copy(start_point=location)
+		#Create the new segment pieces
+		seg1 = self.copy(end_point   = split_loc)
+		seg2 = self.copy(start_point = split_loc)
+
+		#Update the wrapped gcode lines
 		if self.gc_line1 and self.gc_line2:
-			proportion = seg1.length() / self.length()
-			args = {
-					'X': location.x,
-					'Y': location.y,
-					'E': self.gc_line2.args['E'] * proportion,
+
+			#First segment
+			seg1_frac = seg1.length() / self.length()
+			seg1_args = {
+					'X': split_loc.x,
+					'Y': split_loc.y,
+					'E': self.gc_line2.args['E'] * seg1_frac,
 			}
 			if 'F' in self.gc_line2.args:
-				args['F'] = self.gc_line2.args['F']
+				seg1_args['F'] = self.gc_line2.args['F']
 
-			seg1.gc_line1 = copy(self.gc_line1)
-			seg1.gc_line2 = self.gc_line2.__class__(args=args,
-																					 lineno=self.gc_line1.lineno+proportion)
+			seg1.gc_line2 = self.gc_line2.__class__(
+					code=self.gc_line2.code,
+					args=seg1_args,
+					lineno=self.gc_line1.lineno+seg1_frac)
+			seg1.gc_line2.relative_extrude = seg1.gc_line1.relative_extrude * seg1_frac
 
+
+			#Second segment
+			seg2_frac = 1 - seg1_frac
 			seg2.gc_line1 = copy(seg1.gc_line2)
 			seg2.gc_line2 = copy(self.gc_line2)
-			seg2.gc_line2.args['E'] *= proportion
 
+			seg2.gc_line2.args['E'] *= seg2_frac
+			seg2.gc_line2.relative_extrude *= seg2_frac
+
+			#Cleanup
 			seg1.gc_line1.fake = True
 			seg1.gc_line2.fake = True
 			seg2.gc_line1.fake = True
