@@ -141,29 +141,28 @@ class TLayer(Cura4Layer):
 		segs = []
 
 		for i,tseg in enumerate(thread):
-			#Is the thread segment entirely below or above the layer? If so, skip it.
+			#Is the thread segment entirely below or above (including sitting on top
+			# of) the layer? If so, skip it.
 			if((tseg.start_point.z <  bot.z and tseg.end_point.z <  bot.z) or
 				 (tseg.start_point.z >= top.z and tseg.end_point.z >= top.z)):
 				log.debug(f'{i}. {tseg} endpoints not in layer',
 						extra=dict(style={'line-height':'normal'}))
 				continue
 
-
-			#Clip segments to top/bottom of layer (note "walrus" operator := )
-			if s := tseg.intersection(bot): self.in_out.append(s)
-			if e := tseg.intersection(top): self.in_out.append(e)
-			newseg = GSegment(s or tseg.start_point, e or tseg.end_point)
+			#Is the segment entirely inside the layer? If so, don't need to clip.
+			if tseg.start_point.z >= bot.z and tseg.end_point.z >= bot.z:
+				newseg = tseg.copy()
+			else:
+				#Clip segments to top/bottom of layer (note "walrus" operator := )
+				if s := tseg.intersection(bot): self.in_out.append(s)
+				if e := tseg.intersection(top): self.in_out.append(e)
+				newseg = GSegment(s or tseg.start_point, e or tseg.end_point)
 
 			#Flatten segment to the layer's z-height, but not if the segment is
 			# vertical
 			if newseg.start_point.as2d() != newseg.end_point.as2d():
 				newseg.set_z(self.z)
 			segs.append(newseg)
-			# if s or e:
-			# 	print(f'Crop {tseg} to\n'
-			# 			  f'     {segs[-1]}')
-
-			#segs[-1].set_z(self.z)
 
 		#Combine collinear segments
 		segs = seg_combine(segs)
