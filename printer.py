@@ -218,10 +218,12 @@ class Printer:
 			endpoints = set(flatten(avoid)) - set(thr[:])
 			avoidables = set(ep for ep in endpoints if self.anchor.distance(ep) > avoid_by)
 			dists = {ep: thr.distance(ep) for ep in avoidables}
-			if any(False if d is None else d - avoid_by <= -eps for d in dists.values()):
-				rprint("No intersection but something is too close:")
-				rprint(dists)
-			else:
+			flag = False
+			for ep, dist in dists.items():
+				if dist - avoid_by <= -eps:
+					rprint(f'Careful: non-intersecting segment endpoint {ep} is only {dist:.2f} mm from thread', indent=4)
+					flag = True
+			if not flag:
 				return set()
 
 
@@ -254,9 +256,9 @@ class Printer:
 					avoid, indent=4)
 			rprint(f"Intersections {self.anchor}→{vis_points[0]}:",
 					ipts[vis_points[0]], indent=4)
-			self._debug_quickplot_args = dict(gc_segs=avoid, anchor=self.anchor,
-																thread_ring=thr)
-			raise ValueError("oh noes")
+			self._debug_quickplot_args = dict(gc_segs=avoid, anchor=self.anchor, thread_ring=thr)
+			raise ValueError("thread_avoid() couldn't avoid; try running\n"
+				"plot_helpers.quickplot(**threader.layer_steps[-1].printer._debug_quickplot_args);")
 
 		#Return the set of segments that we intersected
 		return vis[vis_points[0]]
