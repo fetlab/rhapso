@@ -1,4 +1,4 @@
-from Geometry3D import Circle, Vector
+from Geometry3D import Circle, Vector, get_eps
 from math import degrees, cos, radians, sin, atan2
 
 from gcline import GCLine
@@ -54,17 +54,31 @@ class Ring:
 		return self.angle2point(self.angle)
 
 
-	def intersection(self, seg:GSegment|GHalfLine) -> list[GPoint]:
-		"""Return the intersection points between the passed GSegment and the ring,
-		sorted by distance to seg.start_point ."""
-		#Form a half line (basically a ray) from the anchor through the target
-		hl = (seg if isinstance(seg, GHalfLine) else GHalfLine(seg.start_point, seg.end_point)).as2d()
+	#Source: https://stackoverflow.com/a/59582674/49663
+	def intersection(self, seg:GSegment) -> list[GPoint]:
+		centered_seg = seg.moved(-Vector(*self.center))
+		x1, y1, _ = centered_seg.start_point[:]
+		x2, y2, _ = centered_seg.end_point[:]
+		dx, dy, _ = (centered_seg.end_point - centered_seg.start_point)[:]
+		dr = (dx**2 + dy**2)**.5
+		big_d = x1*y2 - x2*y1
+		discriminant = self.radius**2 * dr**2 - big_d**2
 
-		isecs = hl.intersections(self.geometry.segments())
-		if isecs is None: return []
+		#No intersection between segment and circle
+		if discriminant < 0: return []
 
-		#Sort intersections by distance to the start point of the HalfLine
-		return sorted(isecs, key=lambda p: hl.point.distance(p))
+		intersections = [GPoint(
+			( big_d * dy + sign * (-1 if dy < 0 else 1) * dx * discriminant**.5) / dr**2,
+			(-big_d * dx + sign * abs(dy) * discriminant**.5) / dr**2,
+			0).moved(Vector(*self.center))
+									 for sign in ((1,-1) if dy < 0 else (-1, 1))]
+
+		hl = GHalfLine(*seg).as2d()
+		intersections = [p for p in intersections if p in hl]
+
+		if len(intersections) == 2 and abs(discriminant) <= get_eps(): return [intersections[0]]
+
+		return sorted(intersections, key=seg.start_point.distance)
 
 
 	def angle2point(self, angle):
@@ -91,12 +105,17 @@ class Ring:
 		extrude = self.rot_mul * dist
 		dir_str = 'CCW' if dist > 0 else 'CW'
 
+		message = f'Ring move by {dist:.2f}° {dir_str}'
 		gc = [
+			GCLine(code='M300', args={'P':50, 'S':10000}, comment='Beep', fake=True),
+			GCLine(f'M117 {message}', fake=True),
+			GCLine('G4 S1'),
 			GCLine(code='T1', comment='Switch to ring extruder', fake=True),
 			GCLine(code='M83', comment='Set relative extrusion mode', fake=True),
 			GCLine(code='M302', args={'P':1}, comment='Allow cold extrusion', fake=True),
 			GCLine(code='G1', args={'E':round(extrude,3), 'F':8000},
-					comment=f'Ring move by {dist:.2f}° {dir_str}', fake=True, meta={'ring_move_deg': dist}),
+					comment=message, fake=True, meta={'ring_move_deg': dist}),
+			GCLine(code='M300', args={'P':50, 'S':1000}, comment='Beep', fake=True),
 		]
 
 		return gc

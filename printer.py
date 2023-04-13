@@ -278,7 +278,7 @@ class Printer:
 		ring_angle = self.ring.angle
 
 		if target != anchor:
-			if isecs := self.ring.intersection(GHalfLine(anchor, target)):
+			if isecs := self.ring.intersection(GSegment(anchor, target)):
 				ring_angle = self.ring.point2angle(isecs[-1])
 
 				if move_ring:
