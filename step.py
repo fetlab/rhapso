@@ -44,7 +44,10 @@ class Step:
 		and .gc_line2 member which are GCLines.
 		"""
 		if not self.gcsegs:
-			return [] if not self.ring_move else self.printer.gcode_ring_move(self.ring_move)
+			return [] if not self.ring_move else self.printer.gcode_ring_move(self.ring_move,
+				#Tell ring move to pause if the previous step was a thread-fixing step
+				pause_after=False if self.number < 1 else self.steps_obj.steps[self.number-1].fixing)
+
 
 		#Sort gcsegs by the first gcode line number in each
 		self.gcsegs.sort(key=lambda s:s.gc_lines.first.lineno)
