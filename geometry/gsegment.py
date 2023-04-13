@@ -1,6 +1,6 @@
 from copy import copy
 from typing import Collection, Set, List
-from Geometry3D import Vector, Segment, Point, Line
+from Geometry3D import Vector, Segment, Point, Line, angle
 from fastcore.basics import listify
 from .gpoint import GPoint
 from .gcast import gcast
@@ -276,3 +276,9 @@ class GSegment(Segment):
 		if 0 < t < 1: return GPoint(*(self.line.dv * t + self.start_point))
 		elif t <= 0:  return self.start_point
 		else:         return self.end_point
+
+
+	def angle(self, other=None):
+		"""Return the angle between this segment and something else, or the X axis
+		if `other` is None."""
+		return angle(self.line.dv, other or Vector.x_unit_vector())
