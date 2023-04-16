@@ -16,52 +16,49 @@ Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
 Planes   = make_dataclass('Planes',   ['top', 'bottom'])
 
 
-def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> tuple[dict[GPoint, set], dict[GPoint, set]]:
+def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> dict[GPoint, set]:
 	"""Calculate visibility for `origin` with respect to `query`, attempting to
-	ensure `avoid_by` mm of avoidance. For every potential visibility point,
-	return the segments intersected by a ray from `origin` to that point:
+	ensure `avoid_by` mm of avoidance. Visibility points are the
+	tangent points of a line from `origin` on a circle of radius `avoid_by`
+	around each endpoint of the segments in `query`. The function returns a
+	dict:
 
 		{visible_point: {segments intersected}, ...}
 
-	This returned dict is sorted by the number of intersected segments.
 	"""
+	#All of the endpoints of the segments in query, except for origin
 	endpoints = set(flatten(query)) - {origin}
-	farpoints = {p for p in endpoints if origin.distance(p) > avoid_by}
-	if not farpoints:
-		# dbg_out = '\n\t'.join([f'{p} -> {origin.distance(p):.2f}' for p in endpoints])
-		# raise GCodeException((origin, query), f"No endpoints from query are > {avoid_by} from origin {origin}:\n\t{dbg_out}")
-		return {origin: set(query)}, {}
-	tanpoints = set(flatten(
-			tangent_points(p, avoid_by, origin) for p in farpoints))
-	isecs:Dict[GPoint, Set] = {}
-	isec_points:Dict[GPoint, Set] = {}
 
+	#All of the endpoints that are at least avoid_by mm away from origin
+	farpoints = {p for p in endpoints if origin.distance(p) > avoid_by}
+
+	#If farpoints is empty, then all of the endpoints are too close to origin
+	if not farpoints: return {origin: set(query)}
+
+	#For each point not within avoid_by mm of origin, find the tangent points of
+	# a line from origin to a circle of size avoid_by around that point
+	tanpoints = set(flatten(tangent_points(p, avoid_by, origin) for p in farpoints))
+
+	intersecting_segments: Dict[GPoint, Set] = {}
+
+	#For each tangent point, find the segments in query that intersect a half-line
+	# from origin to that tangent point
 	for tp in tanpoints:
 		hl = GHalfLine(origin, tp)
-		isecs[tp] = set()
-		isec_points[tp] = set()
+		intersecting_segments[tp] = set()
+
 		for seg in query:
-			isec = False
-			isec_points[tp] = hl.intersecting(seg)
-			if isec_points[tp]:
-				isec = True
-			if not isec:
-				if seg.start_point != origin:
-					d = hl.distance(seg.start_point)
-					if d is not None and (d - avoid_by <= -eps):
-						isec = True
-						isec_points[tp] = (f'dist from {hl} to start {seg.start_point} = {d} < {avoid_by}', hl, seg)
-			if not isec:
-				d = hl.distance(seg.end_point)
-				if d is not None and (d - avoid_by <= -eps):
-					isec = True
-					isec_points[tp] = (f'dist from {hl} to end {seg.end_point} = {d} < {avoid_by}',
-												hl, seg)
+			#Does a half-line from the origin to the tangent point intersect this segment?
+			if hl.intersecting(seg):
+				intersecting_segments[tp].add(seg)
+			else:
+				if seg.start_point != origin and too_close(hl, seg.start_point, avoid_by):
+					intersecting_segments[tp].add(seg)
+				elif too_close(hl, seg.end_point, avoid_by):
+					intersecting_segments[tp].add(seg)
 
-			if isec:
-				isecs[tp].add(seg)
-
-	return dict(sorted(isecs.items(), key=lambda x:len(x[1]))), isec_points
+	#Sort the intersected segments by the number of segments they intersect
+	return dict(sorted(intersecting_segments.items(), key=lambda x:len(x[1])))
 
 
 def too_close(a, b, by=1):

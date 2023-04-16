@@ -55,11 +55,20 @@ class Ring:
 
 
 	#Source: https://stackoverflow.com/a/59582674/49663
-	def intersection(self, seg:GSegment) -> list[GPoint]:
-		centered_seg = seg.moved(-Vector(*self.center))
-		x1, y1, _ = centered_seg.start_point[:]
-		x2, y2, _ = centered_seg.end_point[:]
-		dx, dy, _ = (centered_seg.end_point - centered_seg.start_point)[:]
+	def intersection(self, seg:GSegment|GHalfLine) -> list[GPoint]:
+		"""Return the intersection points between the given segment and the ring,
+		or an empty list if there are none. If the segment is tangent to the ring,
+		return a list with one point."""
+		if isinstance(seg, GSegment):
+			centered_seg = seg.moved(-Vector(*self.center))
+			p1, p2 = centered_seg[:]
+		elif isinstance(seg, GHalfLine):
+			centered_hl = seg.moved(-Vector(*self.center))
+			p1, p2 = centered_hl.point, centered_hl.point + centered_hl.vector
+
+		x1, y1, _ = p1[:]
+		x2, y2, _ = p2[:]
+		dx, dy, _ = (p2 - p1)[:]
 		dr = (dx**2 + dy**2)**.5
 		big_d = x1*y2 - x2*y1
 		discriminant = self.radius**2 * dr**2 - big_d**2
@@ -73,7 +82,7 @@ class Ring:
 			0).moved(Vector(*self.center))
 									 for sign in ((1,-1) if dy < 0 else (-1, 1))]
 
-		hl = GHalfLine(*seg).as2d()
+		hl = (GHalfLine(*seg) if isinstance(seg, GSegment) else seg).as2d()
 		intersections = [p for p in intersections if p in hl]
 
 		if len(intersections) == 2 and abs(discriminant) <= get_eps(): return [intersections[0]]

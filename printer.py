@@ -1,11 +1,13 @@
 from copy import copy, deepcopy
+from collections import defaultdict
 from typing import Collection, Callable
 from itertools import groupby
 from more_itertools import flatten
-from fastcore.basics import listify
+from fastcore.basics import first, listify
 
 from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
+from geometry.utils import eps
 from gcline import GCLine, GCLines
 from gclayer import Layer
 from ring import Ring
@@ -211,35 +213,76 @@ class Printer:
 		assert(avoid)
 		avoid = set(avoid)
 
+		#Current thread->ring segment
 		thr = GSegment(self.anchor, self.ring.point)
 
-		if not thr.intersecting(avoid):
-			from geometry.utils import eps
-			endpoints = set(flatten(avoid)) - set(thr[:])
-			avoidables = set(ep for ep in endpoints if self.anchor.distance(ep) > avoid_by)
-			dists = {ep: thr.distance(ep) for ep in avoidables}
-			flag = False
-			for ep, dist in dists.items():
-				if dist - avoid_by <= -eps:
-					rprint(f'Careful: non-intersecting segment endpoint {ep} is only {dist:.2f} mm from thread', indent=4)
-					flag = True
-			if not flag:
+		rprint(f'Avoiding {len(avoid)} segments')
+
+		#If there's only one segment in avoid, and the anchor point is either on it
+		# or within `avoid_by` of it, move the thread to be perpindicular to it.
+		if len(avoid) == 1:
+			seg = first(avoid)
+			if (self.anchor in seg or
+					too_close(self.anchor, seg.start_point, avoid_by) or
+					too_close(self.anchor, seg.end_point, avoid_by)):
+#### TODO: find the perpindicular angle of the segment and then use
+# ring.intersect to find the ring angle needed
+
+			seg = avoid.pop()
+			if seg.start_point.distance(self.anchor) < avoid_by or seg.end_point.distance(self.anchor) < avoid_by:
+				rprint('Anchor is on or very close to segment, so we can just move the thread to be perpendicular to it')
+				#Move the ring to be perpendicular to the segment
+				self.ring.angle = seg.angle + 90
+				#Move the thread to be perpendicular to the segment
+				self.anchor = seg.point_at_distance(avoid_by)
+				#Move the ring to be perpendicular to the segment
+				self.ring.angle = seg.angle + 90
 				return set()
 
+		#Thread is already not intersecting segments in `avoid`, but we want to try
+		# to move it so it's not very close to the ends of the segments either.
+		if not (isecs := thr.intersecting(avoid)):
+			rprint('No intersections, but we want to avoid segments by at least 1 mm')
 
-		#If no thread-avoid intersections and the thread is not too close to any
-		# avoid segment endpoints, we don't need to move ring, and are done
-		# if(not thr.intersecting(avoid)
-		# 	 and not any(too_close(thr, ep) for ep in (set(flatten(avoid)) - set(thr[:])))):
-		# 	return set()
+			#All printed segment starts & ends, minus the thread's start/end
+			endpoints  = set(flatten(avoid)) - set(thr[:])
 
-		vis, ipts = visibility(self.anchor, avoid, avoid_by)
+			#We can't avoid points that are too close to the anchor - not physically possible
+			avoidables = set(ep for ep in endpoints if self.anchor.distance(ep) > avoid_by)
+
+			#Find distance from thread to each printed segment end point
+			dists = {ep: thr.distance(ep) for ep in avoidables}
+
+			#Find out if any of the end points are closer than `avoid_by` to the
+			# thread; if so, we'll have to do more processing
+			too_close = False
+			for ep, dist in dists.items():
+				if dist - avoid_by <= -eps:
+					rprint(f'    Careful: non-intersecting segment endpoint {ep} is only {dist:.2f} mm from thread')
+					too_close = True
+			if not too_close:
+				return set()
+
+		else:
+			rprint(f'    {len(isecs)} intersections')
+
+		#Either the thread intersects printed segments, or it's too close to
+		# printed segment endpoints, so we will try to move the thread.
+
+		vis = visibility(self.anchor, avoid, avoid_by)
+		vis_segs = defaultdict(set)
+		for vp, segs in vis.items():
+			vis_segs[vp].update(segs)
+
+		rprint(f'    {len(vis)} potential visibility points')
+		if len(vis) < 5:
+			rprint(vis)
 
 		#We only have 1 segment to avoid but can't avoid it. Let's pretend we did
 		# and see what happens.
-		if len(vis) == 1 and vis == {self.anchor: avoid}:
+		if len(avoid) == 1 and len(vis_segs) == 1 and first(vis_segs) == first(avoid):
+			rprint(f"Can't avoid only segment {first(avoid)}, giving up on trying")
 			return set()
-
 
 		#Get all of the visibility points with N intersections, where N is the
 		# smallest number of intersections
@@ -251,11 +294,11 @@ class Printer:
 		#Now move the thread to the closest one
 		self.thread_intersect(vis_points[0], set_new_anchor=False)
 
+		#If the visibility point with the smallest number of intersections still
+		# intersects the segments in `avoid`, it's probably too close to avoid.
 		if vis[vis_points[0]] == avoid:
 			rprint("Result of visibility:", vis[vis_points[0]], "is the same thing we tried to avoid:",
 					avoid, indent=4)
-			rprint(f"Intersections {self.anchor}→{vis_points[0]}:",
-					ipts[vis_points[0]], indent=4)
 			self._debug_quickplot_args = dict(gc_segs=avoid, anchor=self.anchor, thread_ring=thr)
 			raise ValueError("thread_avoid() couldn't avoid; try running\n"
 				"plot_helpers.quickplot(**threader.layer_steps[-1].printer._debug_quickplot_args);")
