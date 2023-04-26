@@ -279,6 +279,6 @@ class GSegment(Segment):
 
 
 	def angle(self, other=None):
-		"""Return the angle between this segment and something else, or the X axis
-		if `other` is None."""
+		"""Return the angle in radians between this segment and something else, or
+		the X axis if `other` is None."""
 		return angle(self.line.dv, other or Vector.x_unit_vector())
