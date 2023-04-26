@@ -94,8 +94,8 @@ class GPoint(Point):
 
 
 	def angle(self, other:Point=None):
-		"""Return the angle in radians of a line drawn through this point from
+		"""Return the angle in degrees of a line drawn through this point from
 		either the origin or a second point (ignoring the z-coordinate)."""
 		from math import degrees, atan2
 		x, y = (other.x, other.y) if isinstance(other, Point) else (0, 0)
-		return atan2(self.y - y, self.x - x)
+		return degrees(atan2(self.y - y, self.x - x))
