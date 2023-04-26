@@ -1,20 +1,21 @@
+from math import pi
 from copy import copy, deepcopy
 from collections import defaultdict
 from typing import Collection, Callable
 from itertools import groupby
 from more_itertools import flatten
 from fastcore.basics import first, listify
+from Geometry3D import Line, Vector
 
 from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
-from geometry.utils import eps
 from gcline import GCLine, GCLines
 from gclayer import Layer
 from ring import Ring
 from bed import Bed
 from logger import rprint
 from geometry_helpers import visibility, too_close
-from geometry.utils import angsort
+from geometry.utils import angsort, ang_diff, eps
 from steps import Steps
 
 
@@ -225,19 +226,17 @@ class Printer:
 			if (self.anchor in seg or
 					too_close(self.anchor, seg.start_point, avoid_by) or
 					too_close(self.anchor, seg.end_point, avoid_by)):
-#### TODO: find the perpindicular angle of the segment and then use
-# ring.intersect to find the ring angle needed
+				seg_vec = seg.line.dv
+				ring_isecs = sorted(
+					self.ring.intersection(
+						Line(self.anchor, Vector(seg_vec[1], seg_vec[0], 0))),
+					key=lambda isec: ang_diff(self.ring.point2angle(isec), self.ring.angle))
 
-			seg = avoid.pop()
-			if seg.start_point.distance(self.anchor) < avoid_by or seg.end_point.distance(self.anchor) < avoid_by:
-				rprint('Anchor is on or very close to segment, so we can just move the thread to be perpendicular to it')
-				#Move the ring to be perpendicular to the segment
-				self.ring.angle = seg.angle + 90
-				#Move the thread to be perpendicular to the segment
-				self.anchor = seg.point_at_distance(avoid_by)
-				#Move the ring to be perpendicular to the segment
-				self.ring.angle = seg.angle + 90
-				return set()
+				if isec := first(ring_isecs):
+					self.ring.angle = self.ring.point2angle(isec)
+
+			return set()
+
 
 		#Thread is already not intersecting segments in `avoid`, but we want to try
 		# to move it so it's not very close to the ends of the segments either.
@@ -250,17 +249,9 @@ class Printer:
 			#We can't avoid points that are too close to the anchor - not physically possible
 			avoidables = set(ep for ep in endpoints if self.anchor.distance(ep) > avoid_by)
 
-			#Find distance from thread to each printed segment end point
-			dists = {ep: thr.distance(ep) for ep in avoidables}
-
 			#Find out if any of the end points are closer than `avoid_by` to the
 			# thread; if so, we'll have to do more processing
-			too_close = False
-			for ep, dist in dists.items():
-				if dist - avoid_by <= -eps:
-					rprint(f'    Careful: non-intersecting segment endpoint {ep} is only {dist:.2f} mm from thread')
-					too_close = True
-			if not too_close:
+			if not any(too_close(thr, ep) for ep in avoidables):
 				return set()
 
 		else:

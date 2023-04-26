@@ -1,4 +1,4 @@
-from Geometry3D import Circle, Vector, get_eps
+from Geometry3D import Circle, Vector, Line, get_eps
 from math import degrees, cos, radians, sin, atan2
 
 from gcline import GCLine
@@ -55,39 +55,41 @@ class Ring:
 
 
 	#Source: https://stackoverflow.com/a/59582674/49663
-	def intersection(self, seg:GSegment|GHalfLine) -> list[GPoint]:
-		"""Return the intersection points between the given segment and the ring,
-		or an empty list if there are none. If the segment is tangent to the ring,
-		return a list with one point."""
-		if isinstance(seg, GSegment):
-			centered_seg = seg.moved(-Vector(*self.center))
-			p1, p2 = centered_seg[:]
-		elif isinstance(seg, GHalfLine):
-			centered_hl = seg.moved(-Vector(*self.center))
-			p1, p2 = centered_hl.point, centered_hl.point + centered_hl.vector
+	def intersection(self, seg:GSegment|GHalfLine|Line) -> list[GPoint]:
+		"""Return the intersection points between a segment, HalfLine, or Line, and
+		the ring, or an empty list if there are none. If the segment is tangent to
+		the ring, return a list with one point."""
+		if   isinstance(seg, GSegment):  p1, p2 = seg[:]
+		elif isinstance(seg, GHalfLine): p1, p2 = seg.point, seg.point + seg.vector
+		elif isinstance(seg, Line):      p1, p2 = GPoint(*seg.sv), GPoint(*(seg.sv + seg.dv))
+		else: raise ValueError(f"Can't intersect with {type(seg)}")
 
-		x1, y1, _ = p1[:]
-		x2, y2, _ = p2[:]
-		dx, dy, _ = (p2 - p1)[:]
-		dr = (dx**2 + dy**2)**.5
-		big_d = x1*y2 - x2*y1
+		#Shift the points by the ring center and extract x and y
+		x1, y1, _ = (p1 - self.center)[:]
+		x2, y2, _ = (p2 - self.center)[:]
+
+		dx, dy, _    = (p2 - p1)[:]
+		dr           = (dx**2 + dy**2)**.5
+		big_d        = x1*y2 - x2*y1
 		discriminant = self.radius**2 * dr**2 - big_d**2
 
 		#No intersection between segment and circle
 		if discriminant < 0: return []
 
+		#Find intersections and shift them back by the ring center
 		intersections = [GPoint(
 			( big_d * dy + sign * (-1 if dy < 0 else 1) * dx * discriminant**.5) / dr**2,
 			(-big_d * dx + sign * abs(dy) * discriminant**.5) / dr**2,
 			0).moved(Vector(*self.center))
 									 for sign in ((1,-1) if dy < 0 else (-1, 1))]
 
-		hl = (GHalfLine(*seg) if isinstance(seg, GSegment) else seg).as2d()
-		intersections = [p for p in intersections if p in hl]
+		if not isinstance(seg, Line):
+			hl = (GHalfLine(*seg) if isinstance(seg, GSegment) else seg).as2d()
+			intersections = [p for p in intersections if p in hl]
 
 		if len(intersections) == 2 and abs(discriminant) <= get_eps(): return [intersections[0]]
 
-		return sorted(intersections, key=seg.start_point.distance)
+		return sorted(intersections, key=p1.distance)
 
 
 	def angle2point(self, angle):
@@ -108,8 +110,6 @@ class Ring:
 
 	def gcode_move(self, dist):
 		"""Return the gcode necessary to move the ring by `dist` degrees."""
-		if not degrees: return []
-
 		#Find "extrusion" amount
 		extrude = self.rot_mul * dist
 		dir_str = 'CCW' if dist > 0 else 'CW'
