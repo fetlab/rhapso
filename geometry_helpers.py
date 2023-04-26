@@ -61,7 +61,7 @@ def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> dict[GP
 	return dict(sorted(intersecting_segments.items(), key=lambda x:len(x[1])))
 
 
-def too_close(a, b, by=1):
+def too_close(a, b, by=1) -> bool:
 	"""Return True if the distance between `a` and `b` is <= `by` (taking into
 	account imprecision via `eps`)."""
 	d = a.distance(b)
