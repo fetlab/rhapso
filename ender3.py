@@ -123,7 +123,16 @@ class Ender3(Printer):
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
 
+		#State to save/restore for switching to ring movement and back
 		self.save_vars = 'extruder_no', 'extrusion_mode', 'cold_extrusion'
+		self.extruder_no    = GCLine(code='T0', comment='Switch to main extruder', fake=True)
+		self.extrusion_mode = GCLine(code='M82',comment='Set absolute extrusion mode', fake=True)
+		self.cold_extrusion = GCLine(code='M302', args={'P':0}, comment='Prevent cold extrusion', fake=True)
+
+		#Save attributes on these Gcode lines
+		self.add_codes('M82', 'M83',      action='extrusion_mode')
+		self.add_codes('T0', 'T1',        action='extruder_no')
+		self.add_codes('M302',            action='cold_extrusion')
 
 
 	def gcode_file_preamble(self, preamble: list[GCLine]) -> list[GCLine]:
@@ -141,9 +150,26 @@ class Ender3(Printer):
 
 
 
-	def gcode_ring_move(self, move_amount, pause_after=False) -> list[GCLine]:
+	def gcode_ring_move(self, dist, pause_after=False) -> list[GCLine]:
+		#Save and restore state while moving ring
 		with Saver(self, self.save_vars) as saver:
-			gcode = self.execute_gcode(self.ring.gcode_move(move_amount))
+			#Find "extrusion" amount
+			extrude = self.ring.rot_mul * dist
+			dir_str = 'CCW' if dist > 0 else 'CW'
+
+			message = f'Ring move by {dist:.2f}° {dir_str}'
+			gcode = self.execute_gcode([
+				GCLine(code='M300', args={'P':50, 'S':10000}, comment='Beep', fake=True),
+				GCLine(f'M117 {message}', fake=True),
+				GCLine('G4 S1'),
+				GCLine(code='T1', comment='Switch to ring extruder', fake=True),
+				GCLine(code='M83', comment='Set relative extrusion mode', fake=True),
+				GCLine(code='M302', args={'P':1}, comment='Allow cold extrusion', fake=True),
+				GCLine(code='G1', args={'E':round(extrude,3), 'F':8000},
+						comment=message, fake=True, meta={'ring_move_deg': dist}),
+				GCLine(code='M300', args={'P':50, 'S':1000}, comment='Beep', fake=True),
+			])
+
 		if pause_after:
 			gcode.extend(self.execute_gcode(
 				GCLine(code='G4', args={'S': post_thread_overlap_pause},

@@ -57,8 +57,6 @@ class Ender3(Ender3v1):
 		self.ring = Ring(**ring_config)
 		Printer.__init__(self, self.bed, self.ring)
 
-		self.save_vars = 'extruder_no', 'extrusion_mode', 'cold_extrusion'
-
 
 	#Called for G0, G1, G92
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):

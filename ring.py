@@ -108,28 +108,6 @@ class Ring:
 		return degrees(atan2(point.y - self.center.y, point.x - self.center.x))
 
 
-	def gcode_move(self, dist):
-		"""Return the gcode necessary to move the ring by `dist` degrees."""
-		#Find "extrusion" amount
-		extrude = self.rot_mul * dist
-		dir_str = 'CCW' if dist > 0 else 'CW'
-
-		message = f'Ring move by {dist:.2f}° {dir_str}'
-		gc = [
-			GCLine(code='M300', args={'P':50, 'S':10000}, comment='Beep', fake=True),
-			GCLine(f'M117 {message}', fake=True),
-			GCLine('G4 S1'),
-			GCLine(code='T1', comment='Switch to ring extruder', fake=True),
-			GCLine(code='M83', comment='Set relative extrusion mode', fake=True),
-			GCLine(code='M302', args={'P':1}, comment='Allow cold extrusion', fake=True),
-			GCLine(code='G1', args={'E':round(extrude,3), 'F':8000},
-					comment=message, fake=True, meta={'ring_move_deg': dist}),
-			GCLine(code='M300', args={'P':50, 'S':1000}, comment='Beep', fake=True),
-		]
-
-		return gc
-
-
 	def plot(self, fig, style=None, offset:Vector=None, angle=None):
 		angle = self.angle if angle is None else angle
 		center = self.center.copy()

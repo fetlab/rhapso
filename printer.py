@@ -37,9 +37,6 @@ class Printer:
 		#State
 		self.head_loc   = GPoint(0, 0, z)
 		self.anchor     = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
-		self.extruder_no    = GCLine(code='T0', comment='Switch to main extruder', fake=True)
-		self.extrusion_mode = GCLine(code='M82',comment='Set absolute extrusion mode', fake=True)
-		self.cold_extrusion = GCLine(code='M302', args={'P':0}, comment='Prevent cold extrusion', fake=True)
 
 		#Properties for self.attr_changed()
 		self._ring_angle = self.ring.angle
@@ -53,9 +50,6 @@ class Printer:
 		self.add_codes(None,              action=lambda gcline, **kwargs: [gcline])
 		self.add_codes('G28',             action=self.gcfunc_auto_home)
 		self.add_codes('G0', 'G1', 'G92', action=self.gcfunc_set_axis_value)
-		self.add_codes('M82', 'M83',      action='extrusion_mode')
-		self.add_codes('T0', 'T1',        action='extruder_no')
-		self.add_codes('M302',            action='cold_extrusion')
 
 
 	#Create attributes which call Printer.attr_changed on change
@@ -121,7 +115,9 @@ class Printer:
 
 
 	def gcode_ring_move(self, move_amount) -> list[GCLine]:
-		return self.ring.gcode_move(move_amount)
+		"""Default ring movement command, provide relative or absolute or both.
+		Must be implemented in subclasses."""
+		raise NotImplementedError("Subclass must implement gcode_ring_move")
 
 
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
