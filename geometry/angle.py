@@ -64,8 +64,7 @@ class Angle(Real):
 	def __rpow__(self, base):          return NotImplemented
 	def __trunc__(self):               return trunc(self.radians)
 
-	def __repr__(self):
-		return "{0}({1!r})".format(self.__class__.__name__, float(self))
+	def __repr__(self): return f'{self.degrees:.3f}°'
 
 
 

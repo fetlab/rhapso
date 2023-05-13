@@ -1,10 +1,11 @@
 from Geometry3D import Circle, Vector, Line, get_eps
-from math import degrees, cos, radians, sin, atan2
+from math import cos, sin
 
 from gcline import GCLine
 from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import ang_diff
 from util import attrhelper
+from angle import Angle, atan2
 
 from plot_helpers import update_figure
 
@@ -17,9 +18,9 @@ class Ring:
 	}
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
-	def __init__(self, radius=100, angle=0, center:GPoint=None, rot_mul=1):
+	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1):
 		self.radius   = radius
-		self.angle    = angle
+		self.angle:Angle    = angle
 		self.center   = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
 		self.geometry = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
 
@@ -92,23 +93,23 @@ class Ring:
 		return sorted(intersections, key=p1.distance)
 
 
-	def angle2point(self, angle):
+	def angle2point(self, angle:Angle):
 		"""Return an x,y,z=0 location on the ring based on the given angle, without
 		moving the ring."""
 		return GPoint(
-			cos(radians(angle)) * self.radius + self.center.x,
-			sin(radians(angle)) * self.radius + self.center.y,
+			cos(angle) * self.radius + self.center.x,
+			sin(angle) * self.radius + self.center.y,
 			self.center.z
 		)
 
 
-	def point2angle(self, point:GPoint) -> float:
+	def point2angle(self, point:GPoint) -> Angle:
 		"""Given a point, return the angle between the ring center and that
 		point in degrees."""
-		return degrees(atan2(point.y - self.center.y, point.x - self.center.x))
+		return atan2(point.y - self.center.y, point.x - self.center.x)
 
 
-	def plot(self, fig, style=None, offset:Vector=None, angle=None):
+	def plot(self, fig, style=None, offset:Vector=None, angle:Angle=None):
 		angle = self.angle if angle is None else angle
 		center = self.center.copy()
 		if offset: center.move(offset)
@@ -125,12 +126,12 @@ class Ring:
 		ringwidth = next(fig.select_shapes(selector={'name':'ring'})).line.width
 
 		c1 = GPoint(
-				self.center.x + cos(radians(angle))*(self.radius-ringwidth/2),
-				self.center.y + sin(radians(angle))*(self.radius-ringwidth/2),
+				self.center.x + cos(angle)*(self.radius-ringwidth/2),
+				self.center.y + sin(angle)*(self.radius-ringwidth/2),
 				self.center.z)
 		c2 = GPoint(
-				self.center.x + cos(radians(angle))*(self.radius+ringwidth/2),
-				self.center.y + sin(radians(angle))*(self.radius+ringwidth/2),
+				self.center.x + cos(angle)*(self.radius+ringwidth/2),
+				self.center.y + sin(angle)*(self.radius+ringwidth/2),
 				self.center.z)
 
 

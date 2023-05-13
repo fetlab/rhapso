@@ -62,6 +62,7 @@ from util     import Number, Saver
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
+from angle import Angle
 
 # --- Ring gearing ---
 stepper_microsteps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps, 200 steps per rotation
@@ -97,14 +98,14 @@ RingConfig = TypedDict(
 		'center': GPoint,
 		'radius': Number,
 		'rot_mul': Number,
-		'angle': Number,
+		'angle': Angle,
 	})
 
 ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
-	'angle': 0,
+	'angle': Angle(0),
 }
 bed_config: BedConfig = {
 	'zero': GPoint(-32.5, -65, 0),

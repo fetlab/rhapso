@@ -1,9 +1,10 @@
-from math import atan2, pi, sin, cos, radians
+from math import pi, sin, cos, radians
 from typing import Collection, List
 from more_itertools import first
 from Geometry3D import Point, Segment, Line, Vector, Plane, HalfLine
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
+from .angle import Angle, atan2, acos, asin
 
 eps = get_eps()
 
@@ -40,8 +41,9 @@ def min_max_xyz_segs(segs:Collection[Segment]):
 					(seg.start_point.z, seg.end_point.z)) for seg in segs]))
 	return (min(x), min(y), min(z)), (max(x), max(y), max(z))
 
+# **** TODO **** Change to work with Angle
 
-def atan2p(y, x):
+def atan2p(y, x) -> Angle:
 	"""Return atan2(y,x), but ensure it's positive by adding 2pi if it's
 	negative."""
 	ang = atan2(y,x)
@@ -62,13 +64,13 @@ def ccw_dist(p,a,c):
 
 
 #Source: https://stackoverflow.com/a/28037434
-def ang_diff(a, b):
-	"""Return the shortest distance to go bewteen angles a and b (in degrees)."""
-	diff = (b - a + 180) % 360 - 180
-	return diff + 360 if diff < -180 else diff
+def ang_diff(a:Angle, b:Angle) -> Angle:
+	"""Return the shortest distance to go between angles a and b."""
+	diff = (b - a + pi) % 2*pi - pi
+	return diff + 2*pi if diff < -pi else diff
 
 
-def ang_dist(p,c,a):
+def ang_dist(p,c,a) -> Angle:
 	"""Return the angular distance of Point p with respect to the line formed by c->a"""
 	return atan2(p.y-c.y, p.x-c.x) - atan2(a.y-c.y, a.x-c.x)
 
@@ -128,7 +130,7 @@ def distance_linelike_point(linelike, point):
 	return None if foot is None else point.distance(foot)
 
 
-def angle2point(angle, center:Point, radius) -> GPoint:
-	return GPoint(cos(radians(angle)) * radius + center.x,
-							 sin(radians(angle)) * radius + center.y,
-							 center.z)
+def angle2point(angle:Angle, center:Point, radius) -> GPoint:
+	return GPoint(cos(angle) * radius + center.x,
+							  sin(angle) * radius + center.y,
+							  center.z)

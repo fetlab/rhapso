@@ -5,6 +5,7 @@ from geometry.utils import ang_diff
 from gcline import GCLine, comment
 from util import Saver, unprinted, Number
 from logger import rprint, rich_log
+from angle import Angle
 import logging
 
 class Step:
@@ -19,9 +20,9 @@ class Step:
 		self.number = -1
 		self.valid = True
 		self.printer_anchor = None
-		self.ring_initial_angle = None
-		self.ring_angle = None
-		self.ring_move = 0
+		self.ring_initial_angle:Angle|None = None
+		self.ring_angle:Angle|None = None
+		self.ring_move:Angle|None = None
 		self.fixing = False   #Does this step print over a thread to fix it in place?
 
 
@@ -30,7 +31,7 @@ class Step:
 				+ (f' ({len(self.gcsegs)} segments)>:' if self.gcsegs else '>')
 				+ f' [light_sea_green italic]{self.name}[/]>'
 				+ ((f' from {self.ring_initial_angle:.2f}° → {self.ring_angle:.2f}°' + f'({self.ring_move:.2f}°) ')
-					if self.ring_initial_angle and self.ring_angle and self.ring_move else '')
+						if self.ring_initial_angle and self.ring_angle and self.ring_move else '')
 		)
 
 
@@ -44,7 +45,7 @@ class Step:
 		and .gc_line2 member which are GCLines.
 		"""
 		if not self.gcsegs:
-			return [] if not self.ring_move else self.printer.gcode_ring_move(self.ring_move,
+			return [] if self.ring_move is None else self.printer.gcode_ring_move(self.ring_move,
 				#Tell ring move to pause if the previous step was a thread-fixing step
 				pause_after=False if self.number < 1 else self.steps_obj.steps[self.number-1].fixing)
 

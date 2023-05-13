@@ -15,7 +15,7 @@ Bed configuration:
 	at its other extreme, with the back edge of the plate under the nozzle, then
 	the actual front-left corner of the bed is at (-52.5, -285).
 """
-from math     import atan2, sin, acos, asin, pi, degrees
+from math     import sin, pi
 from geometry import GPoint, GSegment
 from bed      import Bed
 from ring     import Ring
@@ -26,6 +26,7 @@ from geometry_helpers import traj_isec
 from ender3   import RingConfig, BedConfig, stepper_microsteps_per_rotation, \
 										 thread_overlap_feedrate, \
 										 default_esteps_per_unit, Ender3 as Ender3v1
+from angle import Angle, atan2, asin, acos
 
 motor_gear_teeth = 19
 ring_gear_teeth  = 112
@@ -38,7 +39,7 @@ ring_config: RingConfig = {
 	'center':  GPoint(-5.5, 74.2, 0),
 	'radius':  93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
-	'angle':   90,
+	'angle':   Angle(90),
 }
 bed_config: BedConfig = {
 	'zero': GPoint(-52.5, -65, 0),
@@ -84,3 +85,7 @@ class Ender3(Ender3v1):
 		if new_ring_angle != self.ring.angle:
 			gcline.args['A'] = new_ring_angle
 		return [gcline]
+
+
+	def gcode_ring_move(self, dist, pause_after=False) -> list[GCLine]:
+		return [GCLine('G0', A=self.ring.angle+dist)]

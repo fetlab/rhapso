@@ -17,6 +17,7 @@ from logger import rprint
 from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, eps
 from steps import Steps
+from angle import Angle
 
 
 class Printer:
@@ -39,7 +40,7 @@ class Printer:
 		self.anchor     = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
 
 		#Properties for self.attr_changed()
-		self._ring_angle = self.ring.angle
+		self._ring_angle:Angle = self.ring.angle
 		self._x = 0
 		self._y = 0
 		self._z = 0
@@ -114,9 +115,8 @@ class Printer:
 	def gcode_layer_postamble(self, postamble: list[GCLine], layer:Layer) -> list[GCLine]: return postamble
 
 
-	def gcode_ring_move(self, move_amount) -> list[GCLine]:
-		"""Default ring movement command, provide relative or absolute or both.
-		Must be implemented in subclasses."""
+	def gcode_ring_move(self, move_amount:Angle, relative=True) -> list[GCLine]:
+		"""Default ring movement command. Must be implemented in subclasses."""
 		raise NotImplementedError("Subclass must implement gcode_ring_move")
 
 
