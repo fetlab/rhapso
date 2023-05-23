@@ -62,7 +62,7 @@ from util     import Number, Saver
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
-from angle import Angle
+from geometry.angle import Angle
 
 # --- Ring gearing ---
 stepper_microsteps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps, 200 steps per rotation
@@ -199,6 +199,10 @@ class Ender3(Printer):
 
 		#Do super() stuff
 		gclines = super().gcfunc_set_axis_value(gcline)
+
+		#M83: relative extrude mode
+		if 'E' in gcline.args and self.extrusion_mode.code == 'M83':
+			self.e += gcline.args['E']
 
 		#If not printing, don't need to do anything
 		if not gclines or not gcline.is_xyextrude(): return

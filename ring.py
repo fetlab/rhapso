@@ -5,7 +5,7 @@ from gcline import GCLine
 from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import ang_diff
 from util import attrhelper
-from angle import Angle, atan2
+from geometry.angle import Angle, atan2
 
 from plot_helpers import update_figure
 
@@ -19,10 +19,10 @@ class Ring:
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
 	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1):
-		self.radius   = radius
-		self.angle:Angle    = angle
-		self.center   = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
-		self.geometry = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
+		self.radius      = radius
+		self.angle:Angle = angle
+		self.center      = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
+		self.geometry    = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
 
 		#Set to -1 if positive E commands make the ring go clockwise
 		self.rot_mul  = rot_mul
@@ -32,7 +32,7 @@ class Ring:
 
 
 	def __repr__(self):
-		return f'Ring({self.angle:.2f}°, ⌀{self.radius*2}, ⊙{self.center})'
+		return f'Ring({self.angle}, ⌀{self.radius*2}, ⊙{self.center})'
 
 
 	@property
@@ -93,7 +93,7 @@ class Ring:
 		return sorted(intersections, key=p1.distance)
 
 
-	def angle2point(self, angle:Angle):
+	def angle2point(self, angle:Angle) -> GPoint:
 		"""Return an x,y,z=0 location on the ring based on the given angle, without
 		moving the ring."""
 		return GPoint(

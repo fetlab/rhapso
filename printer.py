@@ -17,7 +17,7 @@ from logger import rprint
 from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, eps
 from steps import Steps
-from angle import Angle
+from geometry.angle import Angle
 
 
 class Printer:
@@ -154,17 +154,11 @@ class Printer:
 			if gcline.code == 'G92':
 				self.e = gcline.args['E']
 
-			#M83: relative extrude mode
-			elif self.extrusion_mode.code == 'M83':
-				self.e += gcline.args['E']
-
 			#A normal extruding line; we need to use the relative extrude value
 			# since our lines get emitted out-of-order
 			else:
 				self.e += gcline.relative_extrude
-				gcline = deepcopy(gcline)
-				gcline.args['E'] = self.e
-				return [gcline]
+				return [gcline.copy(args={'E': self.e})]
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):

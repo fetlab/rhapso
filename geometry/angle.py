@@ -20,6 +20,7 @@ class Angle(Real):
 			raise ValueError('Must provide either degrees or radians')
 
 
+	#Extract radians from objects that might be Angles
 	@classmethod
 	def _r(cls, value): return value.radians if isinstance(value, cls) else value
 
@@ -64,7 +65,8 @@ class Angle(Real):
 	def __rpow__(self, base):          return NotImplemented
 	def __trunc__(self):               return trunc(self.radians)
 
-	def __repr__(self): return f'{self.degrees:.3f}°'
+	def __repr__(self):         return f'{self.degrees:.3f}°'
+	def __format__(self, spec): return format(self.degrees, spec)
 
 
 

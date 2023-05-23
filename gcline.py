@@ -1,10 +1,11 @@
 import re, sys
 from functools import total_ordering
 from collections import UserList
+from geometry.angle import Angle
+from util import deep_update, ReadOnlyDict
 
 from rich.console import Console
 rprint = Console(style="on #272727").print
-
 
 #Use total_ordering to allow comparing based on line number
 @total_ordering
@@ -19,6 +20,9 @@ class GCLine:
 		self.comment = comment
 		self.fake    = fake       #Set to True if it's been generated
 		self.meta    = meta or {} #Metadata about this line
+
+		if any(isinstance(arg, Angle) for arg in args.values()):
+			raise ValueError()
 
 		self.relative_extrude = None
 
@@ -56,6 +60,24 @@ class GCLine:
 						else:
 							self.args[None] = arg
 
+		self.args = ReadOnlyDict(self.args)
+
+
+	def copy(self, **kwargs):
+		"""Return a copy of this line. Pass kwargs to override
+		attributes."""
+		gcline = GCLine(
+				line    = kwargs.get('line',    self.line),
+				lineno  = kwargs.get('lineno',  self.lineno),
+				code    = kwargs.get('code',    self.code),
+				args    = deep_update(dict(self.args), kwargs.get('args', {})),
+				comment = kwargs.get('comment', self.comment),
+				fake    = kwargs.get('fake',    self.fake),
+				meta    = kwargs.get('meta',    self.meta),
+		)
+		gcline.relative_extrude = self.relative_extrude
+		return gcline
+
 
 	def __hash__(self):
 		return hash(('GCLine', self.lineno, self.construct()))
@@ -92,17 +114,11 @@ class GCLine:
 		"""Return a copy of this line without extrusion, turning it into a G0."""
 		if not self.is_xymove():
 			raise ValueError(f'Call of as_xymove() on non-xymove GCLine {self}')
-		c = GCLine(self.construct())
-		if fake:
-			c.lineno = ''
-			c.fake = True
-			c.comment += ' (fake)'
-		else:
-			c.lineno = self.lineno
-		if 'E' in c.args:
-			del(c.args['E'])
-		c.code = 'G0'
-		return c
+		return self.copy(
+			code='G0', args={k:v for k,v in self.args.items() if k != 'E'}, fake=fake,
+			lineno=self.lineno if not fake else '',
+			comment=((self.comment + ' (fake)' if fake else '') if self.comment else None),
+		)
 
 
 	@property
@@ -132,8 +148,11 @@ class GCLine:
 		for arg, val in args.items():
 			out.append(
 					(arg or "") +
-					("" if val is None else
-								str(round(val, 5)) if isinstance(val, (int,float)) else val))
+					("" if val is None
+							else str(round(val, 5))         if isinstance(val, (int,float))
+							#else str(round(val.degrees, 5)) if isinstance(val, Angle)
+							else val))
+
 		comment = ' '.join([
 				f'[{self.lineno}]' if (lineno_in_comment and self.lineno) else '',
 				self.comment or '']).strip()
