@@ -15,7 +15,7 @@ class Bed:
 
 	def __init__(self, anchor:Sequence=(0, 0, 0), size:Sequence=(220, 220)):
 		"""Anchor is where the thread is initially anchored on the bed. Size is the
-		size of the bed. Both are in mm."""
+		effective (taking into account the ring) size of the bed. Both are in mm."""
 		self.anchor = GPoint(*anchor)
 		self.size   = size
 
