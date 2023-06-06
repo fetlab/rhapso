@@ -69,8 +69,9 @@ class Ender3(Ender3v1):
 		gclines = Printer.gcfunc_set_axis_value(self, gcline)
 		if 'A' in gcline.args: self.ring_angle = Angle(degrees=gcline.args['A'])
 
-		#If there's no Y movement we don't need to do anything
-		if not gcline.y or gcline.y == cur_loc.y: return
+		#If there's no Y movement we don't need to do anything; the bed doesn't
+		# move so the thread angle won't change
+		if not gcline.y or gcline.y == prev_loc.y: return
 
 		#Find out how to move the ring to keep the thread at the same angle during
 		# this move.
