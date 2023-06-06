@@ -47,7 +47,7 @@ class Threader:
 			f.write('\n'.join([l.construct(lineno_in_comment=False) for l in self.gcode()]))
 
 
-	def gcode(self):
+	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all layers."""
 		r = self.printer.execute_gcode(
 				self.printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
