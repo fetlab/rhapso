@@ -20,7 +20,7 @@ class Ring:
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
 	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1):
 		self.radius      = radius
-		self.angle:Angle = angle
+		self._angle:Angle = angle
 		self.center      = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
 		self.geometry    = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
 
@@ -33,6 +33,16 @@ class Ring:
 
 	def __repr__(self):
 		return f'Ring({self.angle}, ⌀{self.radius*2}, ⊙{self.center})'
+
+
+	@property
+	def angle(self) -> Angle: return self._angle
+
+
+	@angle.setter
+	def angle(self, angle:Angle):
+		if not isinstance(angle, Angle): raise TypeError(f"Expected Angle, got {type(angle)}")
+		self._angle = angle
 
 
 	@property
