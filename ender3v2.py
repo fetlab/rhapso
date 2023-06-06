@@ -1,6 +1,6 @@
 """
 Configuration for updated Ender 3 with metal ring:
-	* Bed  (0,0,0) = (-117.5, -65, 0)
+	* Actual bed  (0,0,0) = (-117.5, -65, 0)
 	* Ring (0,0)   = (-5.5, 74.2)
 	* Ring x center is 122 mm from bed x = 0
 
@@ -42,15 +42,17 @@ ring_config: RingConfig = {
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
 	'angle':   Angle(90),
 }
+
 bed_config: BedConfig = {
 	'zero': GPoint(-52.5, -65, 0),
 	'size': (110, 220),
-	'anchor': GPoint(-72, 0, 0),
+	'anchor': GPoint(-72.5, 0, 0),   #In frame coordinates (45mm from actual bed left edge)
 }
 
 #Move the zero points so the bed zero is actually 0,0
 ring_config['center'] -= bed_config['zero']
-bed_config ['zero']   -= bed_config['zero']
+bed_config['anchor']  -= bed_config['zero']
+bed_config['zero']    -= bed_config['zero']
 
 
 class Ender3(Ender3v1):
