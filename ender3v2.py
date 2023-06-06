@@ -62,8 +62,8 @@ class Ender3(Ender3v1):
 
 	#Called for G0, G1, G92
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
-		#Keep a copy of the head location since super() might change it
-		cur_loc = self.head_loc.copy()
+		#Keep a copy of the head location since super() will change it
+		prev_loc = self.head_loc.copy()
 
 		#Update printer state
 		gclines = Printer.gcfunc_set_axis_value(self, gcline)
@@ -74,7 +74,7 @@ class Ender3(Ender3v1):
 
 		#Find out how to move the ring to keep the thread at the same angle during
 		# this move.
-		new_thr = GSegment(self.anchor, self.ring.point, z=0).moved(y=gcline.y-cur_loc.y)
+		new_thr = GSegment(self.anchor, self.ring.point, z=0).moved(y=gcline.y-prev_loc.y)
 		isecs = self.ring.intersection(new_thr)
 		if not isecs: return
 
