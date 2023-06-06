@@ -67,7 +67,7 @@ class Ender3(Ender3v1):
 
 		#Update printer state
 		gclines = Printer.gcfunc_set_axis_value(self, gcline)
-		if 'A' in gcline.args: self.a = gcline.args['A']
+		if 'A' in gcline.args: self.ring_angle = Angle(degrees=gcline.args['A'])
 
 		#If there's no Y movement we don't need to do anything
 		if not gcline.y or gcline.y == cur_loc.y: return
