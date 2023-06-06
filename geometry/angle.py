@@ -45,7 +45,6 @@ class Angle(Real):
 
 	def __hash__(self):                return hash(self.radians)
 	def __float__(self):               return float(self.radians)
-	def __str__(self):                 return str(self.radians)
 
 	def __eq__(self, other):           return self.radians == other
 	def __ne__(self, other):           return self.radians != other
@@ -65,8 +64,9 @@ class Angle(Real):
 	def __rpow__(self, base):          return NotImplemented
 	def __trunc__(self):               return trunc(self.radians)
 
-	def __repr__(self):         return f'{self.degrees:.3f}°'
-	def __format__(self, spec): return format(self.degrees, spec)
+	def __str__(self):                 return self.__repr__()
+	def __repr__(self):                return f'{self.degrees:.3f}°'
+	def __format__(self, spec):        return format(self.degrees, spec)
 
 
 
