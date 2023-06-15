@@ -1,10 +1,15 @@
+from __future__ import annotations
 from math import pi, sin, cos, radians
-from typing import Collection, List
+from typing import Collection, List, TYPE_CHECKING
 from more_itertools import first
 from Geometry3D import Point, Segment, Line, Vector, Plane, HalfLine
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
 from .angle import Angle, atan2, acos, asin
+
+if TYPE_CHECKING:
+	from .gsegment import GSegment
+	from .ghalfline import GHalfLine
 
 eps = get_eps()
 
@@ -41,7 +46,6 @@ def min_max_xyz_segs(segs:Collection[Segment]):
 					(seg.start_point.z, seg.end_point.z)) for seg in segs]))
 	return (min(x), min(y), min(z)), (max(x), max(y), max(z))
 
-# **** TODO **** Change to work with Angle
 
 def atan2p(y, x) -> Angle:
 	"""Return atan2(y,x), but ensure it's positive by adding 2pi if it's
@@ -50,14 +54,14 @@ def atan2p(y, x) -> Angle:
 	return ang if ang > 0 else ang + 2*pi
 
 
-def ccw(a:Point, b:Point, c:Point):
+def ccw(a:Point, b:Point, c:Point) -> Angle:
 	"""Compare the angles of a and b with respect to c as a center point. If a is
 	collinear to b, return 0; return negative if a is counter-clockwise from b,
 	and positive if it is clockwise."""
 	return atan2p(a.y-c.y, a.x-c.x) - atan2p(b.y-c.y, b.x-c.x)
 
 
-def ccw_dist(p,a,c):
+def ccw_dist(p,a,c) -> Angle:
 	"""Return CCW angular distance of point P from the line formed by a-c"""
 	v = atan2(a.y-c.y,a.x-c.x)-atan2(p.y-c.y,p.x-c.x)
 	return v if v > 0 else v + 2*pi
