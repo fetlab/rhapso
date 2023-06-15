@@ -17,6 +17,7 @@ class Steps:
 		self.layer   = layer
 		self.printer = printer
 		self.steps: list[Step] = []
+		self._cached_gcode: list[GCLine] = []
 
 
 	def __repr__(self):
@@ -45,6 +46,8 @@ class Steps:
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all steps."""
+		if self._cached_gcode:
+			return self._cached_gcode
 		r: list[GCLine] = self.printer.execute_gcode(
 				self.printer.gcode_layer_preamble(list(self.layer.preamble), self.layer))
 		if r:
@@ -63,4 +66,5 @@ class Steps:
 				self.printer.gcode_layer_postamble(list(self.layer.postamble), self.layer)))
 			r.append(comment(f'::: End layer {self.layer.layernum} postamble :::'))
 
+		self._cached_gcode = r
 		return r
