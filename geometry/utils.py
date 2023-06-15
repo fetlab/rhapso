@@ -70,7 +70,7 @@ def ccw_dist(p,a,c) -> Angle:
 #Source: https://stackoverflow.com/a/28037434
 def ang_diff(a:Angle, b:Angle) -> Angle:
 	"""Return the shortest distance to go between angles a and b."""
-	diff = (b - a + pi) % 2*pi - pi
+	diff = (b - a + pi) % (2*pi) - pi
 	return diff + 2*pi if diff < -pi else diff
 
 
