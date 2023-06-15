@@ -106,9 +106,9 @@ class Step:
 		if self.debug is False: rich_log.setLevel(logging.DEBUG)
 
 		#Save state
-		self.printer_anchor     = self.printer.anchor.copy()
-		self.ring_angle         = self.printer.ring.angle
-		self.ring_move          = ang_diff(self.ring_initial_angle, self.ring_angle)
+		self.printer_anchor = self.printer.anchor.copy()
+		self.ring_angle     = self.printer.ring.angle
+		self.ring_move      = ang_diff(self.ring_initial_angle, self.ring_angle)
 
 		#Die if there's an exception
 		if exc_type is not None:

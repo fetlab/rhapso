@@ -1,10 +1,15 @@
+from __future__ import annotations
 from math import pi, sin, cos, radians
-from typing import Collection, List
+from typing import Collection, List, TYPE_CHECKING
 from more_itertools import first
 from Geometry3D import Point, Segment, Line, Vector, Plane, HalfLine
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
 from .angle import Angle, atan2, acos, asin
+
+if TYPE_CHECKING:
+	from .gsegment import GSegment
+	from .ghalfline import GHalfLine
 
 eps = get_eps()
 
@@ -65,7 +70,7 @@ def ccw_dist(p,a,c) -> Angle:
 #Source: https://stackoverflow.com/a/28037434
 def ang_diff(a:Angle, b:Angle) -> Angle:
 	"""Return the shortest distance to go between angles a and b."""
-	diff = (b - a + pi) % 2*pi - pi
+	diff = (b - a + pi) % (2*pi) - pi
 	return diff + 2*pi if diff < -pi else diff
 
 
@@ -133,3 +138,43 @@ def angle2point(angle:Angle, center:Point, radius) -> GPoint:
 	return GPoint(cos(angle) * radius + center.x,
 							  sin(angle) * radius + center.y,
 							  center.z)
+
+
+#Source: https://stackoverflow.com/a/59582674/49663
+def circle_intersection(center:GPoint, radius, seg:GSegment|GHalfLine|Line) -> list[GPoint]:
+		from .gsegment import GSegment
+		from .ghalfline import GHalfLine
+		"""Return the intersection points between a segment, HalfLine, or Line, and
+		the ring, or an empty list if there are none. If the segment is tangent to
+		the ring, return a list with one point. Return the list sorted by distane
+		to the second point in the segment."""
+		if   isinstance(seg, GSegment):  p1, p2 = seg[:]
+		elif isinstance(seg, GHalfLine): p1, p2 = seg.point, seg.point + seg.vector
+		elif isinstance(seg, Line):      p1, p2 = GPoint(*seg.sv), GPoint(*(seg.sv + seg.dv))
+		else: raise ValueError(f"Can't intersect with {type(seg)}")
+
+		#Shift the points by the ring center and extract x and y
+		x1, y1, _ = (p1 - center)[:]
+		x2, y2, _ = (p2 - center)[:]
+
+		dx, dy, _    = (p2 - p1)[:]
+		dr           = (dx**2 + dy**2)**.5
+		big_d        = x1*y2 - x2*y1
+		discriminant = radius**2 * dr**2 - big_d**2
+
+		#No intersection between segment and circle
+		if discriminant < 0: return []
+
+		#Find intersections and shift them back by the ring center
+		intersections = [GPoint(
+			( big_d * dy + sign * (-1 if dy < 0 else 1) * dx * discriminant**.5) / dr**2,
+			(-big_d * dx + sign * abs(dy) * discriminant**.5) / dr**2, 0).moved(Vector(*center))
+									 for sign in ((1,-1) if dy < 0 else (-1, 1))]
+
+		if not isinstance(seg, Line):
+			hl = (GHalfLine(*seg) if isinstance(seg, GSegment) else seg).as2d()
+			intersections = [p for p in intersections if p in hl]
+
+		if len(intersections) == 2 and abs(discriminant) <= get_eps(): return [intersections[0]]
+
+		return sorted(intersections, key=p2.distance)

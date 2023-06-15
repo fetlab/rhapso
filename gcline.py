@@ -32,7 +32,7 @@ class GCLine:
 
 		if ';' in line:
 			cmd, cmt = re.match('^(.*?)\s*;\s*(.*?)\s*$', line).groups()
-			self.comment = cmt
+			if not self.comment: self.comment = cmt
 		else:
 			cmd = line
 
@@ -63,15 +63,20 @@ class GCLine:
 		self.args = ReadOnlyDict(self.args)
 
 
-	def copy(self, **kwargs):
+	def copy(self, add_comment='', **kwargs):
 		"""Return a copy of this line. Pass kwargs to override
-		attributes."""
+		attributes. Specify add_comment to append an additional comment to the
+		existing one."""
+		comment = kwargs.get('comment', self.comment or '')
+		if isinstance(comment,     (list,tuple)): comment     = ' '.join(comment)
+		if isinstance(add_comment, (list,tuple)): add_comment = ' '.join(add_comment)
+		if add_comment: comment = ' '.join((comment, add_comment))
 		gcline = GCLine(
 				line    = kwargs.get('line',    self.line),
 				lineno  = kwargs.get('lineno',  self.lineno),
 				code    = kwargs.get('code',    self.code),
 				args    = deep_update(dict(self.args), kwargs.get('args', {})),
-				comment = kwargs.get('comment', self.comment),
+				comment = comment,
 				fake    = kwargs.get('fake',    self.fake),
 				meta    = kwargs.get('meta',    self.meta),
 		)
@@ -198,8 +203,8 @@ class GCLines(UserList):
 		if not isinstance(to_get, (slice, list, tuple, set)):
 			try:
 				return self.data[self.index(to_get)]
-			except KeyError as e:
-				raise IndexError(f'GCLine number {to_get} not in GCLines') from e
+			except KeyError as ex:
+				raise IndexError(f'GCLine number {to_get} not in GCLines') from ex
 
 		else:
 			#Support slicing, including slicing by list
@@ -329,3 +334,11 @@ class GCLines(UserList):
 
 def comment(comment):
 	return GCLine(fake=True, comment=comment)
+
+
+def comments(comments) -> list[GCLine]:
+	from textwrap import dedent
+	if isinstance(comments, (list,tuple)):
+		return [comment(line) for line in comments]
+	return [comment(line) for line in dedent(comments).split('\n') if line]
+

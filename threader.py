@@ -40,12 +40,12 @@ class Threader:
 		self._cached_gcode: list[GCLine] = []
 
 
-	def save(self, filename):
+	def save(self, filename, lineno_in_comment=False):
 		if len(self.layer_steps) != len(self.gcode_file.layers):
 			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
 				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
-			f.write('\n'.join([l.construct(lineno_in_comment=False) for l in self.gcode()]))
+			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment) for l in self.gcode()]))
 
 
 	def gcode(self) -> list[GCLine]:
@@ -305,3 +305,19 @@ class Threader:
 		rprint(f'Printer state: {self.printer}')
 
 		return steps
+
+
+if __name__ == "__main__":
+	import logger
+	from pathlib import Path
+	from geometry import list2gsegments
+	from gcode_file import GcodeFile
+	from tlayer import TLayer
+
+	test_root = Path('./example/bracelet/')
+	gcode_filename = test_root.joinpath('bracelet-cura5.gcode')
+	thread_geom = list2gsegments([([47.9130, 91.2271, 3.3300], [37.7413, 97.0997, 3.3300]), ([47.9130, 91.2271, 3.3300], [37.7413, 97.0997, 3.3300]), ([37.7413, 97.0997, 3.3300], [31.8687, 107.2714, 3.3300]), ([31.8687, 107.2714, 3.3300], [31.8687, 119.0167, 3.3300]), ([31.8687, 119.0167, 3.3300], [37.7413, 129.1884, 3.3300]), ([37.7413, 129.1884, 3.3300], [47.9130, 135.0611, 3.3300]), ([47.9130, 135.0611, 3.3300], [59.6583, 135.0611, 3.3300]), ([59.6583, 135.0611, 3.3300], [69.8300, 129.1884, 3.3300]), ([69.8300, 129.1884, 3.3300], [75.7026, 119.0167, 3.3300]), ([75.7026, 119.0167, 3.3300], [75.7026, 107.2714, 3.3300]), ([75.7026, 107.2714, 3.3300], [69.8300, 97.0997, 3.3300]), ([69.8300, 97.0997, 3.3300], [59.6583, 91.2271, 3.3300]), ([59.6583, 91.2271, 3.3300], [48.1718, 92.1930, 3.3300]), ([48.1718, 92.1930, 3.3300], [47.8936, 91.2396, 6.6600]), ([47.8936, 91.2396, 6.6600], [37.7219, 97.1122, 6.6600]), ([37.7308, 97.1202, 6.6600], [31.8581, 107.2920, 6.6600]), ([31.8698, 107.2945, 6.6600], [31.8698, 119.0397, 6.6600]), ([31.8812, 119.0361, 6.6600], [37.7538, 129.2078, 6.6600]), ([37.7618, 129.1989, 6.6600], [47.9335, 135.0716, 6.6600]), ([47.9360, 135.0599, 6.6600], [59.6813, 135.0599, 6.6600]), ([59.6776, 135.0485, 6.6600], [69.8494, 129.1759, 6.6600]), ([69.8405, 129.1679, 6.6600], [75.7131, 118.9962, 6.6600]), ([75.7015, 118.9937, 6.6600], [75.7015, 107.2484, 6.6600]), ([75.6901, 107.2521, 6.6600], [69.8175, 97.0804, 6.6600]), ([69.8095, 97.0892, 6.6600], [59.6378, 91.2166, 6.6600]), ([59.6583, 91.2271, 6.6600], [48.1718, 92.1930, 6.6600])])
+	gcode = GcodeFile(gcode_filename, layer_class=TLayer)
+	threader = Threader(gcode)
+	logger.restart_logging()
+	threader.route_model(thread_geom)

@@ -52,7 +52,6 @@ class Printer:
 	x = property(**attrhelper('head_loc.x'))
 	y = property(**attrhelper('head_loc.y'))
 	z = property(**attrhelper('head_loc.z'))
-	ring_angle = property(**attrhelper('ring.angle'))
 
 
 	@property
@@ -96,11 +95,6 @@ class Printer:
 		""")
 
 
-	def attr_changed(self, attr, old_value, new_value):
-		if attr[1] in 'xyz':
-			self.head_loc['xyz'.index(attr[1])] = new_value
-
-
 	#Functions to add extra lines of GCode. Each is passed the pre/postamble and
 	# should return it, possibly modified.
 	def gcode_file_preamble  (self, preamble:  list[GCLine]) -> list[GCLine]: return preamble
@@ -116,15 +110,6 @@ class Printer:
 
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
 		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
-
-
-	# def execute_gcode(self, gcline:GCLine|list[GCLine]|GCLines) -> list[GCLine]:
-	# 	"""Update the printer state according to the passed line of gcode. Return
-	# 	the line of gcode for convenience. Assumes absolute coordinates."""
-	# 	r: list[GCLine] = []
-	# 	for l in listify(gcline):
-	# 		r.extend(self._code_actions.get(l.code, self._code_actions[None])(l) or [l])
-	# 	return r
 
 
 	def execute_gcode(self, gcline:GCLine|list[GCLine], **kwargs) -> list[GCLine]:

@@ -197,7 +197,7 @@ def deep_update(mapping, *updating_mappings):
 class Saver:
 	"""Save values for variables in save_vars that have changed."""
 	def __init__(self, obj, save_vars):
-		self.saved = {v: getattr(obj, v) for v in save_vars}
+		self.saved = {v: rgetattr(obj, v) for v in save_vars}
 		self.obj = obj
 		self.changed = {}
 
@@ -208,7 +208,7 @@ class Saver:
 		if exc_type is not None:
 			return False
 		for var,oldval in self.saved.items():
-			newval = getattr(self.obj, var)
+			newval = rgetattr(self.obj, var)
 			if newval != oldval:
 				self.changed[var] = newval
 

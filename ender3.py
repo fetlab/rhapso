@@ -53,16 +53,17 @@ Transforms to provide:
 	fact that the bed moves in the y-axis.
 """
 
+from copy     import copy
 from printer  import Printer
 from bed      import Bed
 from ring     import Ring
 from geometry import GPoint, GSegment
-from typing   import TypedDict
-from util     import Number, Saver
+from util     import Saver
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
 from geometry.angle import Angle
+from config import RingConfig, BedConfig
 
 # --- Ring gearing ---
 stepper_microsteps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps, 200 steps per rotation
@@ -85,27 +86,12 @@ thread_overlap_feedrate = 900
 #Pause before we move the thread carrier if we just printed over thread
 post_thread_overlap_pause = 2
 
-# --- Actual measured parameters of the printer, in the coordinate system of
-# the printer frame (see comments above) ---
-BedConfig  = TypedDict(
-	'BedConfig',  {
-		'zero':   GPoint,
-		'size':   tuple[Number, Number],
-		'anchor': GPoint,
-	})
-RingConfig = TypedDict(
-	'RingConfig', {
-		'center': GPoint,
-		'radius': Number,
-		'rot_mul': Number,
-		'angle': Angle,
-	})
 
 ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
-	'angle': Angle(0),
+	'angle': Angle(degrees=0),
 }
 bed_config: BedConfig = {
 	'zero': GPoint(-32.5, -65, 0),
@@ -120,6 +106,8 @@ bed_config ['zero']   -= bed_config['zero']
 
 class Ender3(Printer):
 	def __init__(self):
+		self._ring_config = copy(ring_config)
+		self._bed_config  = copy(bed_config)
 		self.bed = Bed(anchor=(ring_config['radius']+ring_config['center'].x, 0, 0), size=bed_config['size'])
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
@@ -231,3 +219,11 @@ class Ender3(Printer):
 							comment(f'  Segment: {printed_seg}'),
 							comment(f'  Thread ({self.ring_angle:.2f}°):  {thread_seg}'),
 						] + self.gcode_ring_move(move_by) + gclines)
+
+
+	def gcfunc_auto_home(self, gcline: GCLine, **kwargs):
+		#Also reset the ring to its default configuration when we get a home command
+		super().gcfunc_auto_home(gcline)
+		self.ring = Ring(**self._ring_config)
+		self.bed = Bed(anchor=self._bed_config['anchor'], size=self._bed_config['size'])
+		self.anchor = self.bed.anchor

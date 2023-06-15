@@ -1,0 +1,46 @@
+general:
+  #Defined in Marlin
+  default_esteps_per_unit: 93
+
+  #Raise print head a bit before we move the ring past it (mm)
+  thread_crossing_head_raise: 1
+
+  #Slow down when we print over the thread
+  thread_overlap_feedrate: 900
+
+  #Pause before we move the thread carrier if we just printed over thread
+  post_thread_overlap_pause: 2
+
+
+ring:
+  #16 microsteps, 200 steps per rotation = 3200
+  stepper_microsteps_per_rotation: 3200
+
+  #Configure gears
+  motor_gear_teeth: 19
+  ring_gear_teeth : 112
+
+  #The center of the ring in printer frame corodinates, in mm
+  center: [-5.5, -74.2, 0]
+
+  #Ring radius, measured from center to thread outlet in thread carrier, in mm
+  radius: 93
+
+  #Home angle of ring, in degrees
+  home_angle: 90
+
+
+bed:
+  #Note: the "effective" bed is the portion of the physical print bed which is
+  # actually printable, taking the ring into account.
+
+  #The "zero" point of the effective bed in mm, in printer frame coordinates
+  zero: [-52.5, -65, 0]
+
+  #The size of the effective bed in mm
+  size: [110, 220]
+
+  #The point where the thread is anchored to the bed, in mm, in printer frame
+  # coordinates
+  #(Here it's 45mm from the actual bed's left edge)
+  anchor: [-72.5, -65, 0]
