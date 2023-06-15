@@ -116,17 +116,11 @@ class GCLine:
 		"""Return a copy of this line without extrusion, turning it into a G0."""
 		if not self.is_xymove():
 			raise ValueError(f'Call of as_xymove() on non-xymove GCLine {self}')
-		c = GCLine(self.construct())
-		if fake:
-			c.lineno = ''
-			c.fake = True
-			c.comment += ' (fake)'
-		else:
-			c.lineno = self.lineno
-		if 'E' in c.args:
-			del(c.args['E'])
-		c.code = 'G0'
-		return c
+		return self.copy(
+			code='G0', args={k:v for k,v in self.args.items() if k != 'E'}, fake=fake,
+			lineno=self.lineno if not fake else '',
+			comment=((self.comment + ' (fake)' if fake else '') if self.comment else None),
+		)
 
 
 	@property
