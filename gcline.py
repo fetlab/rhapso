@@ -1,6 +1,7 @@
 import re, sys
 from functools import total_ordering
 from collections import UserList
+from util import deep_update, ReadOnlyDict
 
 from rich.console import Console
 rprint = Console(style="on #272727").print
@@ -55,6 +56,29 @@ class GCLine:
 								self.args[arg[0]] = None
 						else:
 							self.args[None] = arg
+
+		self.args = ReadOnlyDict(self.args)
+
+
+	def copy(self, add_comment='', **kwargs):
+		"""Return a copy of this line. Pass kwargs to override
+		attributes. Specify add_comment to append an additional comment to the
+		existing one."""
+		comment = kwargs.get('comment', self.comment or '')
+		if isinstance(comment,     (list,tuple)): comment     = ' '.join(comment)
+		if isinstance(add_comment, (list,tuple)): add_comment = ' '.join(add_comment)
+		if add_comment: comment = ' '.join((comment, add_comment))
+		gcline = GCLine(
+				line    = kwargs.get('line',    self.line),
+				lineno  = kwargs.get('lineno',  self.lineno),
+				code    = kwargs.get('code',    self.code),
+				args    = deep_update(dict(self.args), kwargs.get('args', {})),
+				comment = comment,
+				fake    = kwargs.get('fake',    self.fake),
+				meta    = kwargs.get('meta',    self.meta),
+		)
+		gcline.relative_extrude = self.relative_extrude
+		return gcline
 
 
 	def __hash__(self):

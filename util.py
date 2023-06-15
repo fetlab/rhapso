@@ -3,6 +3,7 @@ from time         import time
 from functools    import wraps, reduce
 from operator     import itemgetter
 from pathlib      import Path
+from collections.abc import Mapping
 
 #Create Number type
 Number = float|int
@@ -224,3 +225,29 @@ class Saver:
 	def originals(self):
 		"""Return the original values for every saved variable that changed."""
 		return {var: self.saved[var] for var in self.changed}
+
+
+class ReadOnlyDict(Mapping):
+	"""A read-only dict."""
+	def __init__(self, *args, **kwargs):
+		self._dict = dict(*args, **kwargs)
+
+	def __getitem__(self, key):
+		return self._dict[key]
+
+	def __iter__(self):
+		return iter(self._dict)
+
+	def __len__(self):
+		return len(self._dict)
+
+	def __repr__(self):
+		return repr(self._dict)
+
+	def __hash__(self):
+		return hash(self._dict)
+
+	def __eq__(self, other):
+		return hash(self) == hash(other)
+
+
