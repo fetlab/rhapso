@@ -39,12 +39,12 @@ class Threader:
 		self.acclog      = reinit_logging()
 
 
-	def save(self, filename):
+	def save(self, filename, lineno_in_comment=False):
 		if len(self.layer_steps) != len(self.gcode_file.layers):
 			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
 				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
-			f.write('\n'.join([l.construct(lineno_in_comment=False) for l in self.gcode()]))
+			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment) for l in self.gcode()]))
 
 
 	def gcode(self):
