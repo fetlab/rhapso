@@ -37,6 +37,7 @@ class Threader:
 		self.printer     = Ender3()
 		self.layer_steps: list[Steps] = []
 		self.acclog      = reinit_logging()
+		self._cached_gcode: list[GCLine] = []
 
 
 	def save(self, filename, lineno_in_comment=False):
@@ -47,8 +48,10 @@ class Threader:
 			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment) for l in self.gcode()]))
 
 
-	def gcode(self):
+	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all layers."""
+		if self._cached_gcode:
+			return self._cached_gcode
 		r = self.printer.execute_gcode(
 				self.printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
@@ -57,6 +60,7 @@ class Threader:
 			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
 		r.extend(self.printer.execute_gcode(
 				self.printer.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
+		self._cached_gcode = r
 		return r
 
 
