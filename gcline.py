@@ -310,3 +310,11 @@ class GCLines(UserList):
 
 def comment(comment):
 	return GCLine(fake=True, comment=comment)
+
+
+def comments(comments) -> list[GCLine]:
+	from textwrap import dedent
+	if isinstance(comments, (list,tuple)):
+		return [comment(line) for line in comments]
+	return [comment(line) for line in dedent(comments).split('\n') if line]
+
