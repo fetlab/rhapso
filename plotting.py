@@ -64,8 +64,8 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		if not step.gcsegs:
 			print(f'Step {stepnum}',
 				 step.name,
-				 f'from {step.ring_initial_angle:.2f}° → {step.ring_angle:.2f}°',
-				 f'({step.ring_move:.2f}°)'
+				 f'from {step.ring_initial_angle} → {step.ring_angle}',
+				 f'({step.ring_move})'
 			)
 		else:
 			print(f'Step {stepnum}: {step.name}')
