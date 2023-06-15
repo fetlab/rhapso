@@ -5,6 +5,7 @@ from fastcore.basics import listify
 from .gpoint import GPoint
 from .gcast import gcast
 from .utils import distance_linelike_point
+from .angle import Angle
 
 def list2gsegments(points:Collection):
 	return [GSegment(s, e) for s,e in points]
@@ -278,7 +279,7 @@ class GSegment(Segment):
 		else:         return self.end_point
 
 
-	def angle(self, other=None):
+	def angle(self, other=None) -> Angle:
 		"""Return the angle in radians between this segment and something else, or
 		the X axis if `other` is None."""
-		return angle(self.line.dv, other or Vector.x_unit_vector())
+		return Angle(radians=angle(self.line.dv, other or Vector.x_unit_vector()))
