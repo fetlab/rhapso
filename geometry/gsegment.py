@@ -216,9 +216,7 @@ class GSegment(Segment):
 			#Second segment
 			seg2_frac = 1 - seg1_frac
 			seg2.gc_line1 = copy(seg1.gc_line2)
-			seg2.gc_line2 = copy(self.gc_line2)
-
-			seg2.gc_line2.args['E'] *= seg2_frac
+			seg2.gc_line2 = self.gc_line2.copy(args={'E': self.gc_line2.args['E'] * seg2_frac})
 			seg2.gc_line2.relative_extrude *= seg2_frac
 
 			#Cleanup
