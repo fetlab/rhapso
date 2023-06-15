@@ -1,6 +1,6 @@
 """
 Configuration for updated Ender 3 with metal ring:
-	* Bed  (0,0,0) = (-117.5, -65, 0)
+	* Actual bed  (0,0,0) = (-117.5, -65, 0)
 	* Ring (0,0)   = (-5.5, 74.2)
 	* Ring x center is 122 mm from bed x = 0
 
@@ -14,6 +14,16 @@ Bed configuration:
 	with the front edge of the bed plate underneath the nozzle. When the bed is
 	at its other extreme, with the back edge of the plate under the nozzle, then
 	the actual front-left corner of the bed is at (-52.5, -285).
+
+The conceptual model for the coordinate system is that the bed is fixed, with
+the effective (0, 0) coordinate as actual (0, 0). Then the print head moves as
+expected in two dimensions, and the ring is locked in position relative to the
+head, so it moves in 2D as well. This inversion of the actual situation should
+be more intuitive and require less converting of coordinate systems.
+
+Conveniently for calculations, this "moving ring" model is (I think!) only
+necessary during GCode generation. In working with calculations for planning
+thread trajectories and print order, we can ignore that part.
 """
 from math     import sin, pi
 from geometry import GPoint, GSegment

@@ -104,8 +104,8 @@ class Ring:
 
 
 	def point2angle(self, point:GPoint) -> Angle:
-		"""Given a point, return the angle between the ring center and that
-		point in degrees."""
+		"""Given a point in the coordinate system of the ring's center coordinate,
+		return the angle between the ring center and that point in degrees."""
 		return atan2(point.y - self.center.y, point.x - self.center.x)
 
 
