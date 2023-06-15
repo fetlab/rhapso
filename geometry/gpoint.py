@@ -2,6 +2,7 @@ from __future__ import annotations     #Allow self-referencing for typing inside
 from copy import copy
 from Geometry3D import Point, Vector
 from fastcore.basics import listify
+from .angle import Angle, atan2
 
 class GPoint(Point):
 	def __init__(self, *args, **kwargs):
@@ -93,9 +94,8 @@ class GPoint(Point):
 		return {o for o in listify(check) if self in o}
 
 
-	def angle(self, other:Point=None):
+	def angle(self, other:Point=None) -> Angle:
 		"""Return the angle in degrees of a line drawn through this point from
 		either the origin or a second point (ignoring the z-coordinate)."""
-		from math import degrees, atan2
 		x, y = (other.x, other.y) if isinstance(other, Point) else (0, 0)
-		return degrees(atan2(self.y - y, self.x - x))
+		return atan2(self.y - y, self.x - x)
