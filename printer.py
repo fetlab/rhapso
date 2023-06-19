@@ -292,7 +292,7 @@ class Printer:
 
 		if target != anchor:
 			if isecs := self.ring.intersection(GSegment(anchor, target)):
-				ring_angle = self.ring.point2angle(isecs[-1])
+				ring_angle = self.ring.angle + ang_diff(self.ring.angle, self.ring.point2angle(isecs[-1]))
 
 				if move_ring:
 					self.ring.angle = ring_angle
@@ -302,6 +302,7 @@ class Printer:
 
 		if set_new_anchor:
 			rprint(f'thread_intersect set new anchor to {target}')
+			rprint(f'thread_intersect set new angle to {self.ring.angle}')
 			self.anchor = target
 
 		return self.ring.angle

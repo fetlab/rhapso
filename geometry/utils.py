@@ -65,9 +65,8 @@ def ccw_dist(p,a,c) -> Angle:
 #Source: https://stackoverflow.com/a/28037434
 def ang_diff(a:Angle, b:Angle) -> Angle:
 	"""Return the shortest distance to go between angles a and b."""
-	diff = (b - a + pi) % 2*pi - pi
-	return diff + 2*pi if diff < -pi else diff
-
+	diff = (b.degrees - a.degrees + 180) % 360 - 180
+	return Angle(degrees=diff + 360) if diff < -180 else Angle(degrees=diff)
 
 def ang_dist(p,c,a) -> Angle:
 	"""Return the angular distance of Point p with respect to the line formed by c->a"""

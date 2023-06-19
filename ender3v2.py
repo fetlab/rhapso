@@ -15,15 +15,12 @@ Bed configuration:
 	at its other extreme, with the back edge of the plate under the nozzle, then
 	the actual front-left corner of the bed is at (-52.5, -285).
 """
-from copy     import copy
-from math     import sin, pi
 from geometry import GPoint, GSegment
 from bed      import Bed
 from ring     import Ring
 from printer  import Printer
-from gcline   import GCLine, comment
+from gcline   import GCLine
 from geometry.utils import ang_diff
-from geometry_helpers import traj_isec
 from ender3   import RingConfig, BedConfig, stepper_microsteps_per_rotation, \
 										 thread_overlap_feedrate, post_thread_overlap_pause, \
 										 default_esteps_per_unit, Ender3 as Ender3v1
@@ -62,39 +59,54 @@ class Ender3(Ender3v1):
 		Printer.__init__(self, self.bed, self.ring)
 
 
-	#Called for G0, G1, G92
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
-		#Keep a copy of the head location since super() will change it
-		prev_loc = self.head_loc.copy()
+		"""Process gcode lines with instruction G0, G1, or G92. Move the ring such that the thread stays in place with any Y movement. \n
+		We do not do this movement on fixing steps or if the gcode line already includes ring movement."""
+		#Fixing segment, we *want* interference! We should have already moved the ring into place, so no processing is required
+		if kwargs.get('fixing') == True:
+			gcline.comment =  'Fixing - true'
+			
+			return [gcline]
 
-		#Update printer state
-		gclines = Printer.gcfunc_set_axis_value(self, gcline)
-		if 'A' in gcline.args: self.ring_angle = Angle(degrees=gcline.args['A'])
+		if kwargs.get('fixing') == False:
+			gcline.comment =  'Fixing - false'
 
-		#If there's no Y movement we don't need to do anything; the bed doesn't
-		# move so the thread angle won't change
-		if not gcline.y or gcline.y == prev_loc.y: return
+		old_head_y_loc = self.head_loc.y
+		#If there's no Y movement we don't need to do anything
+		if not gcline.y or gcline.y == old_head_y_loc: return
+
+		self.head_loc: GPoint = GPoint(gcline)
+
+		#If we already have ring movement, we're done
+		if 'A' in gcline.args: 
+			self._ring_angle = Angle(degrees=gcline.args['A'])
+			return
 
 		#Find out how to move the ring to keep the thread at the same angle during
 		# this move.
-		new_thr = GSegment(self.anchor, self.ring.point, z=0).moved(y=gcline.y-prev_loc.y)
+		ring_point = self.ring.angle2point(self._ring_angle)
+		new_thr = GSegment(self.anchor, ring_point, z=0).moved(y=gcline.y-old_head_y_loc)
 		isecs = self.ring.intersection(new_thr)
 		if not isecs: return
 
 		#Get the intersection closest to the current carrier location
-		isec = isecs[0] if len(isecs) == 1 else sorted(isecs, key=self.ring.point.distance)[0]
+		isec = isecs[0] if len(isecs) == 1 else sorted(isecs, key=ring_point.distance)[0]
 
-		new_ring_angle = self.ring.point2angle(isec)
+		new_ring_angle: Angle = self._ring_angle + ang_diff(self._ring_angle, self.ring.point2angle(isec))
 
-		if new_ring_angle != self.ring.angle:
+		if new_ring_angle != self._ring_angle:
 			gcline = gcline.copy(args={'A': new_ring_angle.degrees})
+			self._ring_angle = new_ring_angle
 		return [gcline]
 
 
-	def gcode_ring_move(self, dist, pause_after=False) -> list[GCLine]:
+	def gcode_ring_move(self, move_to: Angle, pause_after=False) -> list[GCLine]:
+		"""Add a Gcode instruction to move the ring to a specified angle taking the shortest route possible."""
+		new_ring_angle = self._ring_angle + ang_diff(self._ring_angle, move_to)
 		gcode = self.execute_gcode([
-			GCLine('G0', args={'A':(self.ring.angle+dist).degrees})
+			GCLine('G0', args={'A':new_ring_angle.degrees})
 		])
+		self._ring_angle = new_ring_angle
 		if pause_after:
 			gcode.extend(self.execute_gcode(
 				GCLine(code='G4', args={'S': post_thread_overlap_pause},

@@ -12,6 +12,7 @@ from gcode_file import GcodeFile
 from rich import print
 from rich.pretty import pretty_repr
 from itertools import pairwise
+from geometry.angle import Angle
 
 from logger import rprint, restart_logging, reinit_logging, end_accordion_logging
 
@@ -52,6 +53,7 @@ class Threader:
 		"""Return the gcode for all layers."""
 		if self._cached_gcode:
 			return self._cached_gcode
+		self.printer.ring_angle = Angle(0) # Ensure starting ring angle is correct
 		r = self.printer.execute_gcode(
 				self.printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
@@ -234,7 +236,7 @@ class Threader:
 					isecs = self.printer.thread_avoid(anchorsegs)
 					if isecs: raise ValueError("Couldn't avoid anchor segments???")
 				with steps.new_step(f"Print {len(anchorsegs)} anchor-fixing segments") as s:
-					s.add(anchorsegs)
+					s.add(anchorsegs, fixing=True)
 			elif a != self.printer.bed.anchor.copy(z=layer.z):
 				rprint(f"[yellow]No segments contain the start anchor[/] {a}")
 
@@ -266,7 +268,7 @@ class Threader:
 
 					anchor = thread_seg.end_point
 
-					with steps.new_step(f'Move thread to overlap anchor at {anchor}') as s:
+					with steps.new_step(f'Move thread to overlap anchor at {anchor} from {self.printer.anchor}') as s:
 						self.printer.thread_intersect(anchor)
 						rprint(f"Ring now at {self.printer.ring.angle:.2f}°")
 
