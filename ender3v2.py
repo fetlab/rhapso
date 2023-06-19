@@ -24,7 +24,7 @@ from geometry.utils import ang_diff
 from ender3   import RingConfig, BedConfig, stepper_microsteps_per_rotation, \
 										 thread_overlap_feedrate, post_thread_overlap_pause, \
 										 default_esteps_per_unit, Ender3 as Ender3v1
-from geometry.angle import Angle, atan2, asin, acos
+from geometry.angle import Angle
 
 motor_gear_teeth = 19
 ring_gear_teeth  = 112
@@ -72,13 +72,14 @@ class Ender3(Ender3v1):
 			gcline.comment =  'Fixing - false'
 
 		old_head_y_loc = self.head_loc.y
-		#If there's no Y movement we don't need to do anything
+		#If there's no Y movement we don't need to do anything; the bed doesn't
+		# move so the thread angle won't change
 		if not gcline.y or gcline.y == old_head_y_loc: return
 
 		self.head_loc: GPoint = GPoint(gcline)
 
 		#If we already have ring movement, we're done
-		if 'A' in gcline.args: 
+		if 'A' in gcline.args:
 			self._ring_angle = Angle(degrees=gcline.args['A'])
 			return
 
@@ -92,11 +93,11 @@ class Ender3(Ender3v1):
 		#Get the intersection closest to the current carrier location
 		isec = isecs[0] if len(isecs) == 1 else sorted(isecs, key=ring_point.distance)[0]
 
-		new_ring_angle: Angle = self._ring_angle + ang_diff(self._ring_angle, self.ring.point2angle(isec))
+		newring_angle: Angle = self._ring_angle + ang_diff(self._ring_angle, self.ring.point2angle(isec))
 
-		if new_ring_angle != self._ring_angle:
-			gcline = gcline.copy(args={'A': new_ring_angle.degrees})
-			self._ring_angle = new_ring_angle
+		if newring_angle != self._ring_angle:
+			gcline = gcline.copy(args={'A': newring_angle.degrees})
+			self._ring_angle = newring_angle
 		return [gcline]
 
 
