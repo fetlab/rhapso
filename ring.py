@@ -5,7 +5,7 @@ from gcline import GCLine
 from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import ang_diff
 from util import attrhelper
-from angle import Angle, atan2
+from geometry.angle import Angle, atan2
 
 from plot_helpers import update_figure
 

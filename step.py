@@ -5,7 +5,7 @@ from geometry.utils import ang_diff
 from gcline import GCLine, comment
 from util import Saver, unprinted, Number
 from logger import rprint, rich_log
-from angle import Angle
+from geometry.angle import Angle
 import logging
 
 class Step:

@@ -17,7 +17,7 @@ from logger import rprint
 from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, eps
 from steps import Steps
-from angle import Angle
+from geometry.angle import Angle
 
 
 class Printer:
