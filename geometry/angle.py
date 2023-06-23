@@ -4,8 +4,6 @@ from numbers import Real
 
 #Based on https://github.com/dstl/Stone-Soup/blob/main/stonesoup/types/angle.py
 class Angle(Real):
-	__slots__ = '_degrees', '_radians'
-
 	def __init__(self, *, radians=None, degrees=None):
 		if degrees is not None and radians is not None:
 			raise ValueError('Must provide either degrees or radians, not both')
