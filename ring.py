@@ -30,6 +30,8 @@ class Ring:
 	z = property(**attrhelper('center.z'))
 
 
+	def attr_changed(self, attr, old_value, new_value):
+		raise ValueError(f"Can't adjust the {attr} coordinate of the ring!")
 
 
 	@property
@@ -43,8 +45,6 @@ class Ring:
 		self.geometry.move(mv)
 
 
-	def attr_changed(self, attr, old_value, new_value):
-		raise ValueError(f"Can't adjust the {attr} coordinate of the ring!")
 
 
 	@property
