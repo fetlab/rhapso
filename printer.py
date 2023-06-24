@@ -39,13 +39,6 @@ class Printer:
 		self.head_loc   = GPoint(0, 0, z)
 		self.anchor     = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
 
-		#Properties for self.attr_changed()
-		self._ring_angle:Angle = self.ring.angle
-		self._x = 0
-		self._y = 0
-		self._z = 0
-		self._e = 0
-
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
 		self.add_codes(None,              action=lambda gcline, **kwargs: [gcline])
@@ -54,19 +47,17 @@ class Printer:
 
 
 	#Create attributes which call Printer.attr_changed on change
-	x = property(**attrhelper('_x'))
-	y = property(**attrhelper('_y'))
-	z = property(**attrhelper('_z'))
-	e = property(**attrhelper('_e'))
-	ring_angle = property(**attrhelper('_ring_angle'))
+	x = property(**attrhelper('head_loc.x'))
+	y = property(**attrhelper('head_loc.y'))
+	z = property(**attrhelper('head_loc.z'))
 
 
 	@property
-	def xy(self): return self.head_loc.xy
+	def xy(self): return self.x, self.y
 
 
 	@property
-	def xyz(self): return self.head_loc.xyz
+	def xyz(self): return self.x, self.y, self.z
 
 
 	def __repr__(self):
