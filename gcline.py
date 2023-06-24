@@ -1,11 +1,11 @@
 import re, sys
 from functools import total_ordering
 from collections import UserList
+from geometry.angle import Angle
 from util import deep_update, ReadOnlyDict
 
 from rich.console import Console
 rprint = Console(style="on #272727").print
-
 
 #Use total_ordering to allow comparing based on line number
 @total_ordering
@@ -20,6 +20,9 @@ class GCLine:
 		self.comment = comment
 		self.fake    = fake       #Set to True if it's been generated
 		self.meta    = meta or {} #Metadata about this line
+
+		if any(isinstance(arg, Angle) for arg in args.values()):
+			raise ValueError()
 
 		self.relative_extrude = None
 
@@ -150,8 +153,11 @@ class GCLine:
 		for arg, val in args.items():
 			out.append(
 					(arg or "") +
-					("" if val is None else
-								str(round(val, 5)) if isinstance(val, (int,float)) else val))
+					("" if val is None
+							else str(round(val, 5))         if isinstance(val, (int,float))
+							#else str(round(val.degrees, 5)) if isinstance(val, Angle)
+							else val))
+
 		comment = ' '.join([
 				f'[{self.lineno}]' if (lineno_in_comment and self.lineno) else '',
 				self.comment or '']).strip()
