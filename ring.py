@@ -19,10 +19,9 @@ class Ring:
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
 	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1):
-		self.radius   = radius
-		self.angle:Angle    = angle
-		self.center   = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
-		self.geometry = Circle(self.center, Vector.z_unit_vector(), self.radius, n=100)
+		self.radius       = radius
+		self._angle:Angle = angle
+		self.center       = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
 
 		#Set to -1 if positive E commands make the ring go clockwise
 		self.rot_mul  = rot_mul
