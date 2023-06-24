@@ -215,3 +215,11 @@ class Ender3(Printer):
 							comment(f'  Segment: {printed_seg}'),
 							comment(f'  Thread ({self.ring_angle:.2f}°):  {thread_seg}'),
 						] + self.gcode_ring_move(move_by) + gclines)
+
+
+	def gcfunc_auto_home(self, gcline: GCLine, **kwargs):
+		#Also reset the ring to its default configuration when we get a home command
+		super().gcfunc_auto_home(gcline)
+		self.ring = Ring(**self._ring_config)
+		self.bed = Bed(anchor=self._bed_config['anchor'], size=self._bed_config['size'])
+		self.anchor = self.bed.anchor
