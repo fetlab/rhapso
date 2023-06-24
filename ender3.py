@@ -188,6 +188,10 @@ class Ender3(Printer):
 		#Do super() stuff
 		gclines = super().gcfunc_set_axis_value(gcline)
 
+		#M83: relative extrude mode
+		if 'E' in gcline.args and self.extrusion_mode.code == 'M83':
+			self.e += gcline.args['E']
+
 		#If not printing, don't need to do anything
 		if not gclines or not gcline.is_xyextrude(): return
 
