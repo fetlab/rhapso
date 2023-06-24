@@ -66,9 +66,10 @@ class Ring:
 		return circle_intersection(self.center, self.radius, seg)
 
 
-	def angle2point(self, angle:Angle):
+	def angle2point(self, angle:Angle) -> GPoint:
 		"""Return an x,y,z=0 location on the ring based on the given angle, without
-		moving the ring."""
+		moving the ring. Uses the coordinate system according to the ring's center
+		point."""
 		return GPoint(
 			cos(angle) * self.radius + self.center.x,
 			sin(angle) * self.radius + self.center.y,
