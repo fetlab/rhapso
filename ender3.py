@@ -62,7 +62,7 @@ from util     import Number, Saver
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
-from angle import Angle
+from geometry.angle import Angle
 from config import RingConfig, BedConfig
 
 # --- Ring gearing ---
