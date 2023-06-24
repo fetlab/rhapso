@@ -49,6 +49,10 @@ class Ring:
 	def angle(self) -> Angle: return self._angle
 
 
+	@angle.setter
+	def angle(self, angle:Angle):
+		if not isinstance(angle, Angle): raise TypeError(f"Expected Angle, got {type(angle)}")
+		self._angle = (angle % (2*pi))
 
 
 	@property
