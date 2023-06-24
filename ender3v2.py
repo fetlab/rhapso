@@ -33,37 +33,25 @@ from printer  import Printer
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
-from ender3   import RingConfig, BedConfig, stepper_microsteps_per_rotation, \
-										 thread_overlap_feedrate, \
-										 default_esteps_per_unit, Ender3 as Ender3v1
-from angle import Angle, atan2, asin, acos
-
-motor_gear_teeth = 19
-ring_gear_teeth  = 112
-
-esteps_per_degree = stepper_microsteps_per_rotation * ring_gear_teeth / motor_gear_teeth / 360
-
-# --- Actual measured parameters of the printer, in the coordinate system of
-# the printer frame (see comments above) ---
-ring_config: RingConfig = {
-	'center':  GPoint(-5.5, 74.2, 0),
-	'radius':  93,   #effective thread radius from thread carrier to ring center
-	'rot_mul': esteps_per_degree / default_esteps_per_unit,
-	'angle':   Angle(90),
-}
-bed_config: BedConfig = {
-	'zero': GPoint(-52.5, -65, 0),
-	'size': (110, 220),
-	'anchor': GPoint(-72, 0, 0),
-}
+config      = load_config('ender3v2.yaml')
+ring_config = get_ring_config(config)
+bed_config  = get_bed_config(config)
+print(f"Loaded ring: {ring_config}")
+print(f"Loaded bed: {bed_config}")
 
 #Move the zero points so the bed zero is actually 0,0
 ring_config['center'] -= bed_config['zero']
-bed_config ['zero']   -= bed_config['zero']
+bed_config['anchor']  -= bed_config['zero']
+bed_config['zero']    -= bed_config['zero']
+print(f"Ring relative to bed zero: {ring_config}")
+print(f"Bed now: {bed_config}")
 
 
 class Ender3(Ender3v1):
 	def __init__(self):
+		print(f"Init: {ring_config}")
+		self._ring_config = copy(ring_config)
+		self._bed_config  = copy(bed_config)
 		self.bed = Bed(anchor=bed_config['anchor'], size=bed_config['size'])
 		self.ring = Ring(**ring_config)
 		Printer.__init__(self, self.bed, self.ring)
