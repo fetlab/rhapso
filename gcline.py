@@ -203,8 +203,8 @@ class GCLines(UserList):
 		if not isinstance(to_get, (slice, list, tuple, set)):
 			try:
 				return self.data[self.index(to_get)]
-			except KeyError as e:
-				raise IndexError(f'GCLine number {to_get} not in GCLines') from e
+			except KeyError as ex:
+				raise IndexError(f'GCLine number {to_get} not in GCLines') from ex
 
 		else:
 			#Support slicing, including slicing by list
