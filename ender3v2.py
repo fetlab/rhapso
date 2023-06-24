@@ -25,14 +25,21 @@ Conveniently for calculations, this "moving ring" model is (I think!) only
 necessary during GCode generation. In working with calculations for planning
 thread trajectories and print order, we can ignore that part.
 """
-from math     import sin, pi
-from geometry import GPoint, GSegment
-from bed      import Bed
-from ring     import Ring
-from printer  import Printer
-from gcline   import GCLine, comment
-from geometry.utils import ang_diff
+from copy             import copy
+from math             import pi, radians
+from geometry         import GPoint, GSegment, GHalfLine
+from bed              import Bed
+from ring             import Ring
+from printer          import Printer
+from gcline           import GCLine, comments
+from geometry.angle   import Angle, atan2, asin, acos
+from geometry.utils   import ang_diff, circle_intersection
 from geometry_helpers import traj_isec
+from logger           import rprint
+from util             import Saver, Number
+from config           import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
+from ender3           import Ender3 as Ender3v1
+
 config      = load_config('ender3v2.yaml')
 ring_config = get_ring_config(config)
 bed_config  = get_bed_config(config)
