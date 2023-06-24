@@ -30,8 +30,6 @@ class Ring:
 	z = property(**attrhelper('center.z'))
 
 
-	def __repr__(self):
-		return f'Ring({self.angle:.2f}°, ⌀{self.radius*2}, ⊙{self.center})'
 
 
 	@property
@@ -50,14 +48,18 @@ class Ring:
 
 
 	@property
+	def angle(self) -> Angle: return self._angle
+
+
+
+
+	@property
 	def point(self):
 		return self.angle2point(self.angle)
 
 
-
-
-
-
+	def __repr__(self):
+		return f'Ring({self.angle:.3f}°, ⌀{self.radius*2} → {self.point}, ⊙{self.center})'
 
 
 	def intersection(self, seg:GSegment|GHalfLine|Line) -> list[GPoint]:
