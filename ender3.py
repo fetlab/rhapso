@@ -91,7 +91,7 @@ ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
 	'radius': 93,   #effective thread radius from thread carrier to ring center
 	'rot_mul': esteps_per_degree / default_esteps_per_unit,
-	'angle': Angle(0),
+	'angle': Angle(degrees=0),
 }
 bed_config: BedConfig = {
 	'zero': GPoint(-32.5, -65, 0),
