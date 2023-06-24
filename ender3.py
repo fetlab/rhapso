@@ -53,12 +53,12 @@ Transforms to provide:
 	fact that the bed moves in the y-axis.
 """
 
+from copy     import copy
 from printer  import Printer
 from bed      import Bed
 from ring     import Ring
 from geometry import GPoint, GSegment
-from typing   import TypedDict
-from util     import Number, Saver
+from util     import Saver
 from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
