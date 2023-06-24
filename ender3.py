@@ -63,6 +63,7 @@ from gcline   import GCLine, comment
 from geometry.utils import ang_diff
 from geometry_helpers import traj_isec
 from angle import Angle
+from config import RingConfig, BedConfig
 
 # --- Ring gearing ---
 stepper_microsteps_per_rotation = 200 * 16   #For the stepper motor; 16 microsteps, 200 steps per rotation
@@ -85,21 +86,6 @@ thread_overlap_feedrate = 900
 #Pause before we move the thread carrier if we just printed over thread
 post_thread_overlap_pause = 2
 
-# --- Actual measured parameters of the printer, in the coordinate system of
-# the printer frame (see comments above) ---
-BedConfig  = TypedDict(
-	'BedConfig',  {
-		'zero':   GPoint,
-		'size':   tuple[Number, Number],
-		'anchor': GPoint,
-	})
-RingConfig = TypedDict(
-	'RingConfig', {
-		'center': GPoint,
-		'radius': Number,
-		'rot_mul': Number,
-		'angle': Angle,
-	})
 
 ring_config: RingConfig = {
 	'center': GPoint(5, -37, 0),
@@ -120,6 +106,8 @@ bed_config ['zero']   -= bed_config['zero']
 
 class Ender3(Printer):
 	def __init__(self):
+		self._ring_config = copy(ring_config)
+		self._bed_config  = copy(bed_config)
 		self.bed = Bed(anchor=(ring_config['radius']+ring_config['center'].x, 0, 0), size=bed_config['size'])
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
