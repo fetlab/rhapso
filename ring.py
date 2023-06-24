@@ -1,6 +1,5 @@
 from Geometry3D import Circle, Vector, Line, get_eps
-from math import cos, sin
-
+from math import cos, sin, pi
 from gcline import GCLine
 from geometry import GPoint, GSegment, GHalfLine
 from geometry.utils import ang_diff, circle_intersection
