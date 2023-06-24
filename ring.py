@@ -37,14 +37,12 @@ class Ring:
 	@property
 	def y(self): return self.center.y
 
+
 	@y.setter
 	def y(self, val):
 		if val == self.center.y: return
 		mv = Vector(0, val - self.center.y, 0)
-		self.center.move(mv)
-		self.geometry.move(mv)
-
-
+		self.center = self.center.moved(vec=mv)
 
 
 	@property
