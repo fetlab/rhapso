@@ -32,7 +32,7 @@ class GCLine:
 
 		if ';' in line:
 			cmd, cmt = re.match('^(.*?)\s*;\s*(.*?)\s*$', line).groups()
-			self.comment = cmt
+			if not self.comment: self.comment = cmt
 		else:
 			cmd = line
 
