@@ -35,7 +35,9 @@ class Printer:
 		self.bed  = bed
 		self.ring = ring
 
-		#State
+		#State: absolute extrusion amount, print head location, anchor location
+		# (initially the bed's anchor)
+		self.e          = 0
 		self.head_loc   = GPoint(0, 0, z)
 		self.anchor     = GPoint(self.bed.anchor[0], self.bed.anchor[1], 0)
 
@@ -145,17 +147,11 @@ class Printer:
 			if gcline.code == 'G92':
 				self.e = gcline.args['E']
 
-			#M83: relative extrude mode
-			elif self.extrusion_mode.code == 'M83':
-				self.e += gcline.args['E']
-
 			#A normal extruding line; we need to use the relative extrude value
 			# since our lines get emitted out-of-order
 			else:
 				self.e += gcline.relative_extrude
-				gcline = deepcopy(gcline)
-				gcline.args['E'] = self.e
-				return [gcline]
+				return [gcline.copy(args={'E': self.e})]
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
