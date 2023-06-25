@@ -45,7 +45,7 @@ class Step:
 		and .gc_line2 member which are GCLines.
 		"""
 		if not self.gcsegs:
-			return [] if self.ring_move is None else self.printer.gcode_ring_move(self.ring_move,
+			return [] if self.ring_move is None or self.ring_move == 0.0 else self.printer.gcode_ring_move(self.ring_move,
 				#Tell ring move to pause if the previous step was a thread-fixing step
 				pause_after=False if self.number < 1 else self.steps_obj.steps[self.number-1].fixing)
 
