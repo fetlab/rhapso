@@ -72,7 +72,8 @@ class Ender3(Ender3v1):
 			gcline.comment =  'Fixing - false'
 
 		old_head_y_loc = self.head_loc.y
-		#If there's no Y movement we don't need to do anything
+		#If there's no Y movement we don't need to do anything; the bed doesn't
+		# move so the thread angle won't change
 		if not gcline.y or gcline.y == old_head_y_loc: return
 
 		self.head_loc: GPoint = GPoint(gcline)
