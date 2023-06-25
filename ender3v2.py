@@ -109,11 +109,19 @@ class Ender3(Ender3v1):
 		#Keep a copy of the head location since Printer.gfunc_set_axis_value() will change it.
 		prev_loc = self.head_loc.copy()
 
-		for gcline in Printer.gcfunc_set_axis_value(self, gcline) or [gcline]:
 		#Run the passed gcode line `gcline` through the Printer class's
 		# gfunc_set_axis_value() function. (Using Printer rather than super()
 		# because the parent Ender object does things we don't need.) This might
 		# return multiple lines, so we need to process each of the returned list values.
+		super_gclines = Printer.gcfunc_set_axis_value(self, gcline) or [gcline]
+
+		#Fixing segment, we *want* interference! We should have already moved the
+		# ring into place, so no processing is required
+		if kwargs.get('fixing'):
+			return [l.copy(add_comment='Fixing segment, no ring movement') for l in super_gclines]
+
+		for gcline in super_gclines:
+
 			#If there's an 'A' argument, it's a ring move line already, which means
 			# it's "on purpose" and we need to keep track of it in our state.
 			if 'A' in gcline.args:
@@ -131,8 +139,7 @@ class Ender3(Ender3v1):
 									f'change requested was {gcline.args["A"]:.3f}°, new ring angle is {new_ring_angle:.3f}°')))
 				self.gcode_ring_angle = new_ring_angle
 
-				if gcline.is_xymove():
-					raise ValueError("Can't handle a move plus an angle set")
+				if gcline.is_xymove(): raise ValueError("Can't handle a move plus an angle set")
 				continue
 
 			#If there's no Y movement we don't need to do anything; the bed doesn't
@@ -167,8 +174,6 @@ class Ender3(Ender3v1):
 				gcline = gcline.copy(args={'A': ang_diff(self.gcode_ring_angle, new_ring_angle).degrees},
 												 add_comment=f'({new_ring_angle:.3f}°)')
 				self.gcode_ring_angle = new_ring_angle
-			else:
-				gcline = gcline.copy(add_comment='@@@@@')
 			gclines.append(gcline)
 
 		return gclines
