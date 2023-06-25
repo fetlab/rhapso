@@ -78,9 +78,9 @@ class Ender3(Ender3v1):
 
 
 	def _calc_new_ring_angle(self, current_thread:GSegment, new_y:Number) -> Angle:
-		#Find out how to rotate the ring to keep the thread at the same angle during
-		# this move. "Move" the ring's center-y coordinate while keeping the bed
-		# static, then find where the thread will intersect it.
+		"""Find out how to rotate the ring to keep the thread at the same angle during
+		this move. "Move" the ring's center-y coordinate while keeping the bed
+		static, then find where the thread will intersect it."""
 		current_thread  = GSegment(self.anchor, self.ring.point).as2d()
 		new_ring_center = self.ring.center.moved(y=new_y)
 		isecs = circle_intersection(
@@ -94,24 +94,36 @@ class Ender3(Ender3v1):
 
 
 
-	#Called for G0, G1, G92
+	#Note: in order to avoid confusion and keep things cleaner, we use
+	# self.gcode_ring_angle in order to track the ring angle as output in
+	# gcode, rather than (as previously) making changes to the Ring object.
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs) -> list[GCLine]:
+		"""Process gcode lines with instruction G0, G1, or G92. Move the ring such
+		that the thread stays in place with any Y movement.  We do not do this
+		movement on fixing steps or if the gcode line already includes ring
+		movement."""
+
+
 		gclines:list[GCLine] = []
 
-		#Keep a copy of the head location since Printer.gfunc_set_axis_value() will
-		# change it. We use Printer() directly below rather than super() because
-		# the parent Ender object does stuff we don't need.
+		#Keep a copy of the head location since Printer.gfunc_set_axis_value() will change it.
 		prev_loc = self.head_loc.copy()
 
 		for gcline in Printer.gcfunc_set_axis_value(self, gcline) or [gcline]:
+		#Run the passed gcode line `gcline` through the Printer class's
+		# gfunc_set_axis_value() function. (Using Printer rather than super()
+		# because the parent Ender object does things we don't need.) This might
+		# return multiple lines, so we need to process each of the returned list values.
+			#If there's an 'A' argument, it's a ring move line already, which means
+			# it's "on purpose" and we need to keep track of it in our state.
 			if 'A' in gcline.args:
-				#This will be the "nominal" angle, as if y=0
+				#This will be the "nominal" angle, under the assumption that the bed
+				# and ring don't move relative to each other.
 				self.ring.angle += radians(gcline.args['A'])  #GCode A arguments are in degrees
 				self.ring.angle %= 360
-				#self.gcode_ring_angle = self.ring.angle
 
-				#We're probably not actually at y=0 so we need to re-calculate to find
-				# out what the angle should actually be
+				#But in fact the bed does move, so we need to re-calculate to find
+				# out what the angle should actually be.
 				current_thread = GSegment(self.anchor, self.ring.point).as2d()
 				new_ring_angle = self._calc_new_ring_angle(current_thread, self.y)
 				gclines.append(gcline.copy(args={'A': ang_diff(self.gcode_ring_angle, new_ring_angle).degrees},
@@ -143,10 +155,6 @@ class Ender3(Ender3v1):
 				seg    = current_thread)
 
 			if not isecs:
-				# rprint((f"[yellow]WARNING:[/] No intersection with ring for line",
-				# 	 gcline,
-				# 	 f"at center {new_ring_center} with angle {self.ring.angle}",
-				# 	 f"segment {current_thread}"), indent=2)
 				gclines.append(gcline.copy(add_comment=
 					f'--- No ring intersection for ring center {new_ring_center}, segment {current_thread}'))
 				continue
@@ -154,7 +162,6 @@ class Ender3(Ender3v1):
 			#Get the intersection closest to the current carrier location
 			isec = sorted(isecs, key=self.ring.point.moved(y=gcline.y).distance)[0]
 			new_ring_angle = (isec - new_ring_center).angle()
-			#rprint(f'[{gcline.lineno}]: {self.ring.angle = }, {new_ring_angle = }, diff = {ang_diff(self.ring.angle, new_ring_angle)}')
 
 			if new_ring_angle != self.ring.angle:
 				gcline = gcline.copy(args={'A': ang_diff(self.gcode_ring_angle, new_ring_angle).degrees},
