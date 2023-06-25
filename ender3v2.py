@@ -79,7 +79,7 @@ class Ender3(Ender3v1):
 		self.head_loc: GPoint = GPoint(gcline)
 
 		#If we already have ring movement, we're done
-		if 'A' in gcline.args: 
+		if 'A' in gcline.args:
 			self._ring_angle = Angle(degrees=gcline.args['A'])
 			return
 
