@@ -24,7 +24,7 @@ from geometry.utils import ang_diff
 from ender3   import RingConfig, BedConfig, stepper_microsteps_per_rotation, \
 										 thread_overlap_feedrate, post_thread_overlap_pause, \
 										 default_esteps_per_unit, Ender3 as Ender3v1
-from geometry.angle import Angle, atan2, asin, acos
+from geometry.angle import Angle
 
 motor_gear_teeth = 19
 ring_gear_teeth  = 112
