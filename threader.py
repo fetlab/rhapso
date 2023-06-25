@@ -16,7 +16,7 @@ from geometry.angle import Angle
 
 from logger import rprint, restart_logging, reinit_logging, end_accordion_logging
 
-from ender3v2 import Ender3
+from ender3 import Ender3
 from steps import Steps
 from util import unprinted
 
