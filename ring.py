@@ -17,7 +17,7 @@ class Ring:
 	}
 
 	#TODO: add y-offset between printer's x-axis and ring's x-axis
-	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1):
+	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1, **kwargs):
 		self.radius       = radius
 		self._angle:Angle = angle
 		self.center       = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()

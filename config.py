@@ -13,10 +13,11 @@ BedConfig  = TypedDict(
 
 RingConfig = TypedDict(
 	'RingConfig', {
-		'center': GPoint,
-		'radius': Number,
-		'rot_mul': Number,
-		'angle': Angle,
+		'center':     GPoint,
+		'radius':     Number,
+		'rot_mul':    Number,
+		'angle':      Angle,
+		'home_angle': Angle,
 	})
 
 
@@ -26,10 +27,11 @@ def get_ring_config(config:dict) -> RingConfig:
 	esteps_per_degree = r['stepper_microsteps_per_rotation'] * r['ring_gear_teeth'] / r['motor_gear_teeth'] / 360
 
 	return dict(
-		center  = GPoint(*r['center']),
-		radius  = r['radius'],
-		rot_mul = esteps_per_degree / config['general']['default_esteps_per_unit'],
-		angle   = Angle(degrees=r['home_angle']),
+		center     = GPoint(*r['center']),
+		radius     = r['radius'],
+		rot_mul    = esteps_per_degree / config['general']['default_esteps_per_unit'],
+		angle      = Angle(degrees=r['home_angle']),
+		home_angle = Angle(degrees=r['home_angle']),
 	)
 
 

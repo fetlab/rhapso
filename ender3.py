@@ -91,7 +91,8 @@ class Ender3(Printer):
 
 		self.add_codes('M109', action=lambda gcline, **kwargs: [
 			gcline,
-			GCLine('G92 A90 ; Assume the ring has been homed, set its position to 90°'),
+			GCLine(f'G92 A{ring_config["home_angle"]} '
+				f'; Assume the ring has been manually homed, set its position to {ring_config["home_angle"]}°'),
 			GCLine(comment='--- Printer state ---'),
 			GCLine(comment=repr(self.ring)),
 			GCLine(comment=repr(self.bed)),
@@ -99,6 +100,10 @@ class Ender3(Printer):
 			GCLine(comment=f'Carrier: {self.ring.point}'),
 			GCLine(comment=f'Print head: {self.head_loc}'),
 		])
+
+
+		self.add_codes('G28', action=lambda gcline, **kwargs: [
+			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
 
 
 	def _calc_new_ring_angle(self, current_thread:GSegment, new_y:Number) -> Angle:
