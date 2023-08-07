@@ -146,7 +146,7 @@ def circle_intersection(center:GPoint, radius, seg:GSegment|GHalfLine|Line) -> l
 		from .ghalfline import GHalfLine
 		"""Return the intersection points between a segment, HalfLine, or Line, and
 		the ring, or an empty list if there are none. If the segment is tangent to
-		the ring, return a list with one point. Return the list sorted by distane
+		the ring, return a list with one point. Return the list sorted by distance
 		to the second point in the segment."""
 		if   isinstance(seg, GSegment):  p1, p2 = seg[:]
 		elif isinstance(seg, GHalfLine): p1, p2 = seg.point, seg.point + seg.vector
