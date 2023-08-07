@@ -60,7 +60,7 @@ class GPoint(Point):
 	def xyz(self): return self.x, self.y, self.z
 
 
-	def as2d(self):
+	def as2d(self) -> GPoint:
 		"""Return a copy of this point with *z* set to 0. If z is already 0, return self."""
 		if self.z == 0: return self
 		return self.copy(z=0)
@@ -76,7 +76,7 @@ class GPoint(Point):
 		return len([s for s in seglist if test_seg.intersection(s.as2d())]) % 2
 
 
-	def copy(self, x=None, y=None, z=None):
+	def copy(self, x=None, y=None, z=None) -> GPoint:
 		c = copy(self)
 		if x is not None: c.x = x
 		if y is not None: c.y = y
@@ -84,13 +84,13 @@ class GPoint(Point):
 		return c
 
 
-	def moved(self, vec=None, x=None, y=None, z=None):
+	def moved(self, vec=None, x=None, y=None, z=None) -> GPoint:
 		"""Return a copy of this point moved by vector vec or by x/y/z."""
 		x, y, z = vec[:] if vec else (x or 0, y or 0, z or 0)
 		return GPoint(self.x + x, self.y + y, self.z + z)
 
 
-	def intersecting(self, check):
+	def intersecting(self, check) -> set:
 		return {o for o in listify(check) if self in o}
 
 
