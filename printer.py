@@ -84,7 +84,7 @@ class Printer:
 		return textwrap.dedent(f"""\
 			[yellow]—————[/]
 			{self}:
-				_x, _y, _z, _e: {self._x}, {self._y}, {self._z}, {self._e}
+				x, y, z, e: {self.x}, {self.y}, {self.z}, {self.e}
 				anchor: {self.anchor}
 
 				bed: {self.bed}
@@ -283,7 +283,7 @@ class Printer:
 					self.ring.angle = ring_angle
 			else:
 				if move_ring:
-					raise ValueError(f"Didn't get an intersection between {anchor} → {target}")
+					raise ValueError(f"Didn't get an intersection between {anchor} → {target} and the ring")
 
 		if set_new_anchor:
 			rprint(f'thread_intersect set new anchor to {target}')
