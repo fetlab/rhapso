@@ -20,8 +20,8 @@ ring:
   motor_gear_teeth: 19
   ring_gear_teeth : 112
 
-  #The center of the ring in printer frame corodinates, in mm
   center: [-5.5, -74.2, 0]
+  #The center of the ring in printer frame coordinates, in mm
 
   #Ring radius, measured from center to thread outlet in thread carrier, in mm
   radius: 93
