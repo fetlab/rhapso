@@ -141,7 +141,7 @@ class Printer:
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
-		"""Loop to print everything in avoid without thread intersections."""
+		"""Loop to print everything in `avoid` without thread intersections."""
 		avoid = set(avoid or [])
 		repeats = 0
 		while avoid:
@@ -224,10 +224,15 @@ class Printer:
 				return set()
 
 		else:
+			#Let's try to simply drop every segment the thread intersects or that
+			# comes too close to the thread.
 			rprint(f'    {len(isecs)} intersections')
 
 		#Either the thread intersects printed segments, or it's too close to
 		# printed segment endpoints, so we will try to move the thread.
+		#If we got here, either the thread intersects printed segments, or it's too
+		# close to printed segment endpoints, so we have to try to move the thread.
+		rprint('Ring must be moved to avoid segments')
 
 		vis = visibility(self.anchor, avoid, avoid_by)
 		vis_segs = defaultdict(set)
@@ -253,6 +258,7 @@ class Printer:
 
 		#Now move the thread to the closest one
 		self.thread_intersect(vis_points[0], set_new_anchor=False)
+		rprint(f'Ring angle now {self.ring.angle:.3f}°')
 
 		#If the visibility point with the smallest number of intersections still
 		# intersects the segments in `avoid`, it's probably too close to avoid.
@@ -268,7 +274,7 @@ class Printer:
 
 
 
-	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True):
+	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True) -> Angle:
 		"""Rotate the ring so that the thread starting at `anchor` intersects the
 		`target`. By default sets the anchor to the intersection. Return the
 		rotation value."""
