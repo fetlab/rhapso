@@ -250,50 +250,6 @@ class Ender3(Printer):
 		self.anchor = self.bed.anchor
 
 
-	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> set[GSegment]:
-		#Move the ring's center so that the printer's y is at the lowest y in
-		# avoid. Drop any segments that have both endpoints entirely outside the
-		# ring (treat them like they couldn't be avoided).
-
-		#Move ring center so x-axis is at bottom-most point of `avoid`
-		cur_ring_y = self.ring.y
-		self.ring.center = self.ring.center.moved(y=min(flatten(avoid), key=lambda p:p.y).y)
-
-		#Find segments that are totally outside the ring
-		rc = self.ring.center
-		r2 = self.ring.radius**2
-		ring_top_y = self.ring.center.y + self.ring.radius
-
-		outside_ring_segs = set()
-		inside_ring_segs  = set()
-
-		for seg in avoid:
-			s, e = seg[:]
-			#If both y coords are above the ring, it's definitely not inside
-			if s.y > ring_top_y and e.y > ring_top_y:
-				outside_ring_segs.add(seg)
-
-			#If both points are further from center than radius, it's outside
-			elif ((s.x - rc.x)**2 + (s.y - rc.y)**2 > r2 and
-						(e.x - rc.x)**2 + (e.y - rc.y)**2 > r2):
-						 outside_ring_segs.add(seg)
-
-			else:
-				inside_ring_segs.add(seg)
-
-		#Now inside_ring_segs has segments where at least one endpoint is inside
-		# the moved ring, so we can do super's thread_avoid with those
-		unavoidable = super().thread_avoid(inside_ring_segs, move_ring, avoid_by).union(outside_ring_segs)
-
-		#Return the ring's center to its previous location
-		self.ring.y = cur_ring_y
-
-		if unavoidable:
-			rprint(f'{len(unavoidable)} segments outside of ring or not avoided')
-
-		return unavoidable
-
-
 	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True) -> Angle:
 		#Move the ring's `y` to the target's `y` to simulate the moving bed, then
 		# do thread intersection.
