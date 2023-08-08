@@ -66,7 +66,7 @@ class Angle(Real):
 
 	def __str__(self):                 return f'{self.degrees:.3f}°'
 	def __repr__(self):                return f'{self.degrees:.3f}°'
-	def __format__(self, spec):        return format(self.degrees, spec)
+	def __format__(self, spec):        return format(self.degrees, spec or '.3f' if isinstance(self.degrees, float) else '')
 
 
 
