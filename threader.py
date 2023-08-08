@@ -219,7 +219,7 @@ class Threader:
 				rprint('Anchors fixed by segments:', pretty_repr(anchor_segs))
 
 		#Done preprocessing thread; now we can start figuring out what to print and how
-		rprint('[yellow]————[/] Start [yellow]————[/]', div=True)
+		rprint(f'[yellow]————[/] Start [yellow]————[/]\n{self.printer.summarize()}', div=True)
 
 		#Find segments that intersect the incoming thread anchor (if there is one)
 		# so we can print those separately to fix the anchor in place. This will be
