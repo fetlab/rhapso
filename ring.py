@@ -39,8 +39,7 @@ class Ring:
 	@y.setter
 	def y(self, val):
 		if val == self.center.y: return
-		mv = Vector(0, val - self.center.y, 0)
-		self.center = self.center.moved(vec=mv)
+		self.center = self.center.copy(y=val)
 
 
 	@property
