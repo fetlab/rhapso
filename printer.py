@@ -147,26 +147,9 @@ class Printer:
 		while avoid:
 			repeats += 1
 			if repeats > 5: raise ValueError("Too many repeats")
-			with steps.new_step(f"Move thread to avoid {len(avoid)} segments" + extra_message) as s:
-				s._debug = dict(avoid=avoid.copy(), anchor=self.anchor.copy(),
-										ring_angle=self.ring.angle,
-										ring_point=self.ring.point.copy())
-
-				#First let's just try to drop everything the thread trajectory intersects
-				thr = GSegment(self.anchor, self.ring.point, z=self.anchor.z)
-				rprint(f"Thread trajectory: {thr}")
-
-				isecs = thr.intersecting(avoid, ignore=self.anchor)
-				isecs.update({seg for seg in avoid - isecs if
-					too_close(thr, seg.start_point, by=avoid_by) or too_close(thr, seg.end_point, by=avoid_by)})
-
-				s._debug['isecs'] = isecs
-
-				#If we end up intersecting everything, we have to be more sophisticated
-				if isecs == avoid: isecs = self.thread_avoid(avoid)
-
-				rprint(f"{len(isecs)} intersections" + (f": {isecs}" if isecs else ""))
-
+			with steps.new_step(f"Avoid printing over {len(avoid)} segments" + extra_message) as s:
+				if isecs := self.thread_avoid(avoid):
+					rprint(f"{len(isecs)} thread/segment intersections")
 				avoid -= isecs
 
 			if avoid:
@@ -184,7 +167,8 @@ class Printer:
 		avoid = set(avoid)
 
 		#Current thread->ring segment
-		thr = GSegment(self.anchor, self.ring.point)
+		thr = GSegment(self.anchor, self.ring.point, z=self.anchor.z)
+		isecs = thr.intersecting(avoid)
 
 		rprint(f'Avoiding {len(avoid)} segments')
 
@@ -206,10 +190,9 @@ class Printer:
 
 			return set()
 
-
 		#Thread is already not intersecting segments in `avoid`, but we want to try
 		# to move it so it's not very close to the ends of the segments either.
-		if not (isecs := thr.intersecting(avoid)):
+		if not isecs:
 			rprint('No intersections, but we want to avoid segments by at least 1 mm')
 
 			#All printed segment starts & ends, minus the thread's start/end
@@ -228,8 +211,15 @@ class Printer:
 			# comes too close to the thread.
 			rprint(f'    {len(isecs)} intersections')
 
-		#Either the thread intersects printed segments, or it's too close to
-		# printed segment endpoints, so we will try to move the thread.
+			#Add to `isecs` every segment in `avoid` that is too close to the thread
+			isecs.update({seg for seg in (avoid - isecs) if
+				too_close(thr, seg.start_point, by=avoid_by) or too_close(thr, seg.end_point, by=avoid_by)})
+
+			#If there is anything left, return `isecs` so we can subtract from `avoid` in the caller
+			if isecs != avoid:
+				return isecs
+
+
 		#If we got here, either the thread intersects printed segments, or it's too
 		# close to printed segment endpoints, so we have to try to move the thread.
 		rprint('Ring must be moved to avoid segments')
@@ -279,11 +269,17 @@ class Printer:
 		`target`. By default sets the anchor to the intersection. Return the
 		rotation value."""
 		anchor = anchor or self.anchor
-		ring_angle = self.ring.angle
 
-		if target != anchor:
+		if target == anchor:
+			rprint(f'Target and anchor are the same')
+		else:
 			if isecs := self.ring.intersection(GSegment(anchor, target)):
-				ring_angle = self.ring.angle + ang_diff(self.ring.angle, self.ring.point2angle(isecs[-1]))
+				rprint(f'Thread intersects ring at:\n{isecs} - {[isec.angle(self.ring.center) for isec in isecs]}')
+				rprint(f'Ring angle: {self.ring.angle}')
+				rprint(f'Angle diffs: {[ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs]}')
+				ring_move = min((ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs), key=abs)
+				ring_angle = self.ring.angle + ring_move
+				rprint(f'Move ring by {ring_move:.2f}° to {ring_angle:.2f}°')
 
 				if move_ring:
 					self.ring.angle = ring_angle
