@@ -50,18 +50,21 @@ Conveniently for calculations, this "moving ring" model is (I think!) only
 necessary during GCode generation. In working with calculations for planning
 thread trajectories and print order, we can ignore that part.
 """
-from copy             import copy
-from math             import radians
-from geometry         import GPoint, GSegment, GHalfLine
-from bed              import Bed
-from ring             import Ring
-from printer          import Printer
-from gcline           import GCLine, comments
-from geometry.angle   import Angle, atan2, asin, acos
-from geometry.utils   import ang_diff, circle_intersection
-from logger           import rprint
-from util             import Saver, Number
-from config           import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
+from copy           import copy
+from math           import radians
+from typing         import Collection
+from more_itertools import flatten
+
+from geometry       import GPoint, GSegment, GHalfLine
+from bed            import Bed
+from ring           import Ring
+from printer        import Printer
+from gcline         import GCLine, comments
+from geometry.angle import Angle, atan2, asin, acos
+from geometry.utils import ang_diff, circle_intersection
+from logger         import rprint
+from util           import Saver, Number
+from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 config      = load_config('ender3.yaml')
 ring_config = get_ring_config(config)
@@ -110,16 +113,20 @@ class Ender3(Printer):
 		"""Find out how to rotate the ring to keep the thread at the same angle during
 		this move. "Move" the ring's center-y coordinate while keeping the bed
 		static, then find where the thread will intersect it."""
-		current_thread  = GSegment(self.anchor, self.ring.point).as2d()
-		new_ring_center = self.ring.center.moved(y=new_y)
-		isecs = circle_intersection(
-			center = new_ring_center,
-			radius = self.ring.radius,
-			seg    = current_thread)
+		#Move ring center so x-axis is on new_y
+		cur_ring_y = self.ring.y
+		self.ring.center = self.ring.center.moved(y=new_y)
 
-		#Get the intersection closest to the current carrier location
-		isec = sorted(isecs, key=self.ring.point.moved(y=new_y).distance)[0]
-		return (isec - new_ring_center).angle()
+		#Find where the current thread intersects the moved ring
+		isecs = self.ring.intersection(current_thread)
+
+		#Return amount to move the ring, involving least movement
+		ring_move = min((ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs), key=abs)
+
+		#Restore ring center
+		self.ring.y = cur_ring_y
+
+		return ring_move
 
 
 
@@ -132,15 +139,14 @@ class Ender3(Printer):
 		movement on fixing steps or if the gcode line already includes ring
 		movement."""
 
-
 		gclines:list[GCLine] = []
 
 		#Keep a copy of the head location since super() will change it.
 		prev_loc = self.head_loc.copy()
 
 		#Run the passed gcode line `gcline` through the Printer class's
-		# gfunc_set_axis_value() function. This might
-		# return multiple lines, so we need to process each of the returned list values.
+		# gfunc_set_axis_value() function. This might return multiple lines, so we
+		# need to process each of the returned list values.
 		super_gclines = super().gcfunc_set_axis_value(gcline) or [gcline]
 
 		#Fixing segment, we *want* interference! We should have already moved the
@@ -151,7 +157,8 @@ class Ender3(Printer):
 		for gcline in super_gclines:
 
 			#If there's an 'A' argument, it's a ring move line already, which means
-			# it's "on purpose" and we need to keep track of it in our state.
+			# it's "on purpose" and we need to keep track of it in our state. We're
+			# assuming ring moves use relative coordinates.
 			if 'A' in gcline.args:
 				#This will be the "nominal" angle, under the assumption that the bed
 				# and ring don't move relative to each other.
@@ -161,13 +168,17 @@ class Ender3(Printer):
 				#But in fact the bed does move, so we need to re-calculate to find
 				# out what the angle should actually be.
 				current_thread = GSegment(self.anchor, self.ring.point).as2d()
-				new_ring_angle = self._calc_new_ring_angle(current_thread, self.y)
-				gclines.append(gcline.copy(args={'A': ang_diff(self.gcode_ring_angle, new_ring_angle).degrees},
-					add_comment=(f'Ring at {self.ring.angle:.3f}°, gcode angle at {self.gcode_ring_angle:.3f}°,',
-									f'change requested was {gcline.args["A"]:.3f}°, new ring angle is {new_ring_angle:.3f}°')))
+				ring_move_by   = self._calc_new_ring_angle(current_thread, self.y)
+				new_ring_angle = self.gcode_ring_angle + ring_move_by
+
+				gclines.append(gcline.copy(args={'A': ring_move_by.degrees}, add_comment=(
+					f'Ring at {self.ring.angle:.3f}°, gcode angle at {self.gcode_ring_angle:.3f}°,',
+					f'change requested was {ring_move_by:.3f}°, new ring angle is {new_ring_angle:.3f}°')))
+
 				self.gcode_ring_angle = new_ring_angle
 
 				if gcline.is_xymove(): raise ValueError("Can't handle a move plus an angle set")
+
 				continue
 
 			#If there's no Y movement we don't need to do anything; the bed doesn't
@@ -177,30 +188,22 @@ class Ender3(Printer):
 					f'(No Y coord)'
 					if not gcline.y else
 					f'- gcline.y ({gcline.y}) == prev_loc.y ({prev_loc.y})')))
+
 				continue
 
 			#Find out how to rotate the ring to keep the thread at the same angle during
 			# this move. "Move" the ring's center-y coordinate while keeping the bed
 			# static, then find where the thread will intersect it.
 			current_thread  = GSegment(self.anchor, self.ring.point).as2d()
-			new_ring_center = self.ring.center.moved(y=gcline.y)
-			isecs = circle_intersection(
-				center = new_ring_center,
-				radius = self.ring.radius,
-				seg    = current_thread)
-
-			if not isecs:
-				gclines.append(gcline.copy(add_comment=
-					f'--- No ring intersection for ring center {new_ring_center}, segment {current_thread}'))
+			try:
+				ring_move_by = self._calc_new_ring_angle(current_thread, gcline.y)
+			except ValueError:
+				gclines.append(gcline.copy(add_comment=f'--- No ring intersection for segment {current_thread}'))
 				continue
 
-			#Get the intersection closest to the current carrier location
-			isec = sorted(isecs, key=self.ring.point.moved(y=gcline.y).distance)[0]
-			new_ring_angle = (isec - new_ring_center).angle()
-
+			new_ring_angle = self.ring.angle + ring_move_by
 			if new_ring_angle != self.ring.angle:
-				gcline = gcline.copy(args={'A': ang_diff(self.gcode_ring_angle, new_ring_angle).degrees},
-												 add_comment=f'({new_ring_angle:.3f}°)')
+				gcline = gcline.copy(args={'A': ring_move_by.degrees}, add_comment=f'({new_ring_angle:.3f}°)')
 				self.gcode_ring_angle = new_ring_angle
 			gclines.append(gcline)
 
@@ -245,3 +248,61 @@ class Ender3(Printer):
 		self.ring = Ring(**self._ring_config)
 		self.bed = Bed(anchor=self._bed_config['anchor'], size=self._bed_config['size'])
 		self.anchor = self.bed.anchor
+
+
+	def thread_avoid(self, avoid: Collection[GSegment], move_ring=True, avoid_by=1) -> set[GSegment]:
+		#Move the ring's center so that the printer's y is at the lowest y in
+		# avoid. Drop any segments that have both endpoints entirely outside the
+		# ring (treat them like they couldn't be avoided).
+
+		#Move ring center so x-axis is at bottom-most point of `avoid`
+		cur_ring_y = self.ring.y
+		self.ring.center = self.ring.center.moved(y=min(flatten(avoid), key=lambda p:p.y).y)
+
+		#Find segments that are totally outside the ring
+		rc = self.ring.center
+		r2 = self.ring.radius**2
+		ring_top_y = self.ring.center.y + self.ring.radius
+
+		outside_ring_segs = set()
+		inside_ring_segs  = set()
+
+		for seg in avoid:
+			s, e = seg[:]
+			#If both y coords are above the ring, it's definitely not inside
+			if s.y > ring_top_y and e.y > ring_top_y:
+				outside_ring_segs.add(seg)
+
+			#If both points are further from center than radius, it's outside
+			elif ((s.x - rc.x)**2 + (s.y - rc.y)**2 > r2 and
+						(e.x - rc.x)**2 + (e.y - rc.y)**2 > r2):
+						 outside_ring_segs.add(seg)
+
+			else:
+				inside_ring_segs.add(seg)
+
+		#Now inside_ring_segs has segments where at least one endpoint is inside
+		# the moved ring, so we can do super's thread_avoid with those
+		unavoidable = super().thread_avoid(inside_ring_segs, move_ring, avoid_by).union(outside_ring_segs)
+
+		#Return the ring's center to its previous location
+		self.ring.y = cur_ring_y
+
+		if unavoidable:
+			rprint(f'{len(unavoidable)} segments outside of ring or not avoided')
+
+		return unavoidable
+
+
+	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True) -> Angle:
+		#Move the ring's `y` to the target's `y` to simulate the moving bed, then
+		# do thread intersection.
+		cur_ring_y = self.ring.y
+		self.ring.center = self.ring.center.moved(y=target.y)
+		rprint(f'Ring.y {cur_ring_y:.2f} → {self.ring.center.y:.2f}')
+
+		r = super().thread_intersect(target, anchor, set_new_anchor, move_ring)
+
+		self.ring.y = cur_ring_y
+
+		return r
