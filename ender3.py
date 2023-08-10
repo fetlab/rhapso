@@ -89,22 +89,10 @@ class Ender3(Printer):
 		self.ring = Ring(**ring_config)
 		super().__init__(self.bed, self.ring)
 
-		#Keep track of the angle that the GCode generator is using
-		self.gcode_ring_angle = copy(self.ring.angle)
-
-		self.add_codes('M109', action=lambda gcline, **kwargs: [
-			gcline,
-			GCLine(f'G92 A{ring_config["home_angle"]} '
-				f'; Assume the ring has been manually homed, set its position to {ring_config["home_angle"]}°'),
-			GCLine(comment='--- Printer state ---'),
-			GCLine(comment=repr(self.ring)),
-			GCLine(comment=repr(self.bed)),
-			GCLine(comment=f'Anchor: {self.anchor}'),
-			GCLine(comment=f'Carrier: {self.ring.point}'),
-			GCLine(comment=f'Print head: {self.head_loc}'),
-		])
+		self.add_codes('M109', action=self.gfunc_printer_ready)
 
 
+		#BUG: this doesn't get run
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
 
@@ -125,6 +113,23 @@ class Ender3(Printer):
 
 		#Restore ring center
 		self.ring.y = cur_ring_y
+	def gfunc_printer_ready(self, gcline: GCLine, **kwargs) -> list[GCLine]:
+		"""At least with the current version of Cura, M109 is the last command
+		before the printer starts actually doing things."""
+
+		self.ring.angle = ring_config['home_angle']
+		self.anchor = bed_config['anchor']
+		return [
+			gcline,
+			GCLine(f'G92 A{ring_config["home_angle"]} '
+				f'; Assume the ring has been manually homed, set its position to {ring_config["home_angle"]}°'),
+			GCLine(comment='--- Printer state ---'),
+			GCLine(comment=repr(self.ring)),
+			GCLine(comment=repr(self.bed)),
+			GCLine(comment=f'Anchor: {self.anchor}'),
+			GCLine(comment=f'Carrier: {self.ring.point}'),
+			GCLine(comment=f'Print head: {self.head_loc}'),
+		]
 
 		return ring_move
 
