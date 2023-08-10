@@ -97,22 +97,21 @@ class Ender3(Printer):
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
 
 
-	def _calc_new_ring_angle(self, current_thread:GSegment, new_y:Number) -> Angle:
+	def _calc_new_ring_angle(self, current_thread:GSegment, new_y:Number) -> Angle|None:
 		"""Find out how to rotate the ring to keep the thread at the same angle during
 		this move. "Move" the ring's center-y coordinate while keeping the bed
 		static, then find where the thread will intersect it."""
-		#Move ring center so x-axis is on new_y
-		cur_ring_y = self.ring.y
-		self.ring.center = self.ring.center.moved(y=new_y)
 
-		#Find where the current thread intersects the moved ring
-		isecs = self.ring.intersection(current_thread)
+		#Shift thread by moved bed location, then find where the current thread
+		# intersects the moved ring
+		isecs = self.ring.intersection(current_thread.moved(y=-new_y))
 
 		#Return amount to move the ring, involving least movement
-		ring_move = min((ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs), key=abs)
+		return None if not isecs else min(
+			(ang_diff(self.ring.angle, isec.angle(self.ring.center)) for isec in isecs),
+			key=abs)
 
-		#Restore ring center
-		self.ring.y = cur_ring_y
+
 	def gfunc_printer_ready(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""At least with the current version of Cura, M109 is the last command
 		before the printer starts actually doing things."""
@@ -131,13 +130,7 @@ class Ender3(Printer):
 			GCLine(comment=f'Print head: {self.head_loc}'),
 		]
 
-		return ring_move
 
-
-
-	#Note: in order to avoid confusion and keep things cleaner, we use
-	# self.gcode_ring_angle in order to track the ring angle as output in
-	# gcode, rather than (as previously) making changes to the Ring object.
 	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""Process gcode lines with instruction G0, G1, or G92. Move the ring such
 		that the thread stays in place with any Y movement.  We do not do this
@@ -159,8 +152,17 @@ class Ender3(Printer):
 		if kwargs.get('fixing'):
 			return [l.copy(add_comment='Fixing segment, no ring movement') for l in super_gclines]
 
-		for gcline in super_gclines:
+		DEBUG_LINE_NO = 33
 
+		for gcline in super_gclines:
+			DEBUG_HERE = gcline.lineno == DEBUG_LINE_NO or (gcline.lineno or 100) < 25
+
+			if DEBUG_HERE: print(f'\n{gcline}')
+
+			#This can be dropped since an 'A' is the result of thread_intersect()
+			# which now takes into account bed movement - we keep the ring angle
+			# constant as the bed moves, so it will end up at the right place.
+			"""
 			#If there's an 'A' argument, it's a ring move line already, which means
 			# it's "on purpose" and we need to keep track of it in our state. We're
 			# assuming ring moves use relative coordinates.
@@ -185,6 +187,7 @@ class Ender3(Printer):
 				if gcline.is_xymove(): raise ValueError("Can't handle a move plus an angle set")
 
 				continue
+			"""
 
 			#If there's no Y movement we don't need to do anything; the bed doesn't
 			# move so the thread angle won't change
@@ -194,22 +197,37 @@ class Ender3(Printer):
 					if not gcline.y else
 					f'- gcline.y ({gcline.y}) == prev_loc.y ({prev_loc.y})')))
 
+				if DEBUG_HERE: print('no y or y == {prev_loc.y}')
 				continue
 
 			#Find out how to rotate the ring to keep the thread at the same angle during
 			# this move. "Move" the ring's center-y coordinate while keeping the bed
 			# static, then find where the thread will intersect it.
 			current_thread  = GSegment(self.anchor, self.ring.point).as2d()
-			try:
-				ring_move_by = self._calc_new_ring_angle(current_thread, gcline.y)
-			except ValueError:
+			ring_move_by = self._calc_new_ring_angle(current_thread, gcline.y)
+
+			if DEBUG_HERE:
+				print(f'\t{prev_loc.y=}')
+				print(f'\t{self.ring=}')
+				print(f'\t{current_thread=} → {current_thread.angle():.3f}°')
+				print(f'{gcline.y=}')
+				print(f'\t{ring_move_by=}')
+
+			if ring_move_by is None:
 				gclines.append(gcline.copy(add_comment=f'--- No ring intersection for segment {current_thread}'))
+				if DEBUG_HERE: print('ring_move_by is None')
 				continue
 
+			if DEBUG_HERE: print(f'{ring_move_by=}')
 			new_ring_angle = self.ring.angle + ring_move_by
-			if new_ring_angle != self.ring.angle:
-				gcline = gcline.copy(args={'A': ring_move_by.degrees}, add_comment=f'({new_ring_angle:.3f}°)')
-				self.gcode_ring_angle = new_ring_angle
+			gcline = gcline.copy(args={'A': ring_move_by.degrees},
+												add_comment=f'(🧵{current_thread.angle():.3f}°,  ⃘{new_ring_angle:.3f}°)' if
+												new_ring_angle != self.ring.angle else '(no ring move)')
+			self.ring.angle = new_ring_angle
+
+			if DEBUG_HERE:
+				print(f'{new_ring_angle=}, {self.ring.angle=}')
+
 			gclines.append(gcline)
 
 		return gclines
@@ -221,7 +239,7 @@ class Ender3(Printer):
 		gcode = comments(f"""
 			gcode_ring_move({dist:.3f}°)
 			{self.ring}
-			{self.gcode_ring_angle = }
+			{self.ring.angle = }
 			""")
 
 		#Save the current z value, then raise the print head if needed
@@ -231,7 +249,7 @@ class Ender3(Printer):
 					 comment='Raise head to avoid thread snag'),
 				#Here we're setting the angle to the "nominal" value - where the
 				# carrier should be based on the bed not moving; e.g., if y=0.
-				GCLine('G0', args={'A':dist.degrees}, comment=f'({self.gcode_ring_angle+dist:.3f}°)')
+				GCLine('G0', args={'A':dist.degrees}, comment=f'({self.ring.angle+dist:.3f}°)')
 			])
 			if pause_after:
 				pause = config['general']['post_thread_overlap_pause']
@@ -259,7 +277,9 @@ class Ender3(Printer):
 		#Move the ring's `y` to the target's `y` to simulate the moving bed, then
 		# do thread intersection.
 		cur_ring_y = self.ring.y
+		rprint(f'Start: {self.ring=}, {target.y=}')
 		self.ring.center = self.ring.center.moved(y=target.y)
+		rprint(f'End: {self.ring=}')
 		rprint(f'Ring.y {cur_ring_y:.2f} → {self.ring.center.y:.2f}')
 
 		r = super().thread_intersect(target, anchor, set_new_anchor, move_ring)

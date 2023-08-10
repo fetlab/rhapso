@@ -273,11 +273,11 @@ class Printer:
 		if target == anchor:
 			rprint(f'Target and anchor are the same')
 		else:
-			if isecs := self.ring.intersection(GSegment(anchor, target)):
+			if isecs := self.ring.intersection(GHalfLine(anchor, target)):
 				rprint(f'Thread intersects ring at:\n{isecs} - {[isec.angle(self.ring.center) for isec in isecs]}')
 				rprint(f'Ring angle: {self.ring.angle}')
-				rprint(f'Angle diffs: {[ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs]}')
-				ring_move = min((ang_diff(isec.angle(self.ring.center), self.ring.angle) for isec in isecs), key=abs)
+				rprint(f'Angle diffs: {[ang_diff(self.ring.angle, isec.angle(self.ring.center)) for isec in isecs]}')
+				ring_move = min((ang_diff(self.ring.angle, isec.angle(self.ring.center)) for isec in isecs), key=abs)
 				ring_angle = self.ring.angle + ring_move
 				rprint(f'Move ring by {ring_move:.2f}° to {ring_angle:.2f}°')
 
