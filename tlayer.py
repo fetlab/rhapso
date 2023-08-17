@@ -1,7 +1,8 @@
 import logging
 import plotly.graph_objects as go
-from Geometry3D import Point, Segment, Plane, distance
-from geometry_helpers import GPoint, GSegment, Geometry, Planes, seg_combine, gcode2segments
+from Geometry3D import Plane, distance, Vector
+from geometry import GPoint, GSegment, GPolyLine
+from geometry_helpers import Geometry, Planes, seg_combine, gcode2segments
 from typing import List, Set, Dict
 from cura4layer import Cura4Layer
 from fastcore.basics import listify
@@ -18,10 +19,12 @@ class TLayer(Cura4Layer):
 	"""A gcode layer that has thread in it."""
 	def __init__(self, *args, layer_height=0.4, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.geometry     = None
+		self.geometry = Geometry(segments=[], planes=None, outline=[])
 		self.layer_height = layer_height
 		self.model_isecs  = {}
 		self.in_out       = []
+		self.add_boundary_planes()
+		self.mid_z = self.z - self.layer_height/2
 
 
 	def plot(self, fig=None, plot3d=False, only_outline=True, show=False,
@@ -30,6 +33,7 @@ class TLayer(Cura4Layer):
 		print only the outline of the gcode in the layer .
 		"""
 		self.add_geometry()
+
 		if style and 'line' in style or 'marker' in style:
 			_style = self.style.copy()
 			_style['move'] = style
@@ -89,6 +93,30 @@ class TLayer(Cura4Layer):
 		return fig
 
 
+	def add_boundary_planes(self):
+		"""Add top and bottom planes to this layer."""
+		if self.geometry.planes: return
+
+		z = self.z
+		self.geometry.planes = Planes(
+				bottom=Plane(GPoint(0,0,z - self.layer_height), Vector(0,0,1)),
+				top   =Plane(GPoint(0,0,z),                     Vector(0,0,1)),
+		)
+
+		# (min_x, min_y), (max_x, max_y) = self.extents()
+		# mid_x = min_x + .5 * (max_x - min_x)
+		# z = self.z
+
+		# plane_points = [(min_x, min_y), (mid_x, max_y), (max_x, max_y)]
+		# bot_z        = z - self.layer_height/2
+		# top_z        = z + self.layer_height/2
+		# bottom       = Plane(*[GPoint(p[0], p[1], bot_z) for p in plane_points])
+		# top          = Plane(*[GPoint(p[0], p[1], top_z) for p in plane_points])
+		# bottom.z     = bot_z
+		# top.z        = top_z
+
+		# self.geometry.planes = Planes(bottom=bottom, top=top)
+
 
 	def add_geometry(self):
 		"""Add geometry to this Layer based on the list of gcode lines:
@@ -99,28 +127,12 @@ class TLayer(Cura4Layer):
 									denoted by sections in Cura-generated gcode starting with
 									";TYPE:WALL-OUTER"
 		"""
-		if self.geometry or not self.has_moves:
-			return
+		self.add_boundary_planes()
 
-		self.geometry = Geometry(segments=[], planes=None, outline=[])
+		if self.geometry.segments: return
 
 		#Make segments from GCLines
 		self.preamble, self.geometry.segments, self.postamble = gcode2segments(self.lines, self.z)
-
-		#Construct top/bottom planes for intersections
-		(min_x, min_y), (max_x, max_y) = self.extents()
-		mid_x = min_x + .5 * (max_x - min_x)
-		z = self.z
-
-		plane_points = [(min_x, min_y), (mid_x, max_y), (max_x, max_y)]
-		bot_z        = z - self.layer_height/2
-		top_z        = z + self.layer_height/2
-		bottom       = Plane(*[GPoint(p[0], p[1], bot_z) for p in plane_points])
-		top          = Plane(*[GPoint(p[0], p[1], top_z) for p in plane_points])
-		bottom.z     = bot_z
-		top.z        = top_z
-
-		self.geometry.planes = Planes(bottom=bottom, top=top)
 
 		#Find the outline by using Cura comments for "wall-outer"
 		for part, lines in self.parts.items():
@@ -129,7 +141,8 @@ class TLayer(Cura4Layer):
 						[line.segment for line in lines if line.is_xyextrude()])
 
 
-	def flatten_thread(self, thread: List[Segment]) -> List[GSegment]:
+
+	def flatten_thread(self, thread: List[GSegment]) -> List[GSegment]:
 		"""Process the input thread:
 			* Clip it to the top/bottom of the layer (the layer height)
 			* Flatten in-layer segments to have the same z-height as the layer
@@ -143,14 +156,14 @@ class TLayer(Cura4Layer):
 		for i,tseg in enumerate(thread):
 			#Is the thread segment entirely below or above (including sitting on top
 			# of) the layer? If so, skip it.
-			if((tseg.start_point.z <  bot.z and tseg.end_point.z <  bot.z) or
-				 (tseg.start_point.z >= top.z and tseg.end_point.z >= top.z)):
+			if((tseg.start_point.z <  bot.p.z and tseg.end_point.z <  bot.p.z) or
+				 (tseg.start_point.z >= top.p.z and tseg.end_point.z >= top.p.z)):
 				log.debug(f'{i}. {tseg} endpoints not in layer',
 						extra=dict(style={'line-height':'normal'}))
 				continue
 
 			#Is the segment entirely inside the layer? If so, don't need to clip.
-			if tseg.start_point.z >= bot.z and tseg.end_point.z >= bot.z:
+			if tseg.start_point.z >= bot.p.z and tseg.end_point.z >= bot.p.z:
 				newseg = tseg.copy()
 			else:
 				#Clip segments to top/bottom of layer (note "walrus" operator := )
@@ -173,19 +186,9 @@ class TLayer(Cura4Layer):
 		return segs
 
 
-	def geometry_snap(self, thread: List[GSegment], snap_first=False) -> Dict[GSegment, None|GSegment]:
-		"""Return new thread segments, modified as follows:
-			* Each segment end point is moved to its closest intersection with
-				printed layer geometry.
-			* Each segment start point (except the first segment's) is moved to the
-				end point of the preceding segment.
-			* If the closest intersection is the same as the start point, then no new
-				segment is generated.
-			The return value is a dict: {original_segment: new_segment or None}
+	def geometry_snap(self, thread: GPolyLine) -> list[GPoint]:
+		self.add_geometry()
 
-			If `snap_first` is True, the start point of the first thread segment will
-			also be snapped to the closest geometry.
-		"""
 		def _closest_seg_point(p: GPoint) -> tuple[GPoint, GSegment]:
 			closest_seg  = None
 			closest_isec = None
@@ -200,38 +203,25 @@ class TLayer(Cura4Layer):
 			assert closest_isec is not None
 			return closest_isec, closest_seg
 
-		end = None
-		newthread: Dict[GSegment, None|GSegment] = {}
+		out_anchors = []
+		for anchor in thread.points[1:]:
+			#Don't snap anchors not on this layer
+			if anchor.z != self.z: continue
 
-		for i,tseg in enumerate(thread):
-			orig_seg = tseg.copy()
+			p, seg = _closest_seg_point(anchor)
 
-			if i == 0 and snap_first:
-				start, cseg = _closest_seg_point(tseg.start_point)
-				tseg = tseg.copy(start_point=start)
-				log.debug(f'Snap first thread point to {cseg}:\n\t'
-							f'{thread[0].start_point} →\n\t{tseg.start_point}\n\t'
-							f'(distance: {tseg.start_point.distance(thread[0].start_point)})')
-				log.debug(f'Anchor in geom? {tseg.start_point in cseg}')
+			if (move_dist := anchor.distance(p)) > 1:
+				log.debug(f"WARNING: moving end point for {anchor} {move_dist:02f} mm")
 
-			if end and tseg.start_point != end: tseg = tseg.copy(start_point=end)
+			if p != anchor:
+				thread.move(anchor, to=p)
+			log.debug(f'Snap {anchor} to {p}')
 
-			end, cseg = _closest_seg_point(tseg.end_point)
+			out_anchors.append(p)
 
-			if (move_dist := tseg.end_point.distance(end)) > 1:
-				log.debug(f"WARNING: moved end point for {tseg} {move_dist:02f} mm")
+		return out_anchors
 
-			#Not enough distance to intersect anything else
-			if end == tseg.start_point:
-				log.debug(f'Closest point for {tseg} is its start point, dropping it')
-				newthread[orig_seg] = None
-			else:
-				newthread[orig_seg] = tseg.copy(end_point=end)
-
-		return newthread
-
-
-	def non_intersecting(self, thread: List[Segment]) -> Set[GSegment]:
+	def non_intersecting(self, thread: List[GSegment]) -> Set[GSegment]:
 		"""Return a list of GSegments which the given thread segments do not
 		intersect."""
 		thread = listify(thread)
@@ -255,28 +245,7 @@ class TLayer(Cura4Layer):
 		return set.union(*[self.model_isecs[t]['isec_segs'] for t in thread])
 
 
-	def anchors(self, tseg: Segment) -> List[GPoint]:
-		"""Return a list of "anchor points" - Points at which the given thread
-		segment intersects the layer geometry, ordered by distance to the
-		end point of the thread segment (with the assumption that this the
-		"true" anchor point, as the last location the thread will be stuck down."""
-		anchors = self.model_isecs[tseg]['isec_points'].copy()
-		entry   = tseg.start_point
-		exit    = tseg.end_point
-
-		log.debug(f'anchors with thread segment: {tseg}')
-		log.debug(f'isec anchors: {anchors}')
-		if entry in self.in_out and entry.inside(self.geometry.outline):
-			anchors.add(entry)
-			log.debug(f'Entry anchor: {entry}')
-		if exit in self.in_out and exit.inside(self.geometry.outline):
-			anchors.add(exit)
-			log.debug(f'Exit anchor: {exit}')
-
-		return sorted(anchors, key=lambda p:distance(tseg.end_point, p))
-
-
-	def intersect_model(self, segs):
+	def intersect_model(self, segs, skip="SKIRT"):
 		"""Given a list of thread segments, calculate all of the intersections with the model's
 		printed lines of gcode. Caches in self.model_isecs:
 			nsec_segs, isec_segs, isec_points
@@ -284,6 +253,9 @@ class TLayer(Cura4Layer):
 			nsec_segs is non-intersecting GCLines
 			isec_segs is intersecting GCLines
 			isec_points is a list of GPoints for the intersections
+
+		Pass `skip` as a type (see Cura4Layer) to always treat lines of that type
+		as non-intersecting.
 		"""
 		self.add_geometry()
 
@@ -299,15 +271,19 @@ class TLayer(Cura4Layer):
 			for gcseg in self.geometry.segments:
 				if not gcseg.is_extrude: continue
 
-				inter = gcseg.intersection(tseg)
+				if skip in self.parts and gcseg.gc_lines.data[-1] in self.parts[skip]:
+					inter = None
+				else:
+					inter = gcseg.intersection(tseg)
+
 				if inter is None:
 					isecs['nsec_segs'].add(gcseg)
 				else:
 					isecs['isec_segs'].add(gcseg)
-					if isinstance(inter, Point):
+					if isinstance(inter, GPoint):
 						inter = GPoint(inter)
 						isecs['isec_points'].add(inter)
-					elif isinstance(inter, Segment):
+					elif isinstance(inter, GSegment):
 						isecs['isec_points'].update(map(GPoint, inter[:]))
 
 			self.model_isecs[tseg] = isecs

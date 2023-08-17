@@ -7,6 +7,8 @@ from geometry import GSegment, GPoint
 from geometry.utils import angle2point
 from Geometry3D import Vector
 from gcline import GCLine
+from itertools import pairwise
+
 
 def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 							 prev_layer_only_outline=True, preview_layer=True):
@@ -27,48 +29,19 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		plot_segments(fig, layer.geometry.segments, style=styles['gc_segs'],
 								name='gc segs', line_width=1)
 
-		#Plot the entire thread path that will be routed this layer
-		if snapped_thread := getattr(layer, 'snapped_thread', None):
-			#Plot original thread
-			plot_segments(fig, snapped_thread.keys(), name='original thread',
-								 style=styles['original_thread'])
-
-			#Plot trajectories of endpoint moves for snapping
-			x, y = [], []
-			for old,new in snapped_thread.items():
-				if new is not None and new != old:
-					x.extend([old.end_point.x, new.end_point.x, None])
-					y.extend([old.end_point.y, new.end_point.y, None])
-			if x:
-				fig.add_trace(go.Scatter(x=x, y=y, name='thread_snaps', mode='lines',
-															**styles['moved_thread']))
-
-			#Plot new thread
-			plot_segments(fig, snapped_thread.values(), name='thread',
-									style=styles['future_thread'])
-
-		#Plot all of the anchors
-		plot_points(fig, [seg.end_point for seg in layer.thread], style=styles['anchor'])
-		if hasattr(layer, 'start_anchor'):
-			plot_points(fig, [layer.start_anchor], style=styles['anchor'],
-							 name='start anchor', marker_symbol='circle', marker_size=6)
+		points = [step.thread_path.point for step in steps]
+		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
+		 							style=styles['future_thread'], name='thread',
+									mode='markers+lines', **styles['anchor'])
 
 		show_dark(fig, zoom_box=layer.extents())
-
 
 	for stepnum,step in enumerate(steps):
 		if not step.valid:
 			print(f'Skip {step.number}')
 			continue
 
-		if not step.gcsegs:
-			print(f'Step {stepnum}',
-				 step.name,
-				 f'from {step.ring_initial_angle} → {step.ring_angle}',
-				 f'({step.ring_move})'
-			)
-		else:
-			print(f'Step {stepnum}: {step.name}')
+		print(f'Step {stepnum}: {step.name}\n{step.thread_path}')
 		fig = go.Figure()
 
 		#Plot the bed
@@ -80,7 +53,7 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 					only_outline=prev_layer_only_outline)
 
 		#Plot segments to be printed this layer
-		plot_segments(fig, layer.geometry.segments, style=styles['to_print'])
+		plot_segments(fig, layer.geometry.segments, name='to print', style=styles['to_print'])
 
 		#Plot any geometry that was printed in the previous step
 		if stepnum > 0:
@@ -88,15 +61,17 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			plot_segments(fig, segs, name='prev step segs', style=styles['old_segs'])
 
 		##Plot the thread from the previous steps
-		#for i in range(1, stepnum):
-		#	steps[i].plot_thread(fig, steps[i-1].printer_anchor, style={'thread': styles['old_thread']})
-		for i in range(1, stepnum):
-			if steps[i-1].printer_anchor != steps[i].printer_anchor:
-				plot_segments(fig, [GSegment(steps[i-1].printer_anchor, steps[i].printer_anchor)],
-									style=styles['printed_thread'], name='finished thread')
+		points = [step.thread_path.point for step in steps[:stepnum+1]]
+		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
+		 							style=styles['printed_thread'], name='finished thread')
 
 		#Plot geometry printed in this step
 		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
+
+		#Plot thread for this step
+		tp = step.thread_path
+		plot_segments(fig, [GSegment(tp.point, tp.point.moved(tp.vector.normalized()*200))],
+							style=styles['thread_ring'], name='thread path')
 
 		#Plot debug things
 		if hasattr(step, '_debug'):
@@ -105,19 +80,11 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			plot_segments(fig, avoid, name='avoid', style=styles['avoid_segs'])
 			plot_segments(fig, isecs, name='isecs', style=styles['isec_segs'])
 
-		#Plot thread trajectory from current anchor to ring
-		plot_segments(fig, [GSegment(
-			steps[stepnum-1].printer_anchor if stepnum > 0 else steps[0].printer_anchor,
-			step.printer.ring.angle2point(step.ring_angle))], name='thread', style=styles['thread_ring'])
-
 		#Plot anchor/enter/exit points if any
-		plot_points(fig, [step.printer_anchor], name='anchor', style=styles['anchor'])
+		plot_points(fig, [step.thread_path.point], name='anchor', style=styles['anchor'])
 		if hasattr(layer, 'start_anchor'):
 			plot_points(fig, [layer.start_anchor], style=styles['anchor'],
 							 name='start anchor', marker_symbol='circle', marker_size=6)
-
-		#Plot the ring
-		step.printer.ring.plot(fig, angle=step.ring_angle)#, offset=Vector(ender3.bed_config['zero'], ender3.ring_config['zero']))
 
 		#Show the figure for this step
 		(x1,y1),(x2,y2) = layer.extents()
@@ -133,7 +100,6 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		fig.show()
 
 	print('Finished routing this layer')
-
 
 
 def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
@@ -183,6 +149,8 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 	frames = []
 
 	xs, ys = [], []
+
+	#Find the first move destination, set the current x/y to that
 	cur_x, cur_y = 0, 0
 	for i,line in enumerate(gclines):
 		if line.is_xymove():
