@@ -1,6 +1,5 @@
 from typing import Collection, Set
-from fastcore.basics import listify
-from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane
+from fastcore.basics import listify, ifnone
 from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane, angle
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
@@ -11,7 +10,7 @@ from .angle import Angle
 _eps = get_eps()
 
 class GHalfLine(HalfLine):
-	def __init__(self, a, b=None):
+	def __init__(self, a:Point|HalfLine, b:Point|Vector|None=None):
 		if isinstance(a, HalfLine):
 			a, b = a.parametric()
 		else:
@@ -43,13 +42,13 @@ class GHalfLine(HalfLine):
 	def intersecting(self, check:Collection[Segment]) -> Set[Segment]:
 		"""Return Segments in check which this HalfLine intersects with,
 		ignoring intersections with the start point of this HalfLine."""
-		return {gcast(seg) for seg in listify(check) if self._intersection(seg) not in [None, self.point]}
+		return {seg for seg in listify(check) if self._intersection(seg) not in [None, self.point]}
 
 
 	def intersections(self, check:Collection[Segment]) -> Set[Segment]:
 		"""Return all intersection points of this GHalfLine with the Segments in
 		`check`, where the intersection is not the start point of this HalfLine."""
-		return {gcast(seg) for seg in filter(lambda i: i not in [None, self.point],
+		return {seg for seg in filter(lambda i: i not in [None, self.point],
 											[self._intersection(seg) for seg in listify(check)])}
 
 
@@ -59,6 +58,11 @@ class GHalfLine(HalfLine):
 
 	def distance(self, other):
 		return distance_linelike_point(self, other)
+
+
+	def copy(self, *, point:Point|None=None, vec:Vector|None=None):
+		p, v = self.parametric()
+		return self.__class__(ifnone(point, p), ifnone(vec, v))
 
 
 	def moved(self, vec):
