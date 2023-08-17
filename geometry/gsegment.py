@@ -1,3 +1,4 @@
+from __future__ import annotations
 from copy import copy
 from typing import Collection, Set, List
 from Geometry3D import Vector, Segment, Point, Line, angle
@@ -41,7 +42,7 @@ class GSegment(Segment):
 			#Make copies of the start/end points to ensure we avoid accidents
 			a = copy(kwargs.get('start_point', copyseg.start_point))
 			b = copy(kwargs.get('end_point',   copyseg.end_point))
-			z = a.z if z is None else z
+			# z = a.z if z is None else z #Why was I doing this?
 			gc_lines   = getattr(copyseg, 'gc_lines', []) if gc_lines is None else gc_lines
 			is_extrude = getattr(copyseg, 'is_extrude', is_extrude)
 
@@ -136,12 +137,13 @@ class GSegment(Segment):
 
 	def set_z(self, z):
 		"""Set both endpoints of this Segment to a new z."""
-		if self.start_point.z == z and self.end_point.z == z:
-			return self
-		self.start_point.z = z
-		self.end_point.z = z
-		self.line = Line(self.start_point, self.end_point)
-		return self
+		return self.copy(z=z)
+		# if self.start_point.z == z and self.end_point.z == z:
+		# 	return self
+		# self.start_point.z = z
+		# self.end_point.z = z
+		# self.line = Line(self.start_point, self.end_point)
+		# return self
 
 
 	def copy(self, start_point=None, end_point=None, z=None, **kwargs):
@@ -183,7 +185,7 @@ class GSegment(Segment):
 			self.line.dv.normalized() * self.length() * (other-1)))
 
 
-	def _split(self, split_loc:GPoint) -> List:
+	def split_at(self, split_loc:GPoint) -> List:
 		"""Return a set of two GSegments resulting from splitting this one into two
 		pieces at `location`."""
 		if split_loc not in self:
@@ -236,13 +238,14 @@ class GSegment(Segment):
 		return [seg1, seg2]
 
 
-	def split(self, locations:GPoint|Collection[GPoint]) -> List:
+	def split(self, locations:GPoint|Collection[GPoint]) -> list[GSegment]:
+		"""Split this GSegment into multiple pieces at the given `locations`."""
 		locations = listify(locations)
 		splits    = []
 		to_split  = self
 
 		for loc in sorted(locations, key=self.start_point.distance):
-			seg1, seg2 = to_split._split(loc)
+			seg1, seg2 = to_split.split_at(loc)
 			splits.append(seg1)
 			to_split = seg2
 		splits.append(seg2)
