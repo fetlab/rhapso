@@ -8,31 +8,34 @@ import adsk.core, adsk.fusion
 app = adsk.core.Application.get()
 ui  = app.userInterface
 
-selections = ui.activeSelections
-curve = selections[0].entity
-sketch = curve.parentSketch
-connected_curves = sketch.findConnectedCurves(curve)
+def get_thread():
+	selections = ui.activeSelections
+	curve = selections[0].entity
+	sketch = curve.parentSketch
+	connected_curves = sketch.findConnectedCurves(curve)
 
-for c in connected_curves:
-	selections.add(c)
+	for c in connected_curves:
+		selections.add(c)
 
-def m(l):
-	return [f'{i*10:.4f}' for i in l]
+	def m(l):
+		return [f'{i*10:.4f}' for i in l]
 
-#Get geometry
-geom = []
-for c in connected_curves:
-	geom.append('(' +
-		'[' + ', '.join(m(c.worldGeometry.startPoint.asArray())) + '], ' +
-		'[' + ', '.join(m(c.worldGeometry.endPoint.asArray())) + ']' +
-		')')
-geom = '[' + ', '.join(geom) + ']'
+	#Get geometry
+	geom = []
+	for c in connected_curves:
+		geom.append('(' +
+			'[' + ', '.join(m(c.worldGeometry.startPoint.asArray())) + '], ' +
+			'[' + ', '.join(m(c.worldGeometry.endPoint.asArray())) + ']' +
+			')')
+	geom = '[' + ', '.join(geom) + ']'
 
-if sys.platform == 'darwin':
-	Popen("pbcopy",
-		env={'LANG': 'en_US.UTF-8'},
-		stdin=PIPE).communicate(repr(geom).encode('utf-8'))
-	print("Copied path to clipboard in millimeters:")
+	if sys.platform == 'darwin':
+		Popen("pbcopy",
+			env={'LANG': 'en_US.UTF-8'},
+			stdin=PIPE).communicate(repr(geom).encode('utf-8'))
+		print("Copied path to clipboard in millimeters:")
 
-print(geom)
+	print(geom)
+
+get_thread()
 """)
