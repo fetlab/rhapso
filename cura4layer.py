@@ -1,5 +1,6 @@
 from gclayer import Layer
 from util import listsplit
+import re
 
 class Cura4Layer(Layer):
 	"""A Layer, but using the comments in the Cura gcode to add additional useful
@@ -13,6 +14,6 @@ class Cura4Layer(Layer):
 	def __init__(self, lines=[], layernum=None):
 		super().__init__(lines, layernum)
 		parts = listsplit(lines,
-				lambda l: l.line.startswith(';TYPE:') or l.line.startswith(';MESH'),
-				keepsep='>', minsize=1)
-		self.parts = {lines[0]: lines for lines in parts}
+				lambda l: l.line.startswith(';TYPE:'), keepsep='>', minsize=1)
+		self.parts = {m.group(1) if (m:=re.search('TYPE:(.*)',lines[0].line)) else 'NONE': lines
+								for lines in parts}
