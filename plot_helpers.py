@@ -5,8 +5,7 @@ from fastcore.basics import listify
 from fastcore.meta import use_kwargs
 from util import deep_update
 from geometry.utils import min_max_xyz_segs
-from geometry.gsegment import GSegment
-from geometry.gpoint import GPoint
+from geometry import GSegment, GPoint, GHalfLine
 from plot_styles import styles
 
 def str2style(spec, linewidth=1, markersize=4):
@@ -113,6 +112,9 @@ def str2style(spec, linewidth=1, markersize=4):
 
 @use_kwargs(styles.keys())
 def quickplot(plot3d=False, show=True, **kwargs):
+	f"""Quickly plot data. Call as quickplot(<style>=<data>).
+	Currently-supported styles: {styles.keys()}
+	"""
 	fig = kwargs.get('fig', go.Figure())
 	for style in styles:
 		if style in kwargs:
@@ -121,6 +123,10 @@ def quickplot(plot3d=False, show=True, **kwargs):
 				plot_segments(fig, data, style=styles[style], name=style, plot3d=plot3d)
 			elif isinstance(data[0], GPoint):
 				plot_points(fig, data, style=styles[style], name=style, plot3d=plot3d)
+			elif isinstance(data[0], GHalfLine):
+				plot_segments(fig,
+					[GSegment(hl.point, hl.point+hl.vector.normalized()*200) for hl in data],
+					style=styles[style], name=style, plot3d=plot3d)
 			else:
 				print(f"{style}: I don't know how to plot {type(data[0])}")
 	if show: show_dark(fig)
