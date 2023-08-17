@@ -1,10 +1,12 @@
 from typing import Collection, Set
 from fastcore.basics import listify
 from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane
+from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane, angle
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
 from .utils import distance_linelike_point
 from .gcast import gcast
+from .angle import Angle
 
 _eps = get_eps()
 
@@ -72,3 +74,9 @@ class GHalfLine(HalfLine):
 		mv2 = Vector(-v[1], v[0], v[2]) * distance
 		return [self.moved(mv1), self.moved(mv2)] + ([self] if inc_self else [])
 
+
+	def angle(self, other=None) -> Angle:
+		ov = other if isinstance(other, Vector) else \
+				 other.vector if isinstance(other, HalfLine) else \
+				 (other or Vector.x_unit_vector())
+		return Angle(radians=angle(self.vector, ov))

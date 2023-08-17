@@ -79,10 +79,11 @@ def ang_dist(p,c,a) -> Angle:
 	return atan2(p.y-c.y, p.x-c.x) - atan2(a.y-c.y, a.x-c.x)
 
 
-def angsort(points: Collection[Point], ref:Segment) -> List[Point]:
+def angsort(points: Collection[Point], ref:Segment|HalfLine) -> List[Point]:
 	"""Return points sorted with respect to their (absolute) angle to the
 	reference segment."""
-	return sorted(points, key=lambda p: abs(ang_dist(p, ref.start_point, ref.end_point)))
+	s, e = ref[:] if isinstance(ref, Segment) else (ref.point, ref.point.moved(ref.vector))
+	return sorted(points, key=lambda p: abs(ang_dist(p, s, e)))
 
 
 def point_plane_comp(point:Point, plane:Plane):
