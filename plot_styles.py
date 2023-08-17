@@ -3,6 +3,8 @@ styles: dict[str, dict] = {
 	'segments':     {'mode': 'lines', 'line': dict(color='blue', width=1)},
 	'points':       {'mode': 'markers', 'marker': dict(color='violet',  symbol='circle', size=4)},
 	'circles':      {'line':  dict(color='magenta', width=1)},
+	'segpoints':    {'mode': 'markers+lines',
+									 'marker':dict(color='green', symbol='circle', size=4)},
 
 	#Thread styles
 	'original_thread': {'line': dict(color='coral',     width=.5, dash='dot')},
