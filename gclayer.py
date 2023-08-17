@@ -12,7 +12,7 @@ class Layer():
 	def __repr__(self):
 		#If this layer contains some X/Y moves, print the extents
 		if self.has_moves > 1:
-			return '\n'.join((
+			return ' '.join((
 				f'<Layer {self.layernum} at Z={self.z};',
 				f'  corners: {self.extents()};',
 				f'  {len(self.lines)} lines>'))
