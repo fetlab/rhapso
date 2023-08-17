@@ -271,19 +271,3 @@ class Ender3(Printer):
 		self.ring = Ring(**self._ring_config)
 		self.bed = Bed(anchor=self._bed_config['anchor'], size=self._bed_config['size'])
 		self.anchor = self.bed.anchor
-
-
-	def thread_intersect(self, target:GPoint, anchor:GPoint|None=None, set_new_anchor=True, move_ring=True) -> Angle:
-		#Move the ring's `y` to the target's `y` to simulate the moving bed, then
-		# do thread intersection.
-		cur_ring_y = self.ring.y
-		rprint(f'Start: {self.ring=}, {target.y=}')
-		self.ring.center = self.ring.center.moved(y=target.y)
-		rprint(f'End: {self.ring=}')
-		rprint(f'Ring.y {cur_ring_y:.2f} → {self.ring.center.y:.2f}')
-
-		r = super().thread_intersect(target, anchor, set_new_anchor, move_ring)
-
-		self.ring.y = cur_ring_y
-
-		return r
