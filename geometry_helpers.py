@@ -1,19 +1,46 @@
-from Geometry3D import Vector, Line, get_eps
+from __future__ import annotations
+from Geometry3D import Vector, Plane, Line, get_eps
 from gcline import GCLines
+from gclayer import Layer
 from dataclasses import make_dataclass
 from typing import List, Dict, Collection, Set
 from collections import defaultdict
 from more_itertools import flatten
 
-from geometry import GPoint, GSegment, GHalfLine
-from geometry.utils import tangent_points, eps, sign
+from geometry import GPoint, GSegment, GHalfLine, GPolyLine
+from geometry.utils import tangent_points, eps, sign, point_plane_comp
 from geometry.gcast import gcastr
 
 from util import GCodeException
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from tlayer import TLayer
 
 Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
 Planes   = make_dataclass('Planes',   ['top', 'bottom'])
+
+
+def thread_layer_snap(thread:GPolyLine, layers:list[Layer]):
+	#Get the z-height of each layer
+	zs = [layer.z for layer in layers]
+
+	#First, snap each point in the thread to the closest layer midpoint; skip the
+	# first point as it should be the bed anchor
+	for p in thread.points[1:]:
+		thread.move(p, z=min(zs, key=lambda m:abs(m-p.z))-p.z)
+
+	#Now, for any thread segment which isn't on the same layer, split it; skip
+	# the first segment since it's the bed anchor as start point
+	for seg in thread.segments[1:]:
+		mps = zs.index(seg.start_point.z)
+		mpe = zs.index(seg.end_point.z)
+		if mps > mpe: mps, mpe = mpe, mps
+
+		for z in zs[mps:mpe+1]:
+			if seg.start_point.z == z or seg.end_point.z == z:
+				continue
+			_, seg = thread.split(seg, seg.intersection(Plane(GPoint(0, 0, z), Vector.z_unit_vector())))
+
 
 
 def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> dict[GPoint, set]:
