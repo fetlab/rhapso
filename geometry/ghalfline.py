@@ -1,35 +1,39 @@
 from typing import Collection, Set
+from math import sin, cos
 from fastcore.basics import listify, ifnone
 from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane, angle
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
 from .utils import distance_linelike_point
 from .gcast import gcast
-from .angle import Angle
+from .angle import Angle, atan2
 
 _eps = get_eps()
 
 class GHalfLine(HalfLine):
-	def __init__(self, a:Point|HalfLine, b:Point|Vector|None=None):
+	def __init__(self, a:Point|HalfLine, b:Point|Vector|Angle|None=None):
 		if isinstance(a, HalfLine):
 			a, b = a.parametric()
 		else:
 			a = GPoint(a) if isinstance(a, (tuple, list, set, Point)) else a
 			b = GPoint(b) if isinstance(b, (tuple, list, set, Point)) else b
 
-		#Copied from HalfLine.__init__ to avoid deepcopy operations
-		if isinstance(a,Point) and isinstance(b,Point):
+		if not isinstance(a, Point):
+			raise ValueError(f'First argument to GHalfLine must be Point or HalfLine, not {type(a)}')
+
+		if isinstance(b, Point):
 			if a == b: raise ValueError("Cannot initialize a HalfLine with two identical Points")
-			self.line = Line(a,b)
-			self.point = a
-			self.vector = Vector(a,b)
-		elif isinstance(a,Point) and isinstance(b,Vector):
+			b = Vector(a, b)
+		elif isinstance(b, Angle):
+			b = Vector(cos(b), sin(b), 0)
+		elif isinstance(b, Vector):
 			if b.length() < _eps: raise ValueError("Cannot initialize a HalfLine with the length of Vector is 0")
-			self.line = Line(a,b)
-			self.point = a
-			self.vector = b
 		else:
-			raise ValueError('Cannot create segment with type:%s and %s' % (type(a),type(b)))
+			raise ValueError(f'Second argument to GHalfLine must be Point, Vector, or Angle, not {type(b)}')
+
+		self.line   = Line(a, b)
+		self.point  = a
+		self.vector = b
 
 	_intersection = HalfLine.intersection
 	intersection  = gcast(HalfLine.intersection)
@@ -65,9 +69,15 @@ class GHalfLine(HalfLine):
 		return self.__class__(ifnone(point, p), ifnone(vec, v))
 
 
-	def moved(self, vec):
-		point = self.point if isinstance(self.point, GPoint) else GPoint(self.point)
-		return self.__class__(point.moved(vec), self.vector)
+	def moved(self, *args, **kwargs):
+		"""Move the half line's origin point without changing its angle."""
+		return self.__class__(self.point.moved(*args, **kwargs), self.vector)
+
+
+	def rotated(self, by_angle:Angle):
+		"""Return a copy of the half line, rotated by `by_angle` about its origin
+		point."""
+		return self.__class__(self.point, self.angle + by_angle)
 
 
 	def parallels2d(self, distance=1, inc_self=False):
@@ -79,8 +89,31 @@ class GHalfLine(HalfLine):
 		return [self.moved(mv1), self.moved(mv2)] + ([self] if inc_self else [])
 
 
-	def angle(self, other=None) -> Angle:
-		ov = other if isinstance(other, Vector) else \
-				 other.vector if isinstance(other, HalfLine) else \
-				 (other or Vector.x_unit_vector())
-		return Angle(radians=angle(self.vector, ov))
+	@property
+	def angle(self) -> Angle:
+		return atan2(self.vector[1], self.vector[0])
+
+
+
+	def repr_diff(self, b:'GHalfLine', newline=False):
+		"""Return a printable string showing the differences between the two, only
+		in 2D."""
+		a = self
+		if a == b: return ''
+		if a.point.as2d() != b.point.as2d():
+			if a.angle != b.angle:
+				p1 = 'Move and rotate'
+				p2 = f'{a.angle:>6.2f}°/{a.point}'
+				p3 = f'{b.angle:>6.2f}°/{b.point}'
+			else:
+				p1 = 'Move'
+				p2 = f'{a.point}'
+				p3 = f'{b.point} ({b.angle:>6.2f})°'
+		else:
+			p1 = 'Rotate'
+			p2 = f'{a.angle:>6.2f}°'
+			p3 = f'{b.angle:>6.2f}° ({b.point})'
+		if newline:
+			return f'{p1} {p2} →\n{" "*len(p1)} {p3}'
+		else:
+			return f'{p1} {p2} → {p3}'

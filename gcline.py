@@ -21,8 +21,7 @@ class GCLine:
 		self.fake    = fake       #Set to True if it's been generated
 		self.meta    = meta or {} #Metadata about this line
 
-		if any(isinstance(arg, Angle) for arg in args.values()):
-			raise ValueError()
+		assert not any(isinstance(arg, Angle) for arg in args.values())
 
 		self.relative_extrude = None
 
@@ -59,6 +58,9 @@ class GCLine:
 								self.args[arg[0]] = None
 						else:
 							self.args[None] = arg
+
+		if not (self.comment or self.code):
+			raise ValueError(f'Missing a code for line: "{self}"')
 
 		self.args = ReadOnlyDict(self.args)
 

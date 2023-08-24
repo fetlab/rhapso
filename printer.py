@@ -22,36 +22,12 @@ from geometry.angle import Angle
 
 
 class Printer:
-	"""Maintains the state of the printer/ring system. Holds references to the
-	Ring and Bed objects. Subclass this object to handle situations where the
-	coordinate systems need transformations.
-	"""
-	style = {
-		'thread': {'mode':'lines', 'line': dict(color='white', width=1, dash='dot')},
-		'anchor': {'mode':'markers', 'marker': dict(color='red', symbol='x', size=4)},
-	}
-
-
-	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
-		self.bed  = bed
-		self.ring = ring
-
+	def __init__(self, initial_thread_path:GHalfLine):
 		#The current path of the thread: the current thread anchor and the
 		# direction of the thread.
-		self._thread_path = GHalfLine(self.bed.anchor, self.ring.point)
+		self._thread_path = initial_thread_path
 
-		#State: absolute extrusion amount, print head location, anchor location
-		# (initially the bed's anchor)
-		self.e          = 0
-		self.head_loc   = GPoint(0, 0, z)
-
-		#Functions for different Gcode commands
-		self._code_actions: dict[str|None,Callable] = {}
-		self.add_codes(None,              action=lambda gcline, **kwargs: [gcline])
-		self.add_codes('G28',             action=self.gcfunc_auto_home)
-		self.add_codes('G0', 'G1', 'G92', action=self.gcfunc_set_axis_value)
-
-		self.debug_info = {}
+		self.target = None
 
 
 	#Create attributes which call Printer.attr_changed on change
@@ -80,9 +56,16 @@ class Printer:
 
 	@thread_path.setter
 	def thread_path(self, new_path):
-		if new_path != self.thread_path:
-			rprint(f'[green]****[/] Move thread from {self.thread_path} ({self.thread_path.angle()}°)\n'
-						 f'                   to {new_path} ({new_path.angle()}°)')
+		#This bit just does debug printing
+		if new_path.point != self.thread_path.point and new_path.angle != self.thread_path.angle:
+			raise ValueError("Simultaneously setting both point and angle for thread not allowed")
+		if new_path.point != self.thread_path.point:
+			rprint(f'[green]****[/] Move thread at angle {self.thread_path.angle}°'
+					f' from {self.thread_path.point} to {new_path.point}')
+		if new_path.angle != self.thread_path.angle:
+			rprint(f'[green]****[/] Rotate thread at point {self.thread_path.point}'
+					f' from {self.thread_path.angle}° to {new_path.angle}°')
+
 		#Assign even if they're the same, just in case the new one is a copy or
 		# something
 		self._thread_path = new_path
@@ -93,81 +76,8 @@ class Printer:
 
 
 	def rotate_thread_to(self, target:Vector|GPoint):
+		self.target = target
 		self.thread_path = GHalfLine(self.thread_path.point, target)
-
-
-	def add_codes(self, *codes, action:str|Callable):
-		"""Add the given action for each code in `codes`. `action` can be a string,
-		in which case the line of gcode will be saved as an attribute with that
-		name on this object, or it can be a function, in which case that function
-		will be called with the line of gcode as a parameter."""
-		for code in codes:
-			if isinstance(action, str):
-				self._code_actions[code] = lambda v: setattr(self, action, v)
-			elif callable(action):
-				self._code_actions[code] = action
-			else: raise ValueError(f'Need function or string for `action`, not {type(action)}')
-
-
-	def summarize(self):
-		import textwrap
-		return textwrap.dedent(f"""\
-			[yellow]—————[/]
-			{self}:
-				x, y, z, e: {self.x}, {self.y}, {self.z}, {self.e}
-				anchor: {self.anchor}
-
-				bed: {self.bed}
-				ring: {self.ring}
-					angle: {self.ring.angle}
-					center: {self.ring.center}
-			[yellow]—————[/]
-		""")
-
-
-	#Functions to add extra lines of GCode. Each is passed the pre/postamble and
-	# should return it, possibly modified.
-	def gcode_file_preamble  (self, preamble:  list[GCLine]) -> list[GCLine]: return preamble
-	def gcode_file_postamble (self, postamble: list[GCLine]) -> list[GCLine]: return postamble
-	def gcode_layer_preamble (self, preamble:  list[GCLine], layer:Layer) -> list[GCLine]: return preamble
-	def gcode_layer_postamble(self, postamble: list[GCLine], layer:Layer) -> list[GCLine]: return postamble
-
-
-	def gcode_ring_move(self, move_amount:Angle, relative=True) -> list[GCLine]:
-		"""Default ring movement command. Must be implemented in subclasses."""
-		raise NotImplementedError("Subclass must implement gcode_ring_move")
-
-
-	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
-		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
-
-
-	def execute_gcode(self, gcline:GCLine|list[GCLine], **kwargs) -> list[GCLine]:
-		return sum([self._execute_gcline(l, **kwargs) for l in listify(gcline)], [])
-
-
-	#G28
-	def gcfunc_auto_home(self, gcline: GCLine, **kwargs):
-		self.x, self.y, self.z = 0, 0, 0
-
-
-	#G0, G1, G92
-	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
-		#Track head location
-		if gcline.x: self.x = gcline.x
-		if gcline.y: self.y = gcline.y
-		if gcline.z: self.z = gcline.z
-
-		if 'E' in gcline.args:
-			#G92: software set value
-			if gcline.code == 'G92':
-				self.e = gcline.args['E']
-
-			#A normal extruding line; we need to use the relative extrude value
-			# since our lines get emitted out-of-order
-			else:
-				self.e += gcline.relative_extrude
-				return [gcline.copy(args={'E': self.e})]
 
 
 	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
@@ -178,12 +88,13 @@ class Printer:
 			repeats += 1
 			rprint(f'Avoid and print {len(avoid)} segments, iteration {repeats}')
 			if repeats > 5: raise ValueError("Too many repeats")
-			with steps.new_step(f"Prevent {len(avoid)} segments from printing over thread path" + extra_message) as s:
+			with steps.new_step(f"Move thread to avoid printing over it with {len(avoid)} segments?" + extra_message) as s:
 				if isecs := self.thread_avoid(avoid):
 					rprint(f"{len(isecs)} thread/segment intersections")
-				else:
-					s.valid = False
 				avoid -= isecs
+			if s.thread_path == s.original_thread_path:
+				rprint(f'No change in thread path in step {s}, marking it as not valid')
+				s.valid = False
 
 			if avoid:
 				with steps.new_step(f"Print {len(avoid)} segments thread doesn't intersect" + extra_message) as s:
@@ -194,8 +105,8 @@ class Printer:
 
 
 	def thread_avoid(self, avoid: Collection[GSegment], avoid_by=1) -> set[GSegment]:
-		"""Move the ring to try to make the thread's anchor->ring trajectory avoid
-		the segments in `avoid` by at least `avoid_by`. Return any printed segments
+		"""Move thread_path to try to make the thread's trajectory avoid the
+		segments in `avoid` by at least `avoid_by`. Return any printed segments
 		that could not be avoided."""
 		assert(avoid)
 		avoid = set(avoid)
@@ -216,9 +127,11 @@ class Printer:
 				perp1 = GHalfLine(anchor, Vector(-seg.line.dv[1], seg.line.dv[0], 0))
 				perp2 = GHalfLine(anchor, Vector(seg.line.dv[1], -seg.line.dv[0], 0))
 
+				### BUG: for now, just pick the first one
 				#Find the perpendicular path that requires the least movement from
 				# the current path
-				self.thread_path = perp1 if self.thread_path.angle(perp1) <= Angle(degrees=90) else perp2
+				rprint(f'[yellow]WARNING:[/] anchor {anchor} is too close to or on top of only segment {seg}')
+				self.thread_path = perp1# if abs(ang_diff(perp1.angle, self.thread_path.angle)) else perp2
 
 				return set()
 
@@ -227,8 +140,6 @@ class Printer:
 			# to move it so it's not very close to the ends of the segments either.
 
 			rprint(f'No intersections, ensure thread avoids segments by at least {avoid_by} mm')
-
-			self.debug_info['avoid'] = avoid
 
 			#All printed segment starts & ends, minus the thread's start point
 			endpoints  = set(flatten(avoid)) - {self.thread_path.point}

@@ -3,6 +3,7 @@ from copy import copy
 from Geometry3D import Point, Vector
 from fastcore.basics import listify
 from .angle import Angle, atan2
+from util import Number
 
 class GPoint(Point):
 	def __init__(self, *args, **kwargs):
@@ -84,7 +85,7 @@ class GPoint(Point):
 		return c
 
 
-	def moved(self, vec=None, x=None, y=None, z=None) -> GPoint:
+	def moved(self, vec:Vector=None, x:Number=None, y:Number=None, z:Number=None) -> GPoint:
 		"""Return a copy of this point moved by vector vec or by x/y/z."""
 		x, y, z = vec[:] if vec else (x or 0, y or 0, z or 0)
 		return GPoint(self.x + x, self.y + y, self.z + z)

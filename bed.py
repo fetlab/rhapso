@@ -17,7 +17,8 @@ class Bed:
 		"""Anchor is where the thread is initially anchored on the bed. Size is the
 		effective (taking into account the ring) size of the bed. Both are in mm."""
 		self.anchor = GPoint(*anchor)
-		self.size   = size
+		self.width  = size[0]
+		self.height = size[1]
 
 		#Current gcode coordinates of the bed
 		self.x      = 0

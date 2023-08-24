@@ -1,7 +1,4 @@
 general:
-  #Defined in Marlin
-  default_esteps_per_unit: 93
-
   #Raise print head a bit before we move the ring past it (mm)
   thread_crossing_head_raise: 1
 
@@ -11,12 +8,18 @@ general:
   #Pause before we move the thread carrier if we just printed over thread
   post_thread_overlap_pause: 2
 
+  #The angle, in degrees, that the thread should be set to on startup. Note:
+  # this is *not* the ring angle, but the thread's angle out of the anchor.
+  initial_thread_angle: 90
+
 
 ring:
   #16 microsteps, 200 steps per rotation = 3200
+  #Used to know the minimum angle we can move for nicer gcode
   stepper_microsteps_per_rotation: 3200
 
   #Configure gears
+  # Not using now, but keep it for posterity
   motor_gear_teeth: 19
   ring_gear_teeth : 112
 

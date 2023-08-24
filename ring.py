@@ -16,13 +16,10 @@ class Ring:
 		'indicator': {'line': dict(color='blue',  width= 4)},
 	}
 
-	def __init__(self, angle:Angle, radius=100, center:GPoint=None, rot_mul=1, **kwargs):
+	def __init__(self, angle:Angle, radius=100, center:GPoint=None, **kwargs):
 		self.radius       = radius
 		self._angle:Angle = angle
 		self.center       = GPoint(radius, 0, 0) if center is None else GPoint(center).copy()
-
-		#Set to -1 if positive E commands make the ring go clockwise
-		self.rot_mul  = rot_mul
 
 	x = property(**attrhelper('center.x'))
 	z = property(**attrhelper('center.z'))

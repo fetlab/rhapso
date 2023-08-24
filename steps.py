@@ -10,6 +10,7 @@ from step import Step
 from logger import rprint
 from gcline import GCLine, comment
 from gclayer import Layer
+from gcode_printer import GCodePrinter
 
 
 class Steps:
@@ -44,26 +45,26 @@ class Steps:
 			del(self.steps[-1])
 
 
-	def gcode(self) -> list[GCLine]:
+	def gcode(self, gcprinter:GCodePrinter) -> list[GCLine]:
 		"""Return the gcode for all steps."""
 		if self._cached_gcode:
 			return self._cached_gcode
-		r: list[GCLine] = self.printer.execute_gcode(
-				self.printer.gcode_layer_preamble(list(self.layer.preamble), self.layer))
+		r: list[GCLine] = gcprinter.execute_gcode(
+				gcprinter.gcode_layer_preamble(list(self.layer.preamble), self.layer))
 		if r:
 			r.insert(0, comment(f'::: Layer {self.layer.layernum} preamble :::'))
 			r.append(comment(f'::: End layer {self.layer.layernum} preamble :::'))
 
 		for i,step in enumerate(self.steps):
-			step_gcode = step.gcode()
+			step_gcode = step.gcode(gcprinter)
 			r.append(comment(re.sub(RE_TAGS, '', f'Layer {self.layer.layernum} - {step} {"-"*25}')))
 			r.extend(step_gcode)
 
 		#Finally add any extra attached to the layer
 		if self.layer.postamble:
 			r.append(comment(f'::: Layer {self.layer.layernum} postamble :::'))
-			r.extend(self.printer.execute_gcode(
-				self.printer.gcode_layer_postamble(list(self.layer.postamble), self.layer)))
+			r.extend(gcprinter.execute_gcode(
+				gcprinter.gcode_layer_postamble(list(self.layer.postamble), self.layer)))
 			r.append(comment(f'::: End layer {self.layer.layernum} postamble :::'))
 
 		self._cached_gcode = r

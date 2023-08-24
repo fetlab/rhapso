@@ -1,8 +1,9 @@
 from copy import deepcopy
 
-from geometry import GSegment, GPoint
+from geometry import GSegment, GPoint, GHalfLine
 from geometry.utils import ang_diff
 from gcline import GCLine, comment
+from gcode_printer import GCodePrinter
 from util import Saver, unprinted, Number
 from logger import rprint, rich_log
 from geometry.angle import Angle
@@ -19,46 +20,50 @@ class Step:
 		self.gcsegs:list[GSegment] = []
 		self.number = -1
 		self.valid = True
-		self.printer_anchor = None
-		self.ring_initial_angle:Angle|None = None
-		self.ring_angle:Angle|None = None
-		self.ring_move:Angle|None = None
 		self.fixing = False   #Does this step print over a thread to fix it in place?
+		self.original_thread_path: GHalfLine
+		self.thread_path: GHalfLine
+		self.target = None
 
 
 	def __repr__(self):
-		return(f'<Step {self.number}'
+		return(f'<Step {self.steps_obj.layer.layernum}.{self.number}'
 				+ (f' ({len(self.gcsegs)} segments)>:' if self.gcsegs else '>')
 				+ f' [light_sea_green italic]{self.name}[/]>'
-				+ ((f' from {self.ring_initial_angle:.2f}° → {self.ring_angle:.2f}°' + f'({self.ring_move:.2f}°) ')
-						if self.ring_initial_angle and self.ring_angle and self.ring_move else '')
 		)
 
 
-	def gcode(self) -> list:
-		"""Render the gcode involved in this Step, returning a list of GCLines:
-			* Sort added gcode lines by line number. If there are breaks in line
-				number, check whether the represented head position also has a break.
-				If so, add gcode to move the head correctly.
+	def gcode(self, gcprinter:GCodePrinter) -> list:
+		"""Render the gcode involved in this Step, returning a list of GCLines.
+			There are two possibilities:
+				1. Thread movement: the angle of the thread has changed. We need to
+						find out how to move the ring to achieve this angle change, taking into
+						account the bed position. This is partially taken care of in the
+						Printer (sub-)class.
+				2. Printing: we print some stuff. To do so, we sort `add()`-ed gcode
+					lines by line number. If there are breaks in line number, check whether
+					the represented head position also has a break. If so, add gcode to
+					move the head correctly.
 
 		self.gcsegs is made of GSegment objects, each of which should have a .gc_line1
 		and .gc_line2 member which are GCLines.
 		"""
+		if self.original_thread_path != self.thread_path:
+			rprint([f'[yellow]————[/]\nStep {self}:\n\t' +
+					 self.original_thread_path.repr_diff(self.thread_path)])
+
+		#If there are no gcsegs, it must be a thread move.
 		if not self.gcsegs:
-			if self.ring_move is None or self.ring_move == 0.0:
+			if self.thread_path is None or self.thread_path == self.original_thread_path:
 				return []
-			return self.printer.gcode_ring_move(
-					self.ring_move,
-					#Tell ring move to pause if the previous step was a thread-fixing step
-					pause_after=False if self.number < 1 else self.steps_obj.steps[self.number-1].fixing)
+
+			#If the angle changed, the ring should move to reflect that
+			else:
+				return gcprinter.gcode_set_thread_path(self.thread_path, self.target)
 
 
 		#Sort gcsegs by the first gcode line number in each
 		self.gcsegs.sort(key=lambda s:s.gc_lines.first.lineno)
-
-		#Set the anchor in the printer (again) so we can use it for thread location
-		# detection if needed
-		self.printer.anchor = self.printer_anchor
 
 		gcode = []
 		for seg in self.gcsegs:
@@ -67,7 +72,7 @@ class Step:
 			# Save and execute every line, as the XY move will put the head in the
 			# right place for the extrude.
 			if len(seg.gc_lines) > 2:
-				gcode.extend(self.printer.execute_gcode(seg.gc_lines.data[:-1], fixing=self.fixing))
+				gcode.extend(gcprinter.execute_gcode(seg.gc_lines.data[:-1], fixing=self.fixing))
 				extrude_line = seg.gc_lines.data[-1]
 
 			#For 2-line Segments
@@ -76,13 +81,13 @@ class Step:
 
 				#The first line should never execute an extrusion move, but we might need
 				# to use its coordinates to position the print head in the right place.
-				if l1.is_xymove() and self.printer.xy != l1.xy:
+				if l1.is_xymove() and gcprinter.xy != l1.xy:
 					if l1.is_xyextrude():
 						l1 = l1.as_xymove(fake=True)
-					gcode.extend(self.printer.execute_gcode(l1))
+					gcode.extend(gcprinter.execute_gcode(l1))
 
 			assert(extrude_line.is_extrude())
-			gcode.extend(self.printer.execute_gcode(extrude_line))
+			gcode.extend(gcprinter.execute_gcode(extrude_line))
 
 		return gcode
 
@@ -101,7 +106,7 @@ class Step:
 
 	def __enter__(self):
 		if self.debug is False: rich_log.setLevel(logging.CRITICAL)
-		self.ring_initial_angle = self.printer.ring.angle
+		self.original_thread_path = self.printer.thread_path.copy()
 		return self
 
 
@@ -110,8 +115,8 @@ class Step:
 
 		#Save state
 		self.thread_path = self.printer.thread_path.copy()
-		self.debug_info  = deepcopy(self.printer.debug_info)
-		self.printer.debug_info = {}
+		if self.printer.target is not None:
+			self.target = self.printer.target.copy()
 
 		#Die if there's an exception
 		if exc_type is not None:

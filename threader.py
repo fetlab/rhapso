@@ -6,6 +6,9 @@ Geometry3D.utils.vector.unify_types   = lambda x: x
 
 
 from copy import deepcopy
+from math import sin, cos
+
+from Geometry3D import Vector
 from geometry_helpers import GSegment
 from fastcore.basics import filter_values, first
 from gcline import GCLine, comment
@@ -13,20 +16,17 @@ from gcode_file import GcodeFile
 from rich import print
 from rich.pretty import pretty_repr
 from itertools import pairwise
-from geometry import GPoint, GPolyLine
+from geometry import GPoint, GPolyLine, GHalfLine
 from geometry.angle import Angle
 from geometry_helpers import thread_layer_snap
 
 from logger import rprint, restart_logging, reinit_logging, end_accordion_logging
 
-from ender3 import Ender3
+from printer import Printer
 from steps import Steps
 from util import unprinted
-
-from Geometry3D import Vector
-from geometry.angle import Angle
-Vector.__repr__ = lambda self: "↗{:.2f}° ({:.2f}, {:.2f}, {:.2f})".format(
-		Angle(radians=self.angle(self.x_unit_vector())), *self._v)
+from ender3 import Ender3
+from config import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 print('reload threader')
 restart_logging()
@@ -41,12 +41,23 @@ Usage notes:
 """
 
 class Threader:
-	def __init__(self, gcode_file:GcodeFile):
-		self.gcode_file  = gcode_file
-		self.printer     = Ender3()
-		self.layer_steps: list[Steps] = []
-		self.acclog      = reinit_logging()
+	def __init__(self, gcode_file:GcodeFile, config_file:str):
+		config = load_config(config_file)
+		bed_config = get_bed_config(config)
+		self.start_anchor = bed_config['anchor'] - bed_config['zero']
+
+		initial_thread_angle = Angle(degrees=config['general']['initial_thread_angle'])
+		thread_vec = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
+		self.initial_thread_path = GHalfLine(self.start_anchor, thread_vec)
+
+		#Initialze the printer with the configured anchor and angle
+		self.printer = Printer(self.initial_thread_path)
+
+		self.gcode_file                  = gcode_file
+		self.layer_steps: list[Steps]    = []
+		self.acclog                      = reinit_logging()
 		self._cached_gcode: list[GCLine] = []
+
 
 
 	def save(self, filename, lineno_in_comment=False):
@@ -59,17 +70,18 @@ class Threader:
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all layers."""
+		gcprinter = Ender3(self.initial_thread_path)
 		if self._cached_gcode:
 			return self._cached_gcode
-		r = self.printer.execute_gcode(
-				self.printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
+		r = gcprinter.execute_gcode(
+				gcprinter.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
 			r.append(comment(f'==== Start layer {steps_obj.layer.layernum} ===='))
-			r.extend(steps_obj.gcode())
+			r.extend(steps_obj.gcode(gcprinter))
 			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
-		r.extend(self.printer.execute_gcode(
-				self.printer.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
-		self._cached_gcode = r
+		r.extend(gcprinter.execute_gcode(
+				gcprinter.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
+		# self._cached_gcode = r
 		return r
 
 
@@ -77,8 +89,8 @@ class Threader:
 		if self.layer_steps: raise ValueError("This Threader has been used already")
 		self.acclog = reinit_logging(self.acclog)
 		self.acclog.show()
-		if thread_list[0] != self.printer.bed.anchor:
-			thread_list.insert(0, self.printer.bed.anchor)
+		if thread_list[0] != self.start_anchor:
+			thread_list.insert(0, self.start_anchor)
 		thread = GPolyLine(thread_list)
 		rprint('Initial thread:', thread.points)
 		thread_layer_snap(thread, self.gcode_file.layers[start_layer:end_layer])
@@ -172,7 +184,7 @@ class Threader:
 		rprint('Thread in layer:', pretty_repr(layerthread))
 
 		#Done preprocessing thread; now we can start figuring out what to print and how
-		rprint(f'[yellow]————[/] Start [yellow]————[/]\n{self.printer.summarize()}', div=True)
+		rprint(f'[yellow]————[/] Start [yellow]————[/]', div=True)
 
 		#Find and print geometry that will not be intersected by any thread segments
 		to_print = unprinted(layer.non_intersecting(layerthread) if thread else layer.geometry.segments)
@@ -187,10 +199,10 @@ class Threader:
 			# thread path. Now we need to work with the individual thread segments
 			# one by one, where each segment is already anchored at its start
 			# point:
-			# 1. Move the ring so the thread crosses the next anchor point
+			# 1. Move the thread path so the thread crosses the next anchor point
 			# 2. Print gcode segments that intersect this part of the thread, but
 			#    that don't intersect:
-			#    - the anchor->ring trajectory
+			#    - the thread path trajectory
 			#    - the future thread path
 			#    except where those intersections are only at the anchor point iself.
 
@@ -199,8 +211,8 @@ class Threader:
 
 				next_anchor = thread_seg.end_point
 
-				with steps.new_step(f'Move thread to overlap next anchor at {next_anchor} '
-														f'from {self.printer.thread_path.point}') as s:
+				with steps.new_step(f'Rotate thread at {self.printer.thread_path.point}'
+														f' to overlap next anchor at {next_anchor}') as s:
 					self.printer.rotate_thread_to(next_anchor)
 
 				#Find and print the segment that fixes the thread at the anchor point

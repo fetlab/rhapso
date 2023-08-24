@@ -20,7 +20,7 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		step = steps[0]
 		print(f'Preview of {len(steps)} steps for layer {layer.layernum}')
 		fig = go.Figure()
-		step.printer.bed.plot(fig)
+		# step.printer.bed.plot(fig)
 
 		#Plot the outline of the previous layer, if provided
 		if prev_layer:
@@ -45,7 +45,7 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		fig = go.Figure()
 
 		#Plot the bed
-		step.printer.bed.plot(fig)
+		# step.printer.bed.plot(fig)
 
 		#Plot the outline of the previous layer, if provided
 		if prev_layer:

@@ -103,20 +103,6 @@ class TLayer(Cura4Layer):
 				top   =Plane(GPoint(0,0,z),                     Vector(0,0,1)),
 		)
 
-		# (min_x, min_y), (max_x, max_y) = self.extents()
-		# mid_x = min_x + .5 * (max_x - min_x)
-		# z = self.z
-
-		# plane_points = [(min_x, min_y), (mid_x, max_y), (max_x, max_y)]
-		# bot_z        = z - self.layer_height/2
-		# top_z        = z + self.layer_height/2
-		# bottom       = Plane(*[GPoint(p[0], p[1], bot_z) for p in plane_points])
-		# top          = Plane(*[GPoint(p[0], p[1], top_z) for p in plane_points])
-		# bottom.z     = bot_z
-		# top.z        = top_z
-
-		# self.geometry.planes = Planes(bottom=bottom, top=top)
-
 
 	def add_geometry(self):
 		"""Add geometry to this Layer based on the list of gcode lines:
