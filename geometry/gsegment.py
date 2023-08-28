@@ -281,5 +281,5 @@ class GSegment(Segment):
 
 
 	def angle(self) -> Angle:
-		"""Return the angle in radians between this segment and the X axis."""
+		"""Return the angle between this segment and the X axis."""
 		return atan2(self.end_point.y - self.start_point.y, self.end_point.x - self.start_point.x)
