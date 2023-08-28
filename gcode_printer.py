@@ -72,7 +72,7 @@ class GCodePrinter:
 	def gcode_layer_postamble(self, postamble: list[GCLine], layer:Layer) -> list[GCLine]: return postamble
 
 
-	def gcode_set_thread_path(self, thread_path:GHalfLine) -> list[GCLine]:
+	def gcode_set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
 		raise NotImplementedError("Subclass must implement gcode_set_thread_path")
 
 
