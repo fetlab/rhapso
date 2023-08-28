@@ -27,7 +27,7 @@ class Printer:
 		# direction of the thread.
 		self._thread_path = initial_thread_path
 
-		self.target = None
+		self.target:Vector|GPoint = None
 
 
 	#Create attributes which call Printer.attr_changed on change
