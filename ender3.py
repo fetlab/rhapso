@@ -104,8 +104,6 @@ class Ender3(GCodePrinter):
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
 
-		self._flag = False
-
 
 	def __repr__(self):
 		return f'Ender3(🧵={self.thread_path}, x={self.x}, y={self.y}, z={self.z})'
@@ -119,20 +117,9 @@ class Ender3(GCodePrinter):
 		"""Find out how to rotate the ring to keep the thread at the same angle during
 		this move. "Move" the ring's center-y coordinate while keeping the bed
 		static, then find where the thread will intersect it."""
-
 		#Shift thread by moved bed location, then find where the current thread
 		# intersects the moved ring
 		isecs = self.ring.intersection(current_thread.moved(y=-new_y))
-
-		# if not self._flag and current_thread.vector[0] == 67:
-		# 	print(f'{self.thread_path=}')
-		# 	print(f'ring_delta_for_thread({current_thread=}, {new_y=})')
-		# 	print(f'moved: {current_thread.moved(y=-new_y)}')
-		# 	print(self.ring)
-		# 	print(f'{isecs=}')
-		# 	print(f'angles: {min((ang_diff(self.ring.angle, isec.angle(self.ring.center)) for isec in isecs), key=abs)}')
-		# 	self._flag = True
-
 
 		#Return amount to move the ring, involving least movement
 		if not isecs: return None
@@ -143,9 +130,6 @@ class Ender3(GCodePrinter):
 	def gcode_set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
 		"""Set the thread path to the new value and move the ring based on the bed
 		being set to the thread anchor's `y`."""
-		# self.next_thread_path = thread_path
-		# rprint(f'Rotate thread with anchor {thread_path.point} to angle {thread_path.angle} for target {target}')
-		# return comments(f'Change thread path: {self.thread_path.repr_diff(thread_path)}')
 		ring_move_by = self.ring_delta_for_thread(thread_path, target.y)
 		if ring_move_by is None:
 			raise ValueError(f'No ring/thread intersection for {thread_path}')
