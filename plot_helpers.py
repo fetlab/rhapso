@@ -219,8 +219,8 @@ def show_dark(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor
 	yaxis = {'scaleanchor':'x', 'scaleratio':1}#, 'constrain':'domain'}
 	if zoom_box is not None:
 		(x1,y1),(x2,y2)	= zoom_box
-		exp_x = (x2-x1)*zoom_factor
-		exp_y = (y2-y1)*zoom_factor
+		exp_x = (x2-x1)*(zoom_factor - 1)
+		exp_y = (y2-y1)*(zoom_factor - 1)
 		xaxis.update({'range': [x1-exp_x, x2+exp_x]})
 		yaxis.update({'range': [y1-exp_y, y2+exp_y]})
 	fig.update_layout(template='plotly_dark',
