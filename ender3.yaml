@@ -32,8 +32,12 @@ ring:
   #Home angle of ring, in degrees
   home_angle: 90
 
+  #How fast to move the ring?
+  feedrate: 5000
+
 
 bed:
+  #By printer-frame coordinates, the actual bed (0,0,0) = (-117.5, -65, 0)
   #Note: the "effective" bed is the portion of the physical print bed which is
   # actually printable, taking the ring into account.
 
