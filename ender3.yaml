@@ -35,6 +35,18 @@ ring:
   #How fast to move the ring?
   feedrate: 5000
 
+  #Avoid ring/head collisions
+  collision_avoid:
+    - head_between: [0, 25]
+      ring_between: [145, 185]
+      move_ring_to: 185
+    - head_between: [95, 200]
+      ring_between: [0, 45]
+      move_ring_to: 45
+    - head_between: [95, 200]
+      ring_between: [340, 360]
+      move_ring_to: 340
+
 
 bed:
   #By printer-frame coordinates, the actual bed (0,0,0) = (-117.5, -65, 0)

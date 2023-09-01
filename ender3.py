@@ -188,12 +188,12 @@ class Ender3(GCodePrinter):
 		for gcline in super_gclines:
 			#Avoid head collision - move ring before the head movees
 			if gcline.x:
-				if gcline.x <= 25 and Angle(degrees=145) <= self.ring.angle <= Angle(degrees=185):
-					gclines.extend(self.gcode_ring_move(angle=Angle(degrees=185),
-																					comment=f'Avoid head collision at {gcline.x}'))
-				elif gcline.x > 95 and self.ring.angle < Angle(degrees=45) or self.ring.angle > Angle(degrees=340):
-					gclines.extend(self.gcode_ring_move(angle=Angle(degrees=340),
-																					comment=f'Avoid head collision at {gcline.x}'))
+				for collision in ring_config['collision_avoid']:
+					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
+						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
+						gclines.extend(self.gcode_ring_move(angle=collision['move_ring_to'],
+										 comment=f'Avoid head collision at {gcline.x} by moving '
+														 f'ring to {collision["move_ring_to"]}'))
 
 			#If there's no Y movement we don't need to do anything; the bed doesn't
 			# move so the thread angle won't change

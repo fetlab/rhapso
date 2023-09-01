@@ -11,6 +11,14 @@ BedConfig  = TypedDict(
 		'anchor': GPoint,
 	})
 
+
+CollisionAvoid = TypedDict(
+	'CollisionAvoid', {
+		'head_between':  tuple[Number, Number],
+		'ring_between': tuple[Angle, Angle],
+		'move_ring_to':  Angle,
+	})
+
 RingConfig = TypedDict(
 	'RingConfig', {
 		'center':           GPoint,
@@ -22,6 +30,7 @@ RingConfig = TypedDict(
 		'motor_gear_teeth': Number,
 		'ring_gear_teeth':  Number,
 		'stepper_microsteps_per_rotation': Number,
+		'collision_avoid': list[CollisionAvoid],
 	})
 
 
@@ -39,6 +48,13 @@ def get_ring_config(config:dict) -> RingConfig:
 		motor_gear_teeth = r['motor_gear_teeth'],
 		ring_gear_teeth  = r['ring_gear_teeth'],
 		stepper_microsteps_per_rotation = r['stepper_microsteps_per_rotation'],
+		collision_avoid = [dict(
+			head_between  = ca['head_between'],
+			ring_between = (Angle(degrees=ca['ring_between'][0]),
+											Angle(degrees=ca['ring_between'][1])),
+			move_ring_to  = Angle(degrees=ca['move_ring_to']),
+			) for ca in r.get('collision_avoid', []) or []
+		]
 	)
 
 
