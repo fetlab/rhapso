@@ -212,8 +212,19 @@ class Ender3(GCodePrinter):
 		return gclines
 
 
+	def gcode_ring_move(self, dist:Angle=None, angle:Angle=None, comment='') -> list[GCLine]:
+		"""Emit gcode to move the ring. Specify exactly one of dist or angle."""
+		if (dist is not None and angle is not None) or (dist is None and angle is None):
+			raise ValueError('Specify exactly one of dist or angle')
 
-	def gcode_ring_move(self, dist, pause_after=False) -> list[GCLine]:
+		ring_move_by = dist if dist is not None else ang_diff(self.ring.angle, angle)
+		self.ring.angle += ring_move_by
+		return [GCLine('G0', args={'A': ring_move_by.degrees, 'F': ring_config['feedrate']},
+								 comment=comment)]
+
+
+
+	def old_gcode_ring_move(self, dist, pause_after=False) -> list[GCLine]:
 		if dist == 0: return []
 
 		gcode = comments(f"""
