@@ -13,10 +13,11 @@ M82 ; absolute extrusion mode
 ; Ender 3 Custom Start G-code
 G92 E0 ; Reset Extruder
 G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A
-M104 S175 ; Start heating up the nozzle most of the way
+;M104 S175 ; Start heating up the nozzle most of the way
 M190 S60 ; Start heating the bed, wait until target temperature reached
 M109 S200 ; Finish heating the nozzle
 G92 A90 ; Assume the ring has been manually homed, set its position to 90°
+M92 A52.3977 ; Set fractional steps/unit for ring moves
 G0 F5000 X55.0 ; Move head out of the way of the carrier
 G0 F5000 A41.81 ; Move ring to initial thread position (🧵H({-20.00,   0.00,   0.00}, ↗ 90.00° (  0.00,   1.00,   0.00)),  ⃘131.810°)
 ; --- Printer state ---
@@ -34,7 +35,7 @@ G1 Z2.0 F3000 ; Move Z Axis up little to prevent scratching of Heat Bed
 G1 X5 Y20 Z0.3 F5000.0 ; Move over to prevent blob squish
 G92 E0
 G92 E0
-G1 F1500 E-6.5
+;G1 F1500 E-6.5
 ; LAYER_COUNT:6
 ; LAYER:0
 M107
