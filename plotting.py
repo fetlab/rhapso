@@ -1,6 +1,6 @@
 import re
 import plotly.graph_objects as go
-from plot_helpers import plot_segments, plot_points, show_dark, styles
+from plot_helpers import plot_segments, plot_points, show_fig, styles as default_styles
 from tlayer import TLayer
 from util import deep_update
 from geometry import GSegment, GPoint
@@ -11,10 +11,17 @@ from itertools import pairwise
 
 
 def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
-							 prev_layer_only_outline=True, preview_layer=True):
-	#Default plotting style
-	steps       = steps_obj.steps
-	layer       = steps_obj.layer
+							 prev_layer_only_outline=True, preview_layer=True,
+							 template='plotly_dark', styles=default_styles,
+							 zoom_box=None, show_args={}, show=True) -> list[go.Figure]:
+
+	if styles != default_styles:
+		styles = deep_update(default_styles, styles)
+
+	steps = steps_obj.steps
+	layer = steps_obj.layer
+
+	figs: list[go.Figure] = []
 
 	if preview_layer:
 		step = steps[0]
@@ -27,14 +34,18 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			prev_layer.plot(fig, style=styles['old_layer'], only_outline=prev_layer_only_outline)
 
 		plot_segments(fig, layer.geometry.segments, style=styles['gc_segs'],
-								name='gc segs', line_width=1)
+								name='gc_segs')
 
 		points = [step.thread_path.point for step in steps]
 		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
 		 							style=styles['future_thread'], name='thread',
 									mode='markers+lines', **styles['anchor'])
 
-		show_dark(fig, zoom_box=layer.extents())
+		if show:
+			show_fig(fig, zoom_box=zoom_box or layer.extents(), template=template,
+						 **show_args)
+
+		figs.append(fig)
 
 	for stepnum,step in enumerate(steps):
 		if not step.valid:
@@ -86,20 +97,14 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			plot_points(fig, [layer.start_anchor], style=styles['anchor'],
 							 name='start anchor', marker_symbol='circle', marker_size=6)
 
-		#Show the figure for this step
-		(x1,y1),(x2,y2) = layer.extents()
-		exp_x = (x2-x1)*1.1
-		exp_y = (y2-y1)*1.1
-		fig.update_layout(template='plotly_dark',# autosize=False,
-				xaxis={'range': [x1-exp_x, x2+exp_x]},
-				yaxis={'range': [y1-exp_y, y2+exp_y],
-							'scaleanchor': 'x', 'scaleratio':1, 'constrain':'domain'},
-				margin=dict(l=0, r=20, b=0, t=0, pad=0),
-				width=450, height=450,
-				showlegend=False,)
-		fig.show()
+		if show:
+			show_fig(fig, zoom_box=zoom_box or layer.extents(), template=template,
+						 **show_args)
+		figs.append(fig)
 
 	print('Finished routing this layer')
+
+	return figs
 
 
 def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
