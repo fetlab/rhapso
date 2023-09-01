@@ -185,56 +185,11 @@ class Ender3(GCodePrinter):
 		# need to process each of the returned list values.
 		super_gclines = super().gcfunc_set_axis_value(gcline) or [gcline]
 
-		#If there's a new angle for the thread, we need to move it independently
-		# of the bed before we execute the next line of gcode that involves a
-		# y-movement
-		"""
-		if self.thread_path is not None:
-			#and self.thread_path.angle != self.next_thread_path.angle:
-			if (gcline := first(super_gclines, lambda l: 'Y' in l.args)) is None:
-				raise ValueError('Trying to move thread but there is no y-movement in this group of lines')
-			ring_move_by = self.ring_delta_for_thread(self.next_thread_path, gcline.y)
-			if ring_move_by is None:
-				raise ValueError(f'No ring/thread intersection for {self.next_thread_path}')
-
-			isecs = circle_intersection(self.ring.center, self.ring.radius, self.next_thread_path.moved(y=-gcline.y))
-			rprint(f'New thread: {self.thread_path.repr_diff(self.next_thread_path)}',
-						 ['circle_intersection(', self.next_thread_path, f') -> move by -{gcline.y} = {isecs}'], indent=4)
-			rprint(f'Ring angle = {self.ring.center.angle(isecs[0].moved(y=gcline.y))}')
-
-			new_ring_angle = self.ring.angle + ring_move_by
-			ring_info = f'({self.info} → 🧵{self.next_thread_path},  ⃘{self.ring.angle + ring_move_by:.3f}°)'
-			gclines.append(GCLine(code='G0', args={'A': ring_move_by.degrees, 'F': 5000}, comment=ring_info))
-			self.thread_path = self.next_thread_path
-			self.ring.angle = new_ring_angle
-			gclines.append(comment(f'Thread path now {self.thread_path}, ready to fix to create new anchor'))
-		"""
-		# if self.thread_path is not None and self.next_thread_path is not None and self.thread_path != self.next_thread_path:
-		# 	rprint(f'\t{self.thread_path.repr_diff(self.next_thread_path)}')
-		# 	anchor = self.thread_path.point
-		# 	angle  = self.next_thread_path.angle
-		# 	new_thread = GHalfLine(anchor, angle)
-		# 	rprint(f'{new_thread=}, next anchor={self.next_thread_path.point}')
-		# 	ring_move_by = self.ring_delta_for_thread(GHalfLine(self.thread_path.point,
-		# 																		self.next_thread_path.angle),
-		# 													self.next_thread_path.point.y)
-		# 	if ring_move_by is None:
-		# 		raise ValueError(f'No ring/thread intersection')
-
-		# 	new_ring_angle = self.ring.angle + ring_move_by
-		# 	ring_info = f'({self.info} → 🧵{self.next_thread_path},  ⃘{self.ring.angle + ring_move_by:.3f}°)'
-		# 	rprint(self.ring.angle + ring_move_by)
-		# 	gclines.append(GCLine(code='G0', args={'A': ring_move_by.degrees, 'F': 5000}, comment=ring_info))
-		# 	self.thread_path = self.next_thread_path
-		# 	self.ring.angle = new_ring_angle
-
 		for gcline in super_gclines:
 			#If there's no Y movement we don't need to do anything; the bed doesn't
 			# move so the thread angle won't change
 			if not gcline.y or gcline.y == prev_loc.y:
 				pass
-				# gcline = gcline.copy(add_comment=(f'(No Y coord)' if not gcline.y
-				# 		else f'- gcline.y ({gcline.y}) == prev_loc.y ({prev_loc.y})'))
 
 			#If the bed is moving, we want to move the thread simultaneously to keep
 			# it in the same relative position
