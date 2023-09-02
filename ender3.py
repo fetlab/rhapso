@@ -84,13 +84,13 @@ print(f"Bed now: {bed_config}")
 
 
 class Ender3(GCodePrinter):
-	def __init__(self, initial_thread_path:GHalfLine):
+	def __init__(self, initial_thread_path:GHalfLine, *args, **kwargs):
 		print(f"Init: {ring_config}")
 		self._ring_config = copy(ring_config)
 		self._bed_config  = copy(bed_config)
 		self.bed = Bed(anchor=bed_config['anchor'], size=bed_config['size'])
 		self.ring = Ring(**ring_config)
-		super().__init__(self.bed, self.ring)
+		super().__init__()
 
 		self.next_thread_path = initial_thread_path
 

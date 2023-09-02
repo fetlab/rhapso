@@ -15,17 +15,13 @@ from util import attrhelper, Number
 from geometry import GPoint, GSegment, GHalfLine
 from gcline import GCLine, GCLines
 from gclayer import Layer
-from ring import Ring
-from bed import Bed
 from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, ang_dist, eps
 from geometry.angle import Angle
 
 class GCodePrinter:
 	"""Simulates a printer in order to generate gcode."""
-	def __init__(self, bed:Bed, ring:Ring, z:Number=0):
-		self.bed  = bed
-		self.ring = ring
+	def __init__(self, z:Number=0, *args, **kwargs):
 
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
@@ -74,11 +70,6 @@ class GCodePrinter:
 
 	def gcode_set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
 		raise NotImplementedError("Subclass must implement gcode_set_thread_path")
-
-
-	def gcode_ring_move(self, move_amount:Angle, relative=True) -> list[GCLine]:
-		"""Default ring movement command. Must be implemented in subclasses."""
-		raise NotImplementedError("Subclass must implement gcode_ring_move")
 
 
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
