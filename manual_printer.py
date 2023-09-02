@@ -1,6 +1,6 @@
 from gcode_printer import GCodePrinter
 from geometry.angle import Angle
-from gc_line import GCLine
+from gcline import GCLine
 
 class ManualPrinter(GCodePrinter):
 
