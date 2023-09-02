@@ -21,7 +21,7 @@ from geometry.angle import Angle
 
 class GCodePrinter:
 	"""Simulates a printer in order to generate gcode."""
-	def __init__(self, z:Number=0):
+	def __init__(self, z:Number=0, *args, **kwargs):
 
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)

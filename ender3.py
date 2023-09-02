@@ -84,7 +84,7 @@ print(f"Bed now: {bed_config}")
 
 
 class Ender3(GCodePrinter):
-	def __init__(self, initial_thread_path:GHalfLine):
+	def __init__(self, initial_thread_path:GHalfLine, *args, **kwargs):
 		print(f"Init: {ring_config}")
 		self._ring_config = copy(ring_config)
 		self._bed_config  = copy(bed_config)

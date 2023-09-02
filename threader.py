@@ -26,7 +26,7 @@ from printer import Printer
 from steps import Steps
 from util import unprinted
 from ender3 import Ender3
-from config import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
+from config import load_config, get_bed_config, BedConfig
 
 print('reload threader')
 restart_logging()
@@ -60,17 +60,17 @@ class Threader:
 
 
 
-	def save(self, filename, lineno_in_comment=False):
+	def save(self, filename, lineno_in_comment=False, gcode_printer_class: GCodePrinter=Ender3):
 		if len(self.layer_steps) != len(self.gcode_file.layers):
 			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
 				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
-			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment) for l in self.gcode()]))
+			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment, gcode_printer_class) for l in self.gcode()]))
 
 
-	def gcode(self) -> list[GCLine]:
+	def gcode(self, gcode_printer_class: GCodePrinter=Ender3) -> list[GCLine]:
 		"""Return the gcode for all layers."""
-		gcprinter = Ender3(self.initial_thread_path)
+		gcprinter = gcode_printer_class(self.initial_thread_path)
 		if self._cached_gcode:
 			return self._cached_gcode
 		r = gcprinter.execute_gcode(
