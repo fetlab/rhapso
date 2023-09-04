@@ -173,6 +173,13 @@ class TLayer(Cura4Layer):
 
 
 	def geometry_snap(self, thread: GPolyLine) -> list[GPoint]:
+		"""Snap the thread vertices (in-place!) to the geometry in this layer.
+		Return the (possibly new) in-layer vertices."""
+		#If none of the thread vertices start, or end in this layer, then skip
+		# creating geometry. Don't check the first segment since it will be
+		# starting from the anchor point.
+		if not any(p.z == self.z for p in thread.points[1:]): return []
+
 		self.add_geometry()
 
 		def _closest_seg_point(p: GPoint) -> tuple[GPoint, GSegment]:
@@ -190,6 +197,8 @@ class TLayer(Cura4Layer):
 			return closest_isec, closest_seg
 
 		out_anchors = []
+
+		#Skip the first point since it will be the bed anchor
 		for anchor in thread.points[1:]:
 			#Don't snap anchors not on this layer
 			if anchor.z != self.z: continue
@@ -206,6 +215,7 @@ class TLayer(Cura4Layer):
 			out_anchors.append(p)
 
 		return out_anchors
+
 
 	def non_intersecting(self, thread: List[GSegment]) -> Set[GSegment]:
 		"""Return a list of GSegments which the given thread segments do not

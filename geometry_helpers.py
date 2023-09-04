@@ -7,6 +7,7 @@ from typing import List, Dict, Collection, Set
 from collections import defaultdict
 from more_itertools import flatten
 
+from util import Number
 from geometry import GPoint, GSegment, GHalfLine, GPolyLine
 from geometry.utils import tangent_points, eps, sign, point_plane_comp
 from geometry.gcast import gcastr
@@ -20,27 +21,43 @@ Geometry = make_dataclass('Geometry', ['segments', 'planes', 'outline'])
 Planes   = make_dataclass('Planes',   ['top', 'bottom'])
 
 
-def thread_layer_snap(thread:GPolyLine, layers:list[Layer]):
-	#Get the z-height of each layer
-	zs = [layer.z for layer in layers]
+def thread_z_snap(thread:GPolyLine, layer_z_heights:list[Number]) -> GPolyLine:
+	"""Snap the thread vertices to the given layer heights. Split the thread if
+	it passes through multiple layers. Return a modified copy."""
+	#Make a copy so we don't modify the original
+	thread = GPolyLine(thread.points)
+	zs = layer_z_heights
 
-	#First, snap each point in the thread to the closest layer midpoint; skip the
+	#First, snap each point in the thread to the closest layer z; skip the
 	# first point as it should be the bed anchor
 	for p in thread.points[1:]:
 		thread.move(p, z=min(zs, key=lambda m:abs(m-p.z))-p.z)
 
-	#Now, for any thread segment which isn't on the same layer, split it; skip
-	# the first segment since it's the bed anchor as start point
+	#Now, for any thread segment which doesn't start and end on the same layer,
+	# split it; skip the first segment since it's the bed anchor as start point
 	for seg in thread.segments[1:]:
 		mps = zs.index(seg.start_point.z)
 		mpe = zs.index(seg.end_point.z)
 		if mps > mpe: mps, mpe = mpe, mps
 
+		#For each layer height from the start point to the end point...
 		for z in zs[mps:mpe+1]:
+			#If the start or end point is in that layer, we're good
 			if seg.start_point.z == z or seg.end_point.z == z:
 				continue
+			#Otherwise, the thread passes through that layer so we need to split it
 			_, seg = thread.split(seg, seg.intersection(Plane(GPoint(0, 0, z), Vector.z_unit_vector())))
 
+	return thread
+
+
+def thread_snap(thread:GPolyLine, layers) -> GPolyLine:
+	"""Return a copy of `thread` snapped to the z-heights and geometry in
+	`layers`."""
+	t = thread_z_snap(GPolyLine(thread.points), [layer.z for layer in layers])
+	for layer in layers:
+		layer.geometry_snap(t)
+	return t
 
 
 def visibility(origin:GPoint, query:Collection[GSegment], avoid_by=1) -> dict[GPoint, set]:

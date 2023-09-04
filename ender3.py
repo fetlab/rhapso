@@ -69,28 +69,27 @@ from logger         import rprint
 from util           import Saver, Number
 from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
-config      = load_config('ender3.yaml')
-ring_config = get_ring_config(config)
-bed_config  = get_bed_config(config)
-print(f"Loaded ring: {ring_config}")
-print(f"Loaded bed: {bed_config}")
-
-#Move the zero points so the bed zero is actually 0,0
-ring_config['center'] -= bed_config['zero']
-bed_config['anchor']  -= bed_config['zero']
-bed_config['zero']    -= bed_config['zero']
-print(f"Ring relative to bed zero: {ring_config}")
-print(f"Bed now: {bed_config}")
-
 
 class Ender3(GCodePrinter):
-	def __init__(self, initial_thread_path:GHalfLine, z:Number=0, *args, **kwargs):
+	def __init__(self, config, initial_thread_path:GHalfLine, z:Number=0, *args, **kwargs):
+		ring_config = get_ring_config(config)
+		bed_config  = get_bed_config(config)
+		print(f"Loaded ring: {ring_config}")
+		print(f"Loaded bed: {bed_config}")
+
+		#Move the zero points so the bed zero is actually 0,0
+		ring_config['center'] -= bed_config['zero']
+		bed_config['anchor']  -= bed_config['zero']
+		bed_config['zero']    -= bed_config['zero']
+		print(f"Ring relative to bed zero: {ring_config}")
+		print(f"Bed now: {bed_config}")
 		print(f"Init: {ring_config}")
+
 		self._ring_config = copy(ring_config)
 		self._bed_config  = copy(bed_config)
 		self.bed = Bed(anchor=bed_config['anchor'], size=bed_config['size'])
 		self.ring = Ring(**ring_config)
-		super().__init__(z)
+		super().__init__(initial_thread_path, z)
 
 		self.next_thread_path = initial_thread_path
 

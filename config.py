@@ -1,7 +1,9 @@
-from typing import TypedDict
-from geometry import GPoint
+from typing         import TypedDict
+from geometry       import GPoint
 from geometry.angle import Angle
-from util import Number
+from util           import Number
+from importlib      import import_module
+from pathlib        import Path
 import yaml
 
 BedConfig  = TypedDict(
@@ -71,4 +73,14 @@ def load_config(config_file:str) -> dict:
 	with open(config_file, 'rb') as fp:
 		config = yaml.load(fp, yaml.Loader)
 	if not config: raise ValueError(f"Empty config file {config_file}")
+	try:
+		module_name = Path(config_file).stem
+		module = import_module(module_name)
+		classname = ''.join(x.capitalize() or '_' for x in module_name.split('_'))
+		_class = getattr(module, classname)
+	except ModuleNotFoundError:
+		raise ModuleNotFoundError(f"Can't load expected module {module_name} for config file {config_file}")
+	except ImportError:
+		raise ImportError(f"Can't load expected class {classname} from {module_name} for config file {config_file}")
+	config['printer_class'] = _class
 	return config

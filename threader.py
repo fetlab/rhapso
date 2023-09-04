@@ -18,61 +18,64 @@ from rich.pretty import pretty_repr
 from itertools import pairwise
 from geometry import GPoint, GPolyLine, GHalfLine
 from geometry.angle import Angle
-from geometry_helpers import thread_layer_snap
+from geometry_helpers import thread_snap
 
 from logger import rprint, restart_logging, reinit_logging, end_accordion_logging
 
 from printer import Printer
 from steps import Steps
-from util import unprinted
-from ender3 import Ender3
+from util import unprinted, Number
+from gcode_printer import GCodePrinter
 from config import load_config, get_bed_config, BedConfig
 
 print('reload threader')
 restart_logging()
 
-#Epsilon for various things
-thread_epsilon = 1   #Thread segments under this length (mm) get ingored/merged
-
-"""
-Usage notes:
-	* The thread should be anchored on the bed such that it doesn't intersect the
-		model on the way to its first model-anchor point.
-"""
 
 class Threader:
-	def __init__(self, gcode_file:GcodeFile, config_file:str):
-		config = load_config(config_file)
-		bed_config = get_bed_config(config)
+	def __init__(self, gcode_file:GcodeFile, config_file:str, thread_list:list[GPoint],
+							 start_layer:int|None=None, end_layer:int|None=None):
+
+		self.start_layer = start_layer
+		self.end_layer   = end_layer
+		self.gcode_file  = gcode_file
+		self.layer_steps: list[Steps] = []
+
+		self.acclog = reinit_logging()
+		self.acclog.show()
+
+		self.config = load_config(config_file)
+		bed_config  = get_bed_config(self.config)
+
 		self.start_anchor = bed_config['anchor'] - bed_config['zero']
 
-		initial_thread_angle = Angle(degrees=config['general']['initial_thread_angle'])
-		thread_vec = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
+		#Set up the thread and snap it to the layers and geometry
+		if thread_list[0] != self.start_anchor:
+			thread_list.insert(0, self.start_anchor)
+		thread = GPolyLine(thread_list)
+		self.snapped_thread = thread_snap(thread, self.gcode_file.layers[start_layer:end_layer])
+		rprint('Initial thread:', thread.points)
+		rprint('\nSnapped anchors to layers; anchors now:', self.snapped_thread.points)
+
+		#Initialze the printer with the configured bed anchor and starting angle
+		initial_thread_angle     = Angle(degrees=self.config['general']['initial_thread_angle'])
+		thread_vec               = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
 		self.initial_thread_path = GHalfLine(self.start_anchor, thread_vec)
-
-		#Initialze the printer with the configured anchor and angle
-		self.printer = Printer(self.initial_thread_path)
-
-		self.gcode_file                  = gcode_file
-		self.layer_steps: list[Steps]    = []
-		self.acclog                      = reinit_logging()
-		self._cached_gcode: list[GCLine] = []
+		self.printer             = Printer(self.initial_thread_path)
 
 
 
-	def save(self, filename, lineno_in_comment=False, gcode_printer_class: GCodePrinter=Ender3):
+	def save(self, filename, lineno_in_comment=False):
 		if len(self.layer_steps) != len(self.gcode_file.layers):
 			print(f'[red]WARNING: only {len(self.layer_steps)}/{len(self.gcode_file.layers)}'
 				 ' layers were routed - output file will be incomplete!')
 		with open(filename, 'w') as f:
-			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment, gcode_printer_class) for l in self.gcode()]))
+			f.write('\n'.join([l.construct(lineno_in_comment=lineno_in_comment) for l in self.gcode()]))
 
 
-	def gcode(self, gcode_printer_class: GCodePrinter=Ender3) -> list[GCLine]:
+	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all layers."""
-		gcprinter = gcode_printer_class(self.initial_thread_path)
-		if self._cached_gcode:
-			return self._cached_gcode
+		gcprinter = self.config['printer_class'](self.initial_thread_path)
 		r = gcprinter.execute_gcode(
 				gcprinter.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
@@ -81,24 +84,16 @@ class Threader:
 			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
 		r.extend(gcprinter.execute_gcode(
 				gcprinter.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
-		# self._cached_gcode = r
 		return r
 
 
-	def route_model(self, thread_list: list[GPoint], start_layer=None, end_layer=None):
+	def route_model(self):
 		if self.layer_steps: raise ValueError("This Threader has been used already")
-		self.acclog = reinit_logging(self.acclog)
-		self.acclog.show()
-		if thread_list[0] != self.start_anchor:
-			thread_list.insert(0, self.start_anchor)
-		thread = GPolyLine(thread_list)
-		rprint('Initial thread:', thread.points)
-		thread_layer_snap(thread, self.gcode_file.layers[start_layer:end_layer])
-		rprint('\nSnapped anchors to layers; anchors now:', thread.points)
 		rprint(self.printer)
-		for layer in self.gcode_file.layers[start_layer:end_layer]:
+
+		for layer in self.gcode_file.layers[self.start_layer:self.end_layer]:
 			try:
-				self._route_layer(thread, layer)
+				self._route_layer(self.snapped_thread, layer)
 			except:
 				self.acclog.unfold()
 				end_accordion_logging()
@@ -120,6 +115,7 @@ class Threader:
 		finally:
 			self.acclog.unfold()
 			end_accordion_logging()
+
 
 
 	def _route_layer(self, thread: GPolyLine, layer):
@@ -154,9 +150,6 @@ class Threader:
 
 		rprint(f'Route thread through {len(anchors)} anchor points in layer:\n {layer}',
 				[f'\t{i}. {anchor}' for i, anchor in enumerate(anchors)])
-
-		#Snap anchors to printed geometry
-		anchors = layer.geometry_snap(thread)
 
 		#Check for printed segments that have more than one thread anchor in them
 		multi_anchor = filter_values(
