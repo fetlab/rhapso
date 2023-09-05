@@ -62,6 +62,7 @@ class Threader:
 		thread_vec               = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
 		self.initial_thread_path = GHalfLine(self.start_anchor, thread_vec)
 		self.printer             = Printer(self.initial_thread_path)
+		self.gcode_printer       = self.config['printer_class'](self.config, self.initial_thread_path, self.snapped_thread)
 
 
 
@@ -75,15 +76,14 @@ class Threader:
 
 	def gcode(self) -> list[GCLine]:
 		"""Return the gcode for all layers."""
-		gcprinter = self.config['printer_class'](self.initial_thread_path)
-		r = gcprinter.execute_gcode(
-				gcprinter.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
+		r = self.gcode_printer.execute_gcode(
+				self.gcode_printer.gcode_file_preamble(list(self.gcode_file.preamble_layer.lines)))
 		for steps_obj in self.layer_steps:
 			r.append(comment(f'==== Start layer {steps_obj.layer.layernum} ===='))
-			r.extend(steps_obj.gcode(gcprinter))
+			r.extend(steps_obj.gcode(self.gcode_printer))
 			r.append(comment(f'====== End layer {steps_obj.layer.layernum} ===='))
-		r.extend(gcprinter.execute_gcode(
-				gcprinter.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
+		r.extend(self.gcode_printer.execute_gcode(
+				self.gcode_printer.gcode_file_postamble(list(self.gcode_file.postamble_layer.lines))))
 		return r
 
 
