@@ -49,13 +49,6 @@ class GHalfLine(HalfLine):
 		return {seg for seg in listify(check) if self._intersection(seg) not in [None, self.point]}
 
 
-	def intersections(self, check:Collection[Segment]) -> Set[Segment]:
-		"""Return all intersection points of this GHalfLine with the Segments in
-		`check`, where the intersection is not the start point of this HalfLine."""
-		return {seg for seg in filter(lambda i: i not in [None, self.point],
-											[self._intersection(seg) for seg in listify(check)])}
-
-
 	def __repr__(self):
 		return "H({}, {})".format(self.point, self.vector)
 
