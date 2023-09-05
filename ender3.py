@@ -71,25 +71,26 @@ from config         import load_config, get_ring_config, get_bed_config, RingCon
 
 
 class Ender3(GCodePrinter):
-	def __init__(self, config, initial_thread_path:GHalfLine, z:Number=0, *args, **kwargs):
-		ring_config = get_ring_config(config)
-		bed_config  = get_bed_config(config)
-		print(f"Loaded ring: {ring_config}")
-		print(f"Loaded bed: {bed_config}")
+	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
+		self.config = config
+		self.ring_config = get_ring_config(config)
+		self.bed_config  = get_bed_config(config)
+		print(f"Loaded ring: {self.ring_config}")
+		print(f"Loaded bed: {self.bed_config}")
 
 		#Move the zero points so the bed zero is actually 0,0
-		ring_config['center'] -= bed_config['zero']
-		bed_config['anchor']  -= bed_config['zero']
-		bed_config['zero']    -= bed_config['zero']
-		print(f"Ring relative to bed zero: {ring_config}")
-		print(f"Bed now: {bed_config}")
-		print(f"Init: {ring_config}")
+		self.ring_config['center'] -= self.bed_config['zero']
+		self.bed_config['anchor']  -= self.bed_config['zero']
+		self.bed_config['zero']    -= self.bed_config['zero']
+		print(f"Ring relative to bed zero: {self.ring_config}")
+		print(f"Bed now: {self.bed_config}")
+		print(f"Init: {self.ring_config}")
 
-		self._ring_config = copy(ring_config)
-		self._bed_config  = copy(bed_config)
-		self.bed = Bed(anchor=bed_config['anchor'], size=bed_config['size'])
-		self.ring = Ring(**ring_config)
-		super().__init__(initial_thread_path, z)
+		self._ring_config = copy(self.ring_config)
+		self._bed_config  = copy(self.bed_config)
+		self.bed = Bed(anchor=self.bed_config['anchor'], size=self.bed_config['size'])
+		self.ring = Ring(**self.ring_config)
+		super().__init__()
 
 		self.next_thread_path = initial_thread_path
 
@@ -123,7 +124,7 @@ class Ender3(GCodePrinter):
 		#Return amount to move the ring, involving least movement
 		if not isecs: return None
 		delta = min((ang_diff(self.ring.angle, isec.angle(self.ring.center)) for isec in isecs), key=abs)
-		return delta if abs(delta) >= ring_config['min_move'] else Angle(degrees=0)
+		return delta if abs(delta) >= self.ring_config['min_move'] else Angle(degrees=0)
 
 
 	def gcode_set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
@@ -145,20 +146,20 @@ class Ender3(GCodePrinter):
 		"""At least with the current version of Cura, M109 is the last command
 		before the printer starts actually doing things."""
 
-		self.ring.angle = ring_config['home_angle']
+		self.ring.angle = self.ring_config['home_angle']
 		self.thread_path = self.next_thread_path
 		ring_home_to_thread = self.ring_delta_for_thread(self.next_thread_path, self.bed.y)
 		self.ring.angle += ring_home_to_thread
 
 		#Fractional steps per unit don't seem to stick in the Marlin firmware, so
 		# set manually at init
-		steps_per_unit = ring_config['stepper_microsteps_per_rotation'] * \
-			ring_config['ring_gear_teeth'] / ring_config['motor_gear_teeth'] / 360
+		steps_per_unit = self.ring_config['stepper_microsteps_per_rotation'] * \
+			self.ring_config['ring_gear_teeth'] / self.ring_config['motor_gear_teeth'] / 360
 
 		return [
 			gcline,
-			GCLine(f'G92 A{ring_config["home_angle"]} '
-				f'; Assume the ring has been manually homed, set its position to {ring_config["home_angle"]}°'),
+			GCLine(f'G92 A{self.ring_config["home_angle"]} '
+				f'; Assume the ring has been manually homed, set its position to {self.ring_config["home_angle"]}°'),
 			GCLine(f'M92 A{steps_per_unit:.4f} ; Set fractional steps/unit for ring moves'),
 			GCLine(f'G0 F5000 X{self.bed.width/2} ; Move head out of the way of the carrier'),
 			GCLine(f'G0 F5000 A{ring_home_to_thread} ; Move ring to initial thread position ({self.info})'),
@@ -187,7 +188,7 @@ class Ender3(GCodePrinter):
 		for gcline in super_gclines:
 			#Avoid head collision - move ring before the head movees
 			if gcline.x:
-				for collision in ring_config['collision_avoid']:
+				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
 						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
 						gclines.extend(self.gcode_ring_move(angle=collision['move_ring_to'],
@@ -227,7 +228,7 @@ class Ender3(GCodePrinter):
 
 		ring_move_by = dist if dist is not None else ang_diff(self.ring.angle, angle)
 		self.ring.angle += ring_move_by
-		return [GCLine('G0', args={'A': ring_move_by.degrees, 'F': ring_config['feedrate']},
+		return [GCLine('G0', args={'A': ring_move_by.degrees, 'F': self.ring_config['feedrate']},
 								 comment=comment)]
 
 
@@ -244,14 +245,14 @@ class Ender3(GCodePrinter):
 		#Save the current z value, then raise the print head if needed
 		with Saver(self.head_loc, 'z') as saver:
 			gcode += self.execute_gcode([
-				GCLine('G0', args={'Z':self.head_loc.z + config['general']['thread_crossing_head_raise']},
+				GCLine('G0', args={'Z':self.head_loc.z + self.config['general']['thread_crossing_head_raise']},
 					 comment='Raise head to avoid thread snag'),
 				#Here we're setting the angle to the "nominal" value - where the
 				# carrier should be based on the bed not moving; e.g., if y=0.
 				GCLine('G0', args={'A':dist.degrees}, comment=f'({self.ring.angle+dist:.3f}°)')
 			])
 			if pause_after:
-				pause = config['general']['post_thread_overlap_pause']
+				pause = self.config['general']['post_thread_overlap_pause']
 				gcode.extend(self.execute_gcode(
 					GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec before ring move')))
 
