@@ -23,8 +23,8 @@ class TLayer(Cura4Layer):
 		self.layer_height = layer_height
 		self.model_isecs  = {}
 		self.in_out       = []
-		self.add_boundary_planes()
-		self.mid_z = self.z - self.layer_height/2
+		if not isinstance(self.layernum, str):
+			self.add_boundary_planes()
 
 
 	def plot(self, fig=None, plot3d=False, only_outline=True, show=False,
