@@ -21,12 +21,12 @@ from geometry.angle import Angle
 
 class GCodePrinter:
 	"""Simulates a printer in order to generate gcode."""
-	def __init__(self, initial_thread_path:GHalfLine, z:Number=0, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
 		self.e          = 0
-		self.head_loc   = GPoint(0, 0, z)
+		self.head_loc   = GPoint(0, 0, 0)
 
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
@@ -44,7 +44,7 @@ class GCodePrinter:
 	def xy(self): return self.x, self.y
 
 	def __repr__(self):
-		return f'GCodePrinter(x={self.x}, y={self.y}, z={self.z})'
+		return f'{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})'
 
 
 	def add_codes(self, *codes, action:str|Callable):
