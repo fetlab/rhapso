@@ -16,7 +16,7 @@ general:
 ring:
   #16 microsteps, 200 steps per rotation = 3200
   #Used to know the minimum angle we can move for nicer gcode
-  stepper_microsteps_per_rotation: 1600 #3200
+  stepper_microsteps_per_rotation: 3200
 
   #Configure gears
   # Not using now, but keep it for posterity
@@ -24,9 +24,7 @@ ring:
   ring_gear_teeth : 112
 
   #The center of the ring in printer frame coordinates, in mm
-  # center: [-10.5, -74.2, 0] original parameters
-  center: [-5.4, -74.2, 0] # x measure by middle of top bar and cneter of ring
-  
+  center: [-10.5, -74.2, 0]
 
   #Ring radius, measured from center to thread outlet in thread carrier, in mm
   radius: 93
