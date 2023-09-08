@@ -43,38 +43,38 @@ class ManualPrinter(GCodePrinter):
 
 		grabber_size = [0.0, 0.0, 0.0]
 
-		#Get the grabber model from its 3mf file
-		with ZipFile(grabber_filename, 'r') as model_zip:
-			tree = ET.parse(model_zip.open('3D/3dmodel.model'))
-			grabber = tree.find(f'./3mf:resources/3mf:object[@name="{xml_grabber_name}"]', namespace)
-			build = tree.find(f'./3mf:build/3mf:item[@objectid="{grabber.attrib["id"]}"]', namespace)
+		model_filename = Path(model_filename)
+		new_grabber_filename = model_filename.parent.joinpath(model_filename.stem + '-grab' + model_filename.suffix)
+
+		with ZipFile(grabber_filename, 'r') as grabber_zip:
+			#Register namespaces so writing works correctly (https://stackoverflow.com/a/54491129/49663)
+			model = grabber_zip.open('3D/3dmodel.model')
+			for _, (ns, uri) in ET.iterparse(model, events=['start-ns']):
+				ET.register_namespace(ns, uri)
+			model.seek(0)
+
+			#Find the grabber size so we can keep it from overlapping the bed edges
+			tree = ET.parse(model)
+			root = tree.getroot()
+			if root is None: raise ValueError("No root element in XML file")
+			grabber = root.find(f'./3mf:resources/3mf:object[@name="{xml_grabber_name}"]', namespace)
+			if grabber is None:
+				raise ValueError(f"Can't find any object named {xml_grabber_name} in file.")
 
 			mins = [float( 'inf')]*3
 			maxs = [float('-inf')]*3
-			for vertex in tree.findall("./3mf:resources/3mf:object/3mf:mesh/3mf:vertices/3mf:vertex", namespace):
+			for vertex in root.findall("./3mf:resources/3mf:object/3mf:mesh/3mf:vertices/3mf:vertex", namespace):
 				vals = [float(vertex.get(a, 0)) for a in 'xyz']
 				mins = [min(old, new) for old, new in zip(mins, vals)]
 				maxs = [max(old, new) for old, new in zip(maxs, vals)]
 			grabber_size = max([x-n for x,n in zip(maxs, mins)])
 
-		#Modify the model file with grabbers
-		with ZipFile(model_filename, 'r') as model_zip:
-			model = model_zip.open('3D/3dmodel.model')
-			#Register namespaces so writing works correctly (https://stackoverflow.com/a/54491129/49663)
-			for _, (ns, uri) in ET.iterparse(model, events=['start-ns']):
-				ET.register_namespace(ns, uri)
-			model.seek(0)
-
-			#Load the model 3mf file
-			tree = ET.parse(model)
-			objects = tree.findall('./3mf:resources/3mf:object', namespace)
-			max_id = max([int(obj.attrib['id']) for obj in objects])
-
-			#Add the grabber geometry to the model file
-			gid = str(max_id + 1)
-			grabber.attrib['id'] = gid
-			tree.find('./3mf:resources', namespace).append(grabber)
-			builds = tree.find(f'./3mf:build', namespace)
+			#Remove any instances of the grabber in the 3mf
+			builds = root.find(f'./3mf:build', namespace)
+			if builds is None:
+				raise ValueError("Can't find <build> section in 3D/3dmodel.model")
+			for build_obj in builds:
+				builds.remove(build_obj)
 
 			#Make multiple instances of grabber, then rotate and place them
 			for i, seg in enumerate(self.thread.segments):
@@ -82,8 +82,8 @@ class ManualPrinter(GCodePrinter):
 				hl = GHalfLine(*seg[:])
 				isec = first([hl.intersection(i) for i in bed_outline], f=lambda v:v is not None and v != hl.point)
 
-				#Find the point in from the intersection to prevent grabbers being
-				# off-bed
+				#Find the point in from the intersection to prevent grabbers being off-bed
+				#TODO: Need to avoid overlapping grabbers!
 				new_loc = isec.moved(-hl.vector.normalized() * grabber_size * 1.1)
 
 				ang = seg.angle()
@@ -95,11 +95,14 @@ class ManualPrinter(GCodePrinter):
 				])
 				transform = ' '.join(f'{i:.6f}' for i in np.reshape(matrix, -1))
 
-				print(seg, hl, isec)
-				print(f'Grabber {i} at {new_loc} with angle {ang}')
 				builds.append(ET.Element(f'{{{namespace["3mf"]}}}item',
-														 attrib={'objectid': gid, 'transform':transform }))
+					attrib={'objectid':grabber.attrib["id"], 'transform':transform }))
 
-			new_model = ET.tostring(tree.getroot(), xml_declaration=True)
-			# tree.write('tmp/output_tree.xml', encoding='unicode', xml_declaration=True)
-			#model_zip.writestr('3D/3dmodel.model', new_model)
+			#Copy the contents of the grabber file, but add the new grabbers
+			with ZipFile(new_grabber_filename, 'w') as new_grabber_zip:
+				for item in grabber_zip.infolist():
+					if item.filename.lower() != '3D/3dmodel.model'.lower():
+						data = grabber_zip.read(item.filename)
+						new_grabber_zip.writestr(item, data)
+					else:
+						new_grabber_zip.writestr('3D/3dmodel.model', ET.tostring(root, xml_declaration=True))
