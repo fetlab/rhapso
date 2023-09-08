@@ -179,6 +179,7 @@ class GSegment(Segment):
 
 
 	def __mul__(self, other):
+		"""Lengthen the segment, preserving its start point."""
 		if not isinstance(other, (int, float)):
 			return self * other
 		return self.copy(end_point=self.end_point.moved(

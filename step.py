@@ -21,9 +21,9 @@ class Step:
 		self.number = -1
 		self.valid = True
 		self.fixing = False   #Does this step print over a thread to fix it in place?
-		self.original_thread_path: GHalfLine
-		self.thread_path: GHalfLine
-		self.target = None
+		self.original_thread_path: GHalfLine = self.printer.thread_path.copy()
+		self.thread_path: GHalfLine|None = None
+		self.target:GPoint|None = None
 
 
 	def __repr__(self):
@@ -48,18 +48,24 @@ class Step:
 		self.gcsegs is made of GSegment objects, each of which should have a .gc_line1
 		and .gc_line2 member which are GCLines.
 		"""
+		if self.thread_path is None:
+			raise ValueError('Attempt to call gcode() before Step context has exited')
+
 		if self.original_thread_path != self.thread_path:
 			rprint([f'[yellow]————[/]\nStep {self}:\n\t' +
 					 self.original_thread_path.repr_diff(self.thread_path)])
 
 		#If there are no gcsegs, it must be a thread move.
 		if not self.gcsegs:
-			if self.thread_path is None or self.thread_path == self.original_thread_path:
+			if self.thread_path == self.original_thread_path:
+				rprint('No thread movement and no gcsegs')
 				return []
 
 			#If the angle changed, the ring should move to reflect that
 			else:
-				return gcprinter.gcode_set_thread_path(self.thread_path, self.target)
+				if self.target is None:
+					raise ValueError('No gcsegs and no target')
+				return gcprinter.set_thread_path(self.thread_path, self.target)
 
 
 		#Sort gcsegs by the first gcode line number in each
@@ -106,7 +112,6 @@ class Step:
 
 	def __enter__(self):
 		if self.debug is False: rich_log.setLevel(logging.CRITICAL)
-		self.original_thread_path = self.printer.thread_path.copy()
 		return self
 
 

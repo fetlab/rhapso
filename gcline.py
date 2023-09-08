@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re, sys
 from functools import total_ordering
 from collections import UserList
@@ -74,7 +75,7 @@ class GCLine:
 		if isinstance(add_comment, (list,tuple)): add_comment = ' '.join(add_comment)
 		if add_comment: comment = ' '.join((comment, add_comment))
 		gcline = GCLine(
-				line    = kwargs.get('line',    self.line),
+				line    = kwargs.get('line',    self.line if not kwargs else ''),
 				lineno  = kwargs.get('lineno',  self.lineno),
 				code    = kwargs.get('code',    self.code),
 				args    = deep_update(dict(self.args), kwargs.get('args', {})),
@@ -121,11 +122,18 @@ class GCLine:
 		"""Return a copy of this line without extrusion, turning it into a G0."""
 		if not self.is_xymove():
 			raise ValueError(f'Call of as_xymove() on non-xymove GCLine {self}')
-		return self.copy(
-			code='G0', args={k:v for k,v in self.args.items() if k != 'E'}, fake=fake,
+		new_line = self.copy(
+			code='G0', args=self.args, fake=fake,
 			lineno=self.lineno if not fake else '',
-			comment=((self.comment + ' (fake)' if fake else '') if self.comment else None),
+			add_comment='Converted to xy move' + f' (fake from [{self.lineno}])' if fake else '',
 		)
+
+		#Remove extrusion command if it exists
+		new_args = dict(new_line.args)
+		new_args.pop('E', None)
+		new_line.args = ReadOnlyDict(new_args)
+
+		return new_line
 
 
 	@property
@@ -140,10 +148,9 @@ class GCLine:
 	def xyz(self): return self.x, self.y, self.z
 
 
-	def construct(self, lineno_in_comment=True, **kwargs):
-		"""Construct and return a line of gcode based on self.code,
-		self.args, and self.comment. Pass kwargs to override this line's existing
-		arguments."""
+	def construct(self, lineno_in_comment:bool=True, **kwargs) -> str:
+		"""Construct and return a line of gcode based on self.code, self.args, and
+		self.comment. Pass kwargs to override this line's existing arguments."""
 		args = self.args
 		if kwargs:
 			args = self.args.copy()

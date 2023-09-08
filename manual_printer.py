@@ -1,6 +1,6 @@
 from math import sin, cos
 from pathlib import Path
-from updateablezipfile import UpdateableZipFile as ZipFile
+from zipfile import ZipFile
 from fastcore.basics import first
 from gcode_printer import GCodePrinter
 from geometry import GHalfLine, GPolyLine, GSegment
@@ -20,7 +20,7 @@ class ManualPrinter(GCodePrinter):
 		self.thread = thread
 		super().__init__()
 
-	def gcode_set_thread_path(self, thread_path, target) -> list[GCLine]:
+	def set_thread_path(self, thread_path, target) -> list[GCLine]:
 		"""Return code to pause the print and display a message about where the
 		thread should be moved to next."""
 		return [
@@ -102,4 +102,4 @@ class ManualPrinter(GCodePrinter):
 
 			new_model = ET.tostring(tree.getroot(), xml_declaration=True)
 			# tree.write('tmp/output_tree.xml', encoding='unicode', xml_declaration=True)
-			model_zip.writestr('3D/3dmodel.model', new_model)
+			#model_zip.writestr('3D/3dmodel.model', new_model)

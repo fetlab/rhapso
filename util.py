@@ -4,6 +4,7 @@ from functools    import wraps, reduce
 from operator     import itemgetter
 from pathlib      import Path
 from collections.abc import Mapping
+from typing import Collection
 
 #Create Number type
 Number = float|int
@@ -196,7 +197,7 @@ def deep_update(mapping, *updating_mappings):
 
 class Saver:
 	"""Save values for variables in save_vars that have changed."""
-	def __init__(self, obj, save_vars):
+	def __init__(self, obj:object, save_vars:Collection[str]):
 		self.saved = {v: rgetattr(obj, v) for v in save_vars}
 		self.obj = obj
 		self.changed = {}
@@ -219,6 +220,11 @@ class Saver:
 				 '\n'.join([f'\t\t{var}: {self.saved[var]}' for var in self.saved if var
 								not in self.changed])
 			)
+
+
+	def __bool__(self):
+		"""Return True if any of the saved variables have changed."""
+		return bool(self.originals)
 
 
 	@property

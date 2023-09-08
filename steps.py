@@ -50,7 +50,7 @@ class Steps:
 		if self._cached_gcode:
 			return self._cached_gcode
 		r: list[GCLine] = gcprinter.execute_gcode(
-				gcprinter.gcode_layer_preamble(list(self.layer.preamble), self.layer))
+				gcprinter.layer_preamble(list(self.layer.preamble), self.layer))
 		if r:
 			r.insert(0, comment(f'::: Layer {self.layer.layernum} preamble :::'))
 			r.append(comment(f'::: End layer {self.layer.layernum} preamble :::'))
@@ -64,7 +64,7 @@ class Steps:
 		if self.layer.postamble:
 			r.append(comment(f'::: Layer {self.layer.layernum} postamble :::'))
 			r.extend(gcprinter.execute_gcode(
-				gcprinter.gcode_layer_postamble(list(self.layer.postamble), self.layer)))
+				gcprinter.layer_postamble(list(self.layer.postamble), self.layer)))
 			r.append(comment(f'::: End layer {self.layer.layernum} postamble :::'))
 
 		self._cached_gcode = r

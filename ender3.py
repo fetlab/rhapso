@@ -57,14 +57,16 @@ from typing          import Collection
 from more_itertools  import flatten
 from rich            import print
 from fastcore.basics import first
+# from Geometry3D      import Polygon
 
 from geometry       import GPoint, GSegment, GHalfLine
+from geometry.angle import Angle, atan2, asin, acos
+from geometry.utils import ang_diff, circle_intersection, sign
+from geometry_helpers import traj_isec
 from bed            import Bed
 from ring           import Ring
 from gcode_printer  import GCodePrinter
 from gcline         import GCLine, comments, comment
-from geometry.angle import Angle, atan2, asin, acos
-from geometry.utils import ang_diff, circle_intersection
 from logger         import rprint
 from util           import Saver, Number
 from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
@@ -100,9 +102,12 @@ class Ender3(GCodePrinter):
 		# direction of the thread.
 		self.thread_path: GHalfLine = None
 
-		#BUG: this doesn't get run
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
+
+		#Comment out any G90s we fine
+		self.add_codes('G90', action=self.gfunc_set_absolute_positioning)
+
 
 
 	def __repr__(self):
@@ -127,19 +132,20 @@ class Ender3(GCodePrinter):
 		return delta if abs(delta) >= self.ring_config['min_move'] else Angle(degrees=0)
 
 
-	def gcode_set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
+	def set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
 		"""Set the thread path to the new value and move the ring based on the bed
 		being set to the thread anchor's `y`."""
-		ring_move_by = self.ring_delta_for_thread(thread_path, target.y)
-		if ring_move_by is None:
+		if (ring_move_by := self.ring_delta_for_thread(thread_path, target.y)) is None:
 			raise ValueError(f'No ring/thread intersection for {thread_path}')
 		new_ring_angle = self.ring.angle + ring_move_by
-		ring_info = f'{self.thread_path.repr_diff(thread_path)},  ⃘{self.ring.angle + ring_move_by:.3f}°'
-		rprint(ring_info)
 		self.thread_path = thread_path
-		self.ring.angle = new_ring_angle
-		return [GCLine(code='G0', args={'A': ring_move_by.degrees, 'F': 5000}, comment=ring_info)]
+		return self.ring_move(dist=ring_move_by, raise_head=True,
+			comment=f'{self.thread_path.repr_diff(thread_path)},  ⃘{self.ring.angle + ring_move_by:.3f}°')
 
+
+	def gfunc_set_absolute_positioning(self, gcline: GCLine, **kwargs) -> list[GCLine]:
+		rprint(f'[yellow]Warning[/]: dropping G90 on line {gcline.lineno} to avoid ring absolute positioning')
+		return [GCLine(comment=gcline.line + '; Drop G90 to avoid ring being absolutely positioned')]
 
 
 	def gfunc_printer_ready(self, gcline: GCLine, **kwargs) -> list[GCLine]:
@@ -171,29 +177,47 @@ class Ender3(GCodePrinter):
 		]
 
 
-	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs) -> list[GCLine]:
-		"""Process gcode lines with instruction G0, G1, or G92. Move the ring such
+	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
+		"""Process gcode lines with instruction G0, G1. Move the ring such
 		that the angle of `self.thread_path` stays constant with any Y movement."""
 
 		gclines:list[GCLine] = []
 
 		#Keep a copy of the head location since super() will change it.
 		prev_loc = self.head_loc.copy()
+		self.prev_loc = prev_loc
+		self.prev_set_by = self.head_set_by
 
-		#Run the passed gcode line `gcline` through the Printer class's
+		#BUG: Ender3 specific code and hardcoded, should maybe be in config
+		if gcline.is_xymove() and gcline.x == 0 and gcline.y == 220:
+			gcline = gcline.copy(args={'X': 55}, add_comment='Avoid knocking clip off the back of the bed')
+
+		#Run the passed gcode line `gcline` through the parent class's
 		# gfunc_set_axis_value() function. This might return multiple lines, so we
 		# need to process each of the returned list values.
-		super_gclines = super().gcfunc_set_axis_value(gcline) or [gcline]
+		super_gclines = super().gcfunc_move_axis(gcline) or [gcline]
 
 		for gcline in super_gclines:
-			#Avoid head collision - move ring before the head movees
+			#Avoid head collision - move ring before the head moves
 			if gcline.x:
 				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
 						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
-						gclines.extend(self.gcode_ring_move(angle=collision['move_ring_to'],
+						gclines.extend(self.ring_move(angle=collision['move_ring_to'],
 										 comment=f'Avoid head collision at {gcline.x} by moving '
 														 f'ring to {collision["move_ring_to"]}'))
+
+			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove() else None
+			move_type = 'fixing' if gcline.is_xyextrude() else 'normal'
+			with Saver(self.head_loc, 'z') as saver:
+				raise_amt = self.config['general'].get('thread_crossing_head_raise', {}).get(move_type)
+				if isec and raise_amt > 0:
+					gclines.extend(self.execute_gcode(GCLine('G0',
+					args={'Z':self.head_loc.z + raise_amt},
+						comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag')))
+
+			if 'fake from [747]' in (gcline.comment or '') and gcline.x == 69.8:
+				print(f'{prev_loc=}, {self.head_loc=}')
 
 			#If there's no Y movement we don't need to do anything; the bed doesn't
 			# move so the thread angle won't change
@@ -203,33 +227,98 @@ class Ender3(GCodePrinter):
 			#If the bed is moving, we want to move the thread simultaneously to keep
 			# it in the same relative position
 			else:
-				ring_move_by = self.ring_delta_for_thread(self.thread_path, gcline.y)
+				gcline = self.sync_ring(gcline)
 
-				if ring_move_by is None:
-					gclines.append(gcline.copy(add_comment=f'--- No ring intersection for thread {self.thread_path}'))
-				else:
-					if ring_move_by != 0:
-						new_ring_angle = self.ring.angle + ring_move_by
-						gcline = gcline.copy(args={'A': ring_move_by.degrees},
-															add_comment=f'(🧵{self.thread_path.angle:.3f}°,  ⃘{new_ring_angle:.3f}°)' if
-															new_ring_angle != self.ring.angle else f'({self.info})')
-						self.ring.angle = new_ring_angle
-
-
+			#Add the line to the list of lines to be executed
 			gclines.append(gcline)
+
+			#Pause for fixing moves if so configured
+			if isec and move_type == 'fixing':
+				if pause := self.config['general'].get('post_thread_overlap_pause', 0):
+					gclines.extend(self.execute_gcode(
+						GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
+
+			if saver:
+				gclines.extend(self.execute_gcode(
+					GCLine('G0', args={'Z': saver.originals['z']}, comment='Drop head back to original location')))
 
 		return gclines
 
 
-	def gcode_ring_move(self, dist:Angle=None, angle:Angle=None, comment='') -> list[GCLine]:
-		"""Emit gcode to move the ring. Specify exactly one of dist or angle."""
+	def sync_ring(self, gcline:GCLine) -> GCLine:
+		"""Return the a copy of the line with a ring movement added to keep the
+		thread angle in sync with bed movement. Update the ring angle accordingly.
+		If the line contains no y movement, return the line unmodified."""
+		if 'fake from [747]' in (gcline.comment or '') and gcline.x == 69.8:
+			print(f'ring_delta_for_thread({self.thread_path}, {gcline.y}) with ring {self.ring}')
+		ring_move_by = self.ring_delta_for_thread(self.thread_path, gcline.y)
+
+		if ring_move_by is None:
+			gcline = gcline.copy(add_comment=f'--- No ring intersection for thread {self.thread_path}')
+		else:
+			if ring_move_by != 0:
+				new_ring_angle = self.ring.angle + ring_move_by
+				gcline = gcline.copy(args={'A': ring_move_by.degrees},
+													add_comment=f'(🧵{self.thread_path.angle:.3f}°,  ⃘{new_ring_angle:.3f}°)' if
+													new_ring_angle != self.ring.angle else f'({self.info})')
+				self.ring.angle = new_ring_angle
+
+		return gcline
+
+
+	def ring_move(self, dist:Angle=None, angle:Angle=None, comment='', raise_head=False) -> list[GCLine]:
+		"""Emit gcode to move the ring. Specify exactly one of dist or angle. If
+		raise_head is True and the thread will cross the head position, raise the
+		head by the amount set in the configuration file."""
 		if (dist is not None and angle is not None) or (dist is None and angle is None):
 			raise ValueError('Specify exactly one of dist or angle')
 
-		ring_move_by = dist if dist is not None else ang_diff(self.ring.angle, angle)
+		ring_move_by = dist if dist is not None else ang_diff(self.ring.angle, angle) #type: ignore # (checked for None above)
 		self.ring.angle += ring_move_by
-		return [GCLine('G0', args={'A': ring_move_by.degrees, 'F': self.ring_config['feedrate']},
-								 comment=comment)]
+
+		gcode:list[GCLine] = []
+
+		with Saver(self.head_loc, 'z') as saver:
+			raise_amt = self.config['general'].get('thread_crossing_head_raise', {}).get('fixing' if raise_head else 'normal', 0)
+			if raise_amt > 0 and self.thread_cross_head(ring_move_by):
+				gcode.extend(self.execute_gcode(
+					GCLine('G0', args={'Z':self.head_loc.z + raise_amt}, comment=f'ring_move() raise head by {raise_amt} to avoid thread snag')))
+
+		gcode.extend([
+			GCLine(f'M117 Ring {self.ring.angle+ring_move_by}'),
+			GCLine('G0', args={'A': ring_move_by.degrees, 'F': self.ring_config['feedrate']}, comment=comment),
+		])
+
+		if saver:
+			gcode.extend(self.execute_gcode(
+				GCLine('G0', args={'Z': saver.originals['z']}, comment='Drop head back to original location')))
+
+		return gcode
+
+
+	def thread_cross_head(self, ring_move:Angle) -> bool:
+		"""Return True if the ring move would cause the thread to cross the print
+		head."""
+		head_angle = self.head_loc.angle(self.thread_path.point)
+		new_thread_angle = GHalfLine(self.thread_path.point, self.ring.angle2point(self.ring.angle + ring_move)).angle
+		return sign(new_thread_angle - head_angle) == sign(head_angle - self.thread_path.angle)
+
+
+	def head_cross_thread(self, head_loc, gcline:GCLine) -> None|GPoint:
+		"""Return where the move from the current head position to the position
+		in `gcline` would cause the head to cross the thread, or None if it doesn't."""
+		if head_loc.x == gcline.x and head_loc.y == gcline.y:
+			return None
+		head_traj = GSegment(head_loc.as2d(), head_loc.copy(x=gcline.x, y=gcline.y, z=0))
+		if gcline.lineno == 1285:
+			print(f'Line: {gcline}, head: {head_loc}')
+			print(f'Head set by: {self.head_set_by}')
+			print(f'Prev head: {self.prev_loc}')
+			print(f'Prev head set by: {self.prev_set_by}')
+			print(f'Traj: {head_traj}')
+			print(f'Thread: {self.thread_path}')
+		#Assuming here that the ring is synced to the bed movement
+		return self.thread_path.as2d().intersection(head_traj)
 
 
 
