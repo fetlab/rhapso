@@ -105,7 +105,7 @@ class Ender3(GCodePrinter):
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
 
-		#Comment out any G90s we fine
+		#Comment out any G90s we find
 		self.add_codes('G90', action=self.gfunc_set_absolute_positioning)
 
 
