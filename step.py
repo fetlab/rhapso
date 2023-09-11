@@ -20,7 +20,7 @@ class Step:
 		self.gcsegs:list[GSegment] = []
 		self.number = -1
 		self.valid = True
-		self.fixing = False   #Does this step print over a thread to fix it in place?
+		self.anchoring = False   #Does this step create a thread anchor?
 		self.original_thread_path: GHalfLine = self.printer.thread_path.copy()
 		self.thread_path: GHalfLine|None = None
 		self.target:GPoint|None = None
@@ -73,15 +73,15 @@ class Step:
 
 		gcode = []
 		for seg in self.gcsegs:
-			#In a > 2-line Segment, there is always one or more X/Y Move
-			# lines, but only ever one Extrude line, which is always the last line.
-			# Save and execute every line, as the XY move will put the head in the
+			#In a GSegment with more than two gc_lines, there is always one or more
+			# X/Y Move lines, but only ever one Extrude line, which is always the
+			# last line. Execute every line, as the XY move will put the head in the
 			# right place for the extrude.
 			if len(seg.gc_lines) > 2:
-				gcode.extend(gcprinter.execute_gcode(seg.gc_lines.data[:-1], fixing=self.fixing))
+				gcode.extend(gcprinter.execute_gcode(seg.gc_lines.data[:-1]))
 				extrude_line = seg.gc_lines.data[-1]
 
-			#For 2-line Segments
+			#For GSegments with exactly two gc_lines
 			else:
 				l1, extrude_line = seg.gc_lines.data
 
@@ -93,19 +93,19 @@ class Step:
 					gcode.extend(gcprinter.execute_gcode(l1))
 
 			assert(extrude_line.is_extrude())
-			gcode.extend(gcprinter.execute_gcode(extrude_line))
+			gcode.extend(gcprinter.execute_gcode(extrude_line, anchoring=self.anchoring))
 
 		return gcode
 
 
-	def add(self, gcsegs:list[GSegment], fixing=False):
+	def add(self, gcsegs:list[GSegment], anchoring=False):
 		"""Add the GSegments in `gcsegs` to the list of segments that should be
-		printed in this step. Set `fixing` to True to add the `fixed` property to
+		printed in this step. Set `anchoring` to True to add the `fixed` property to
 		each of the passed lines."""
 		rprint(f'Adding {len(unprinted(gcsegs))}/{len(gcsegs)} unprinted gcsegs to Step')
-		if fixing: rprint(f"  -- This is a fixing step (#{self.number})!")
+		if anchoring: rprint(f"  -- This is a anchoring step (#{self.number})!")
 		for seg in unprinted(gcsegs):
-			self.fixing = fixing
+			self.anchoring = anchoring
 			self.gcsegs.append(seg)
 			seg.printed = True
 
