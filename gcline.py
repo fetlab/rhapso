@@ -350,4 +350,3 @@ def comments(comments) -> list[GCLine]:
 	if isinstance(comments, (list,tuple)):
 		return [comment(line) for line in comments]
 	return [comment(line) for line in dedent(comments).split('\n') if line]
-

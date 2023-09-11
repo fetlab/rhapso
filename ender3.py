@@ -1,54 +1,4 @@
-"""This is the specific Ender 3 Pro we have and its parameters:
-
-	- the bed moves for the y axis (XZ gantry)
-	- at (0,0) the bed is all the way towards the rear of the printer and the
-		print head is at the extreme left
-	- printable bed size is 220x220
-	- actual bed size is 235x235
-	- in X, the bed is centered on the frame coordinate system
-
-	We'll use the X/Y parts of the Fusion 360 model's coordinate system as the
-	X/Y for the base printer coordinate system, so (0, 0) is centered above one
-	of the bolts on the bottom of the printer. Note that in Fusion the model is
-	oriented with Y up and Z towards the front of the printer, but I'm switching
-	coordinates here so that Z is up and Y is towards the back.
-
-	Looking straight down from the top of the printer, x=0 is at the center of
-	the top cross-piece of the printer, and y=0 is at the top/back edge of that
-	piece. We'll set z=0 as the bed surface (in the Fusion model this is at
-	z=100.964 mm above the table surface, but in real life is at 100 mm).
-
-	By this coordinate system then (verified by measuring):
-		* Actual bed  (0,0,0) = (-117.5, -65, 0)
-		* Ring (0,0)   = (-5.5, 74.2)
-		* Ring x center is 122 mm from bed x = 0
-
-Ring configuration:
-	- ring is fixed to the x-axis gantry
-	- ring y center (nearly) matches the center of the x-axis gantry bar, which
-		is 1 in towards the rear from the center of the nozzle
-	- ring x center is 129.5 mm from left z-axis gantry, or 122 mm from bed x = 0
-
-Bed configuration:
-	Effective size is 110 x 220. On the actual printer, the effective width as
-	measured by moving the head and seeing where the nozzle hits the bed is 110
-	mm, with the left side of this area at 65 mm from the left edge of the bed.
-
-	Thus, the new origin for the bed, in the printer frame coordinate system, is
-	then (-52.5, -65, 0) (x=235/2 - 65 = 52.5). This is when the bed is at y=0,
-	with the front edge of the bed plate underneath the nozzle. When the bed is
-	at its other extreme, with the back edge of the plate under the nozzle, then
-	the actual front-left corner of the bed is at (-52.5, -285).
-
-The conceptual model for the coordinate system is that the bed is fixed, with
-the effective (0, 0) coordinate as actual (0, 0). Then the print head moves as
-expected in two dimensions, and the ring is locked in position relative to the
-head, so it moves in 2D as well. This inversion of the actual situation should
-be more intuitive and require less converting of coordinate systems.
-
-Conveniently for calculations, this "moving ring" model is (I think!) only
-necessary during GCode generation. In working with calculations for planning
-thread trajectories and print order, we can ignore that part.
+"""
 """
 from __future__      import annotations
 from copy            import copy
@@ -198,7 +148,11 @@ class Ender3(GCodePrinter):
 		super_gclines = super().gcfunc_move_axis(gcline) or [gcline]
 
 		for gcline in super_gclines:
-			#Avoid head collision - move ring before the head moves
+			if not gcline.is_xymove():
+				gclines.append(gcline)
+				continue
+
+			#Avoid head/carrier collision - move ring before the head moves
 			if gcline.x:
 				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
@@ -216,17 +170,9 @@ class Ender3(GCodePrinter):
 					args={'Z':self.head_loc.z + raise_amt},
 						comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag')))
 
-			if 'fake from [747]' in (gcline.comment or '') and gcline.x == 69.8:
-				print(f'{prev_loc=}, {self.head_loc=}')
-
-			#If there's no Y movement we don't need to do anything; the bed doesn't
-			# move so the thread angle won't change
-			if not gcline.y or gcline.y == prev_loc.y:
-				pass
-
 			#If the bed is moving, we want to move the thread simultaneously to keep
 			# it in the same relative position
-			else:
+			if gcline.y is not None and gcline.y != prev_loc.y:
 				gcline = self.sync_ring(gcline)
 
 			#Add the line to the list of lines to be executed
@@ -238,6 +184,8 @@ class Ender3(GCodePrinter):
 					gclines.extend(self.execute_gcode(
 						GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
 
+			#If we changed the z-height during a head-thread crossing move above, we
+			# need to put it back to where it was
 			if saver:
 				gclines.extend(self.execute_gcode(
 					GCLine('G0', args={'Z': saver.originals['z']}, comment='Drop head back to original location')))
