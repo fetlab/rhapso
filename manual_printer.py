@@ -3,7 +3,7 @@ from pathlib import Path
 from zipfile import ZipFile
 from fastcore.basics import first
 from gcode_printer import GCodePrinter
-from geometry import GHalfLine, GPolyLine, GSegment
+from geometry import GHalfLine, GPolyLine, GSegment, GPoint
 from geometry.angle import Angle
 from gcline import GCLine
 import xml.etree.ElementTree as ET
@@ -15,23 +15,36 @@ namespace = {
 }
 
 class ManualPrinter(GCodePrinter):
-	def __init__(self, config, initial_thread_path:GHalfLine, thread:GPolyLine, *args, **kwargs):
+	def __init__(self, config, initial_thread_path:GHalfLine, thread:GPolyLine,
+							grabber_filename: str|Path, model_filename: str|Path, *args, **kwargs):
 		self.config = config
 		self.thread = thread
 		super().__init__()
 
+		self.grabber_filename = Path(grabber_filename)
+		self.model_filename   = Path(model_filename)
+		self.xml_grabber_name = self.config.get('general', {}).get('xml_grabber_name', 'Grabber')
+
+		if self.grabber_filename.suffix.lower() != '.3mf' or self.model_filename.suffix.lower() != '.3mf':
+			raise ValueError('Filenames must end in .3mf')
+
+
 	def set_thread_path(self, thread_path, target) -> list[GCLine]:
 		"""Return code to pause the print and display a message about where the
 		thread should be moved to next."""
-		return [
-				GCLine(code='M117', args={None: f'Move thread to {thread_path.angle}'}),
-				GCLine(code='M601', comment='Pause, wait for user to click buttton')
-				]
+		gclines = [GCLine(code='M117', args={None: f'Move thread to {thread_path.angle}'})]
+		return gclines + self.gcode_pause_for_thread(thread_path, target)
 
 
-	def add_grabbers(self, grabber_filename, model_filename, xml_grabber_name="Grabber"):
-		"""Add grabbers to the model. Both `grabber_filename` and `model_filename`
-		should refer to .3MF files."""
+	def gcode_pause_for_thread(self, thread_path:GPolyLine, target:GPoint) -> list[GCLine]:
+		"""Return gcode to pause for thread insertion."""
+		raise NotImplementedError
+
+
+	def create_grabbers(self):
+		"""Create grabbers. The grabber in `grabber_filename` should be named
+		`xml_grabber_name` (e.g., name the body that in Fusion). Both filenames
+		should have .3mf extensions."""
 		x0, y0, _ = self.config['bed']['zero']
 		x1, y1    = self.config['bed']['size']
 		bed_outline = [
@@ -43,10 +56,10 @@ class ManualPrinter(GCodePrinter):
 
 		grabber_size = [0.0, 0.0, 0.0]
 
-		model_filename = Path(model_filename)
-		new_grabber_filename = model_filename.parent.joinpath(model_filename.stem + '-grab' + model_filename.suffix)
+		new_grabber_filename = self.model_filename.parent.joinpath(
+			self.model_filename.stem + '-grab' + self.model_filename.suffix)
 
-		with ZipFile(grabber_filename, 'r') as grabber_zip:
+		with ZipFile(self.grabber_filename, 'r') as grabber_zip:
 			#Register namespaces so writing works correctly (https://stackoverflow.com/a/54491129/49663)
 			model = grabber_zip.open('3D/3dmodel.model')
 			for _, (ns, uri) in ET.iterparse(model, events=['start-ns']):
@@ -57,9 +70,9 @@ class ManualPrinter(GCodePrinter):
 			tree = ET.parse(model)
 			root = tree.getroot()
 			if root is None: raise ValueError("No root element in XML file")
-			grabber = root.find(f'./3mf:resources/3mf:object[@name="{xml_grabber_name}"]', namespace)
+			grabber = root.find(f'./3mf:resources/3mf:object[@name="{self.xml_grabber_name}"]', namespace)
 			if grabber is None:
-				raise ValueError(f"Can't find any object named {xml_grabber_name} in file.")
+				raise ValueError(f"Can't find any object named {self.xml_grabber_name} in file.")
 
 			mins = [float( 'inf')]*3
 			maxs = [float('-inf')]*3
@@ -76,17 +89,18 @@ class ManualPrinter(GCodePrinter):
 			for build_obj in builds:
 				builds.remove(build_obj)
 
+			seg_hls = [GHalfLine(*seg[:]).as2d() for seg in self.thread.segments]
+
 			#Make multiple instances of grabber, then rotate and place them
-			for i, seg in enumerate(self.thread.segments):
-				seg = seg.as2d()
-				hl = GHalfLine(*seg[:])
+			for i, hl in enumerate(seg_hls):
 				isec = first([hl.intersection(i) for i in bed_outline], f=lambda v:v is not None and v != hl.point)
 
 				#Find the point in from the intersection to prevent grabbers being off-bed
 				#TODO: Need to avoid overlapping grabbers!
+				# This probably needs to be done as a Fusion plugin?
 				new_loc = isec.moved(-hl.vector.normalized() * grabber_size * 1.1)
 
-				ang = seg.angle()
+				ang = hl.angle()
 				matrix = np.array([
 					[ cos(ang), sin(ang), 0],
 					[-sin(ang), cos(ang), 0],
@@ -106,3 +120,5 @@ class ManualPrinter(GCodePrinter):
 						new_grabber_zip.writestr(item, data)
 					else:
 						new_grabber_zip.writestr('3D/3dmodel.model', ET.tostring(root, xml_declaration=True))
+
+			print(f'Made grabber file {new_grabber_filename}')

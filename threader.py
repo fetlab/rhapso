@@ -34,7 +34,7 @@ restart_logging()
 
 class Threader:
 	def __init__(self, gcode_file:GcodeFile, config_file:str, thread_list:list[GPoint],
-							 start_layer:int|None=None, end_layer:int|None=None):
+							 start_layer:int|None=None, end_layer:int|None=None, *args, **kwargs):
 
 		self.start_layer = start_layer
 		self.end_layer   = end_layer
@@ -62,7 +62,9 @@ class Threader:
 		thread_vec               = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
 		self.initial_thread_path = GHalfLine(self.start_anchor, thread_vec)
 		self.printer             = Printer(self.initial_thread_path)
-		self.gcode_printer       = self.config['printer_class'](self.config, self.initial_thread_path, self.snapped_thread)
+		self.gcode_printer       = self.config['printer_class'](self.config,
+															 self.initial_thread_path, self.snapped_thread,
+															 *args, **kwargs)
 
 
 
