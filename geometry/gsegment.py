@@ -186,6 +186,16 @@ class GSegment(Segment):
 			self.line.dv.normalized() * self.length() * (other-1)))
 
 
+	def point_at_dist(self, dist:int|float, from_end=False) -> GPoint:
+		"""Return the point that is `dist` from this GSegment's start point (end
+		point) in the direction of the GSegment. Note that the returned point might
+		not be on the GSegment!"""
+		if from_end:
+			return self.end_point - self.line.dv.normalized() * dist
+		else:
+			return self.start_point + self.line.dv.normalized() * dist
+
+
 	def split_at(self, split_loc:GPoint) -> List:
 		"""Return a set of two GSegments resulting from splitting this one into two
 		pieces at `location`."""
