@@ -95,13 +95,13 @@ class GSegment(Segment):
 	def __repr__(self):
 		if not(self.gc_line1 and self.gc_line2):
 			return "<{}←→{} ({:.2f} mm)>".format(self.start_point, self.end_point,
-					self.length())
+					self.length)
 		return "<{}[{:>2}] {}:{}←→{}:{} ({:.2f} mm)>".format(
 				'S' if self.printed else 's',
 				len(self.gc_lines),
 				self.gc_line1.lineno, self.start_point,
 				self.gc_line2.lineno, self.end_point,
-				self.length())
+				self.length)
 
 
 	#We define __eq__ so have to inherit __hash__:
@@ -113,6 +113,9 @@ class GSegment(Segment):
 
 	def __eq__(self, other):
 		return False if not isinstance(other, Segment) else super().__eq__(other)
+
+	@property
+	def length(self): return super().length()
 
 
 	def intersecting(self, check, ignore:Point | Collection[Point]=()) -> Set[Segment]:
@@ -183,7 +186,7 @@ class GSegment(Segment):
 		if not isinstance(other, (int, float)):
 			return self * other
 		return self.copy(end_point=self.end_point.moved(
-			self.line.dv.normalized() * self.length() * (other-1)))
+			self.line.dv.normalized() * self.length * (other-1)))
 
 
 	def point_at_dist(self, dist:int|float, from_end=False) -> GPoint:
@@ -210,7 +213,7 @@ class GSegment(Segment):
 		if self.gc_line1 and self.gc_line2:
 
 			#First segment
-			seg1_frac = seg1.length() / self.length()
+			seg1_frac = seg1.length / self.length
 			seg1_args = {
 					'X': split_loc.x,
 					'Y': split_loc.y,
