@@ -2,8 +2,11 @@ from __future__ import annotations
 import re, sys
 from functools import total_ordering
 from collections import UserList
+from copy import copy
+from geometry import GPoint, GSegment
 from geometry.angle import Angle
 from util import deep_update, ReadOnlyDict
+from fastcore.basics import ifnone
 
 from rich.console import Console
 rprint = Console(style="on #272727").print
@@ -357,3 +360,58 @@ def comments(comments) -> list[GCLine]:
 	if isinstance(comments, (list,tuple)):
 		return [comment(line) for line in comments]
 	return [comment(line) for line in dedent(comments).split('\n') if line]
+
+
+def split_gcline(start:GPoint, line:GCLine, at:GPoint) -> list[GCLine]:
+	"""Split `line` at point `at`. Provide `start` as a GCLine or a GPoint
+	indicating where the print head was immediately previous to the the line that
+	should be split. This is necessary to calculate how much extrusion should be
+	alloted to each part of the split."""
+	if not line.is_move:
+		raise ValueError("Can't split a non-movement line!")
+
+	#Make an ending point, assuming that if a movement value is missing from
+	# `line` that it's the same as that value for `start`.
+	end = GPoint(
+			ifnone(line.x, start.x),
+			ifnone(line.y, start.y),
+			ifnone(line.z, start.z))
+
+	#Make a GSegment for convenience in lengths and checking that `at` is a valid
+	# split location.
+	seg = GSegment(start, end)
+
+	if at not in seg:
+		raise ValueError(f"Requested split location {at} isn't on segment {seg}")
+
+	#If the line is an extruding one, we have to update the 'E' args for each
+	# split accordingly.
+	if line.is_extrude:
+		#If the line has the `relative_extrude` property and it's not the same as
+		# the E argument, then the gcode is in absolute extrusion mode.
+		if line.relative_extrude is not None:
+			if line.relative_extrude != line.args['E']:
+				s1e = line.args['E'] - line.relative_extrude * at.distance(end) / seg.length
+				s2e = line.args['E']
+
+			#If they are the same, then the gcode is in relative extrusion mode
+			else:
+				s1e = line.args['E'] * start.distance(at) / seg.length
+				s2e = line.args['E'] - s1e
+
+		#If there is no `relative_extrude` property, we don't know if it's relative
+		# or absolute, but have no previous extrusion value to base judgement on,
+		# so we have to bail.
+		else:
+			raise ValueError("No `relative_extrude` propery for line, can't update extrusion value.")
+
+	#First split: starts at `start` (implicit) and ends at `at`.
+	# Copy all the args from `line` then replace destination X/Y with `at`,
+	# and update the extrusion amount if needed.
+	split1 = line.copy(args={'X': at.x, 'Y': at.y, **({'E':s1e} if s1e else {})},
+										 add_comment='(split 1)')
+
+	#Second split: starts at `at` and ends where `line` ended. Update extrusion.
+	split2 = line.copy(args=({'E':s2e} if s2e else {}), add_comment='(split 2)')
+
+	return [split1, split2]
