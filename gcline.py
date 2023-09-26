@@ -256,6 +256,7 @@ class GCLines(UserList):
 			del(self._index[lineno])
 		except KeyError:
 			raise IndexError(f'GCLine number {lineno} not in GCLines')
+		self._generate_index()
 
 
 	def __setitem__(self, lineno, line:GCLine):
