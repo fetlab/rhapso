@@ -80,8 +80,8 @@ class GCodePrinter:
 		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
 
 
-	def execute_gcode(self, gcline:GCLine|list[GCLine], **kwargs) -> list[GCLine]:
-		return sum([self._execute_gcline(l, **kwargs) for l in listify(gcline)], [])
+	def execute_gcode(self, gcline:GCLine|list[GCLine|None]|None, **kwargs) -> list[GCLine]:
+		return sum([self._execute_gcline(l, **kwargs) for l in listify(gcline) if l], [])
 
 
 	#G28
