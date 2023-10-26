@@ -158,7 +158,7 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 	#Find the first move destination, set the current x/y to that
 	cur_x, cur_y = 0, 0
 	for i,line in enumerate(gclines):
-		if line.is_xymove():
+		if line.is_xymove:
 			cur_x, cur_y = line.xy
 			break
 
@@ -182,10 +182,10 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 	for line in gclines[i:]:
 		frame = {'data': [], 'layout': {'shapes': [bed]}, 'name': f'[{len(frames):>3}] Line {line.lineno}'}
 
-		if line.is_xymove():
+		if line.is_xymove:
 			x,y = line.xy
 			# ring_zero = ring_zero.moved(Vector(0, y - ring_zero.y, 0))
-			if line.is_xyextrude():
+			if line.is_xyextrude:
 				xs = xs.copy()
 				ys = ys.copy()
 				xs.extend([cur_x, x, None])
@@ -214,7 +214,7 @@ def animate_gcode(gclines:list[GCLine], bed_config, ring_config, start_angle=0):
 
 			cur_x, cur_y = x, y
 
-		elif line.is_extrude() and extruder == 1:
+		elif line.is_extrude and extruder == 1:
 			if line.args["E"] > 400: print(line)
 			angle += line.args['E'] / ring_config['rot_mul']
 			angle = angle % 360

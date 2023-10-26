@@ -57,7 +57,7 @@ class TLayer(Cura4Layer):
 					#print(line)
 					continue
 
-				segs = Esegs if line.is_xyextrude() else Msegs
+				segs = Esegs if line.is_xyextrude else Msegs
 				segs['x'].extend([seg.start_point.x, seg.end_point.x, None])
 				segs['y'].extend([seg.start_point.y, seg.end_point.y, None])
 				segs['z'].extend([seg.start_point.z, seg.end_point.z, None])
@@ -124,7 +124,7 @@ class TLayer(Cura4Layer):
 		for part, lines in self.parts.items():
 			if 'type:wall-outer' in (lines[0].comment or '').lower():
 				self.geometry.outline.extend(
-						[line.segment for line in lines if line.is_xyextrude()])
+						[line.segment for line in lines if line.is_xyextrude])
 
 
 

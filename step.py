@@ -87,12 +87,12 @@ class Step:
 
 				#The first line should never execute an extrusion move, but we might need
 				# to use its coordinates to position the print head in the right place.
-				if l1.is_xymove() and gcprinter.xy != l1.xy:
-					if l1.is_xyextrude():
+				if l1.is_xymove and gcprinter.xy != l1.xy:
+					if l1.is_xyextrude:
 						l1 = l1.as_xymove(fake=True)
 					gcode.extend(gcprinter.execute_gcode(l1))
 
-			assert(extrude_line.is_extrude())
+			assert(extrude_line.is_extrude)
 			gcode.extend(gcprinter.execute_gcode(extrude_line, anchoring=self.anchoring))
 
 		return gcode

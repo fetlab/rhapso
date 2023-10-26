@@ -150,14 +150,14 @@ def gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
 	segments = []
 
 	#Put all beginning non-extrusion lines into preamble
-	while lines and not lines.first.is_xyextrude():
+	while lines and not lines.first.is_xyextrude:
 		preamble.append(lines.popidx(0))
 
 	#Put back lines from the end until we get an xymove
 	putback = []
-	while preamble and not preamble.last.is_xymove():
+	while preamble and not preamble.last.is_xymove:
 		putback.append(preamble.popidx(-1))
-	if preamble.last.is_xymove(): putback.append(preamble.popidx(-1))
+	if preamble.last.is_xymove: putback.append(preamble.popidx(-1))
 	if putback: lines = list(reversed(putback)) + lines
 
 	#Put the first xymove as the "last" item
@@ -165,18 +165,18 @@ def gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
 
 	if keep_moves_with_extrusions:
 		for line in lines:
-			if line.is_xyextrude():
-				line.segment = GSegment(last, line, z=z, gc_lines=extra, is_extrude=line.is_xyextrude())
+			if line.is_xyextrude:
+				line.segment = GSegment(last, line, z=z, gc_lines=extra, is_extrude=line.is_xyextrude)
 				segments.append(line.segment)
 				last = line
 				extra = GCLines()
-			elif line.is_xymove():
-				if not last.is_xyextrude():
+			elif line.is_xymove:
+				if not last.is_xyextrude:
 					extra.append(last)
 				last = line
 			else:
 				extra.append(line)
-		if not last.is_xyextrude() and last not in extra:
+		if not last.is_xyextrude and last not in extra:
 			extra.append(last)
 			extra.sort()
 
@@ -184,8 +184,8 @@ def gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
 		#Now take pairs of xymove lines, accumulating intervening non-move lines in
 		# extra
 		for line in lines:
-			if line.is_xymove():
-				line.segment = GSegment(last, line, z=z, gc_lines=extra, is_extrude=line.is_xyextrude())
+			if line.is_xymove:
+				line.segment = GSegment(last, line, z=z, gc_lines=extra, is_extrude=line.is_xyextrude)
 				segments.append(line.segment)
 				last  = line
 				extra = GCLines()

@@ -139,7 +139,7 @@ class Ender3(GCodePrinter):
 		self.prev_set_by = self.head_set_by
 
 		#BUG: Ender3 specific code and hardcoded, should maybe be in config
-		if gcline.is_xymove() and gcline.x == 0 and gcline.y == 220:
+		if gcline.is_xymove and gcline.x == 0 and gcline.y == 220:
 			gcline = gcline.copy(args={'X': 55}, add_comment='Avoid knocking clip off the back of the bed')
 
 		#Run the passed gcode line `gcline` through the parent class's
@@ -148,7 +148,7 @@ class Ender3(GCodePrinter):
 		super_gclines = super().gcfunc_move_axis(gcline) or [gcline]
 
 		for gcline in super_gclines:
-			if not gcline.is_xymove():
+			if not gcline.is_xymove:
 				gclines.append(gcline)
 				continue
 

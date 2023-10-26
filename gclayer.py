@@ -6,7 +6,7 @@ class Layer():
 		self.preamble:  list[GCLine] | GCLines = GCLines()
 		self.lines:     list[GCLine] | GCLines = GCLines(lines)
 		self.postamble: list[GCLine] | GCLines = GCLines()
-		self.has_moves = len(list(filter(lambda l:l.is_xymove(), self.lines)))
+		self.has_moves = len(list(filter(lambda l:l.is_xymove, self.lines)))
 		self._z        = None
 
 	def __repr__(self):
@@ -30,7 +30,7 @@ class Layer():
 		occur. Note this does not take arcs into account."""
 		if self.has_moves < 2:
 			raise ValueError(f'Need more than one move line in {self}')
-		movelines = [l for l in self.lines if l.is_xymove()]
+		movelines = [l for l in self.lines if l.is_xymove]
 		try:
 			min_x = min(movelines, key=lambda l: l.args.get('X', float('inf'))).args['X']
 			min_y = min(movelines, key=lambda l: l.args.get('Y', float('inf'))).args['Y']

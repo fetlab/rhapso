@@ -106,30 +106,34 @@ class GCLine:
 		return self.construct()
 
 
+	@property
 	def is_move(self):
 		"""Return True if it's a move in some axis (using Marlin's definition which
 		includes X Y Z A B C U V W), else False."""
 		return self.code in ('G0', 'G1') and any(ax in self.args for ax in 'XYZABCUVW')
 
 
+	@property
 	def is_xymove(self):
 		"""Return True if it's a move in the X/Y plane, else False."""
 		return self.code in ('G0', 'G1') and ('X' in self.args or 'Y' in self.args)
 
 
+	@property
 	def is_extrude(self):
 		"""Return True if this is an extruding command."""
 		return self.code in ('G0', 'G1') and 'E' in self.args
 
 
+	@property
 	def is_xyextrude(self):
 		"""Return True if it's an extruding move in the X/Y plane, else False."""
-		return self.is_xymove() and 'E' in self.args
+		return self.is_xymove and 'E' in self.args
 
 
 	def as_xymove(self, fake=False):
 		"""Return a copy of this line without extrusion, turning it into a G0."""
-		if not self.is_xymove():
+		if not self.is_xymove:
 			raise ValueError(f'Call of as_xymove() on non-xymove GCLine {self}')
 		new_line = self.copy(
 			code='G0', args=self.args, fake=fake,
