@@ -63,7 +63,8 @@ class GCLine:
 			self.code, self.args, self.comment = parse_gcline(line)
 
 		if not (self.comment or self.code):
-			raise ValueError(f'Missing a code for line: "{self}"')
+			#Allow empty lines
+			self.comment = ''
 
 		self.args = ReadOnlyDict(self.args)
 
