@@ -72,21 +72,30 @@ class GCodePrinter:
 	def layer_postamble(self, postamble: list[GCLine], layer:Layer) -> list[GCLine]: return postamble
 
 
-	def set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
-		raise NotImplementedError("Subclass must implement gcode_set_thread_path")
-
-
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
 		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
 
 
-	def execute_gcode(self, gcline:GCLine|list[GCLine|None]|None, **kwargs) -> list[GCLine]:
+	def execute_gcode(self, gcline:GCLine|GCLines|list[GCLine|None]|None, **kwargs) -> list[GCLine]:
 		return sum([self._execute_gcline(l, **kwargs) for l in listify(gcline) if l], [])
 
 
 	#G28
 	def gcfunc_auto_home(self, gcline: GCLine, **kwargs):
+		self.prev_loc = self.head_loc.copy()
+		self.prev_set_by = self.head_set_by
 		self.x, self.y, self.z = 0, 0, 0
+		self.head_set_by = gcline
+
+
+	#M82
+	def gcfunc_set_absolute_extrude(self, gcline:GCLine, **kwargs):
+		self.extrude_mode = 'absolute'
+
+
+	#M83
+	def gcfunc_set_relative_extrude(self, gcline:GCLine, **kwargs):
+		self.extrude_mode = 'relative'
 
 
 	#G0, G1
@@ -95,7 +104,28 @@ class GCodePrinter:
 
 
 	#G0, G1, G92
-	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
+	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs) -> list[GCLine]|None:
+		if any((gcline.x, gcline.y, gcline.z)):
+			self.prev_loc = self.head_loc.copy()
+			self.prev_set_by = self.head_set_by
+			self.head_set_by = gcline
+
+			#Track head location
+			if gcline.x: self.x = gcline.x
+			if gcline.y: self.y = gcline.y
+			if gcline.z: self.z = gcline.z
+
+		if 'E' in gcline.args:
+			if gcline.code == 'G92':
+				self.prev_e = self.e
+				self.e = gcline.args['E']
+
+			elif gcline.code in ('G0', 'G1'):
+				self.prev_e = self.e
+				if self.extrude_mode == 'relative':
+					self.e += gcline.args['E']
+				else: #absolute extrude mode
+					self.e = gcline.args['E']
 		#Track head location
 		if gcline.x: self.x = gcline.x
 		if gcline.y: self.y = gcline.y
