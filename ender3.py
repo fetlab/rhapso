@@ -1,54 +1,4 @@
-"""This is the specific Ender 3 Pro we have and its parameters:
-
-	- the bed moves for the y axis (XZ gantry)
-	- at (0,0) the bed is all the way towards the rear of the printer and the
-		print head is at the extreme left
-	- printable bed size is 220x220
-	- actual bed size is 235x235
-	- in X, the bed is centered on the frame coordinate system
-
-	We'll use the X/Y parts of the Fusion 360 model's coordinate system as the
-	X/Y for the base printer coordinate system, so (0, 0) is centered above one
-	of the bolts on the bottom of the printer. Note that in Fusion the model is
-	oriented with Y up and Z towards the front of the printer, but I'm switching
-	coordinates here so that Z is up and Y is towards the back.
-
-	Looking straight down from the top of the printer, x=0 is at the center of
-	the top cross-piece of the printer, and y=0 is at the top/back edge of that
-	piece. We'll set z=0 as the bed surface (in the Fusion model this is at
-	z=100.964 mm above the table surface, but in real life is at 100 mm).
-
-	By this coordinate system then (verified by measuring):
-		* Actual bed  (0,0,0) = (-117.5, -65, 0)
-		* Ring (0,0)   = (-5.5, 74.2)
-		* Ring x center is 122 mm from bed x = 0
-
-Ring configuration:
-	- ring is fixed to the x-axis gantry
-	- ring y center (nearly) matches the center of the x-axis gantry bar, which
-		is 1 in towards the rear from the center of the nozzle
-	- ring x center is 129.5 mm from left z-axis gantry, or 122 mm from bed x = 0
-
-Bed configuration:
-	Effective size is 110 x 220. On the actual printer, the effective width as
-	measured by moving the head and seeing where the nozzle hits the bed is 110
-	mm, with the left side of this area at 65 mm from the left edge of the bed.
-
-	Thus, the new origin for the bed, in the printer frame coordinate system, is
-	then (-52.5, -65, 0) (x=235/2 - 65 = 52.5). This is when the bed is at y=0,
-	with the front edge of the bed plate underneath the nozzle. When the bed is
-	at its other extreme, with the back edge of the plate under the nozzle, then
-	the actual front-left corner of the bed is at (-52.5, -285).
-
-The conceptual model for the coordinate system is that the bed is fixed, with
-the effective (0, 0) coordinate as actual (0, 0). Then the print head moves as
-expected in two dimensions, and the ring is locked in position relative to the
-head, so it moves in 2D as well. This inversion of the actual situation should
-be more intuitive and require less converting of coordinate systems.
-
-Conveniently for calculations, this "moving ring" model is (I think!) only
-necessary during GCode generation. In working with calculations for planning
-thread trajectories and print order, we can ignore that part.
+"""
 """
 from __future__      import annotations
 from copy            import copy
@@ -65,14 +15,14 @@ from geometry.utils import ang_diff, circle_intersection, sign
 from geometry_helpers import traj_isec
 from bed            import Bed
 from ring           import Ring
-from gcode_printer  import GCodePrinter
-from gcline         import GCLine, comments, comment
+from gcode_printer  import BasicGCodePrinter
+from gcline         import GCLine, comments, comment, split_gcline
 from logger         import rprint
 from util           import Saver, Number
 from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 
-class Ender3(GCodePrinter):
+class Ender3(BasicGCodePrinter):
 	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
 		self.config = config
 		self.ring_config = get_ring_config(config)
@@ -177,19 +127,18 @@ class Ender3(GCodePrinter):
 		]
 
 
-	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
+	def gcfunc_move_axis(self, gcline: GCLine, fixing=False, **kwargs) -> list[GCLine]:
 		"""Process gcode lines with instruction G0, G1. Move the ring such
 		that the angle of `self.thread_path` stays constant with any Y movement."""
 
 		gclines:list[GCLine] = []
 
 		#Keep a copy of the head location since super() will change it.
-		prev_loc = self.head_loc.copy()
-		self.prev_loc = prev_loc
+		self.prev_loc = self.head_loc.copy()
 		self.prev_set_by = self.head_set_by
 
 		#BUG: Ender3 specific code and hardcoded, should maybe be in config
-		if gcline.is_xymove() and gcline.x == 0 and gcline.y == 220:
+		if gcline.is_xymove and gcline.x == 0 and gcline.y == 220:
 			gcline = gcline.copy(args={'X': 55}, add_comment='Avoid knocking clip off the back of the bed')
 
 		#Run the passed gcode line `gcline` through the parent class's
@@ -198,51 +147,204 @@ class Ender3(GCodePrinter):
 		super_gclines = super().gcfunc_move_axis(gcline) or [gcline]
 
 		for gcline in super_gclines:
-			#Avoid head collision - move ring before the head moves
+			#If a line from super() isn't a X/Y move, we don't need to do anything with it
+			if not gcline.is_xymove:
+				gclines.append(gcline)
+				continue
+
+			#If there's an X move in this line, check for potential collisions
+			# between the carrier and the head, and move carrier before the head moves
 			if gcline.x:
 				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
 						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
-						gclines.extend(self.ring_move(angle=collision['move_ring_to'],
-										 comment=f'Avoid head collision at {gcline.x} by moving '
-														 f'ring to {collision["move_ring_to"]}'))
+						gclines.extend(self.execute_gcode(
+							self.ring_move(angle=collision['move_ring_to'],
+														 comment=f'Avoid head collision at {gcline.x} by moving '
+														 f'ring to {collision["move_ring_to"]}')))
 
-			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove() else None
-			move_type = 'fixing' if gcline.is_xyextrude() else 'normal'
-			with Saver(self.head_loc, 'z') as saver:
-				raise_amt = self.config['general'].get('thread_crossing_head_raise', {}).get(move_type)
-				if isec and raise_amt > 0:
-					gclines.extend(self.execute_gcode(GCLine('G0',
-					args={'Z':self.head_loc.z + raise_amt},
-						comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag')))
 
-			if 'fake from [747]' in (gcline.comment or '') and gcline.x == 69.8:
-				print(f'{prev_loc=}, {self.head_loc=}')
+			if not kwargs.get('passthrough') and (head_thread_isec := self.head_cross_thread(self.prev_loc, gcline)):
+				#If the head is going to cross the thread, then we might need to do
+				# specific things depending on configuration. Look up the options here.
+				move_type = 'anchoring' if kwargs.get('anchoring') else \
+										'extruding' if gcline.is_xyextrude   else 'non_extruding'
+				move_opts      = self.config['general'].get('head_crosses_thread', {}).get(move_type)
+				opt_head_raise = move_opts.get('head_raise', 0)
+				opt_overlap    = move_opts.get('overlap_length', 0)
+				comment        = f'Move: {move_type} → gfunc_move_axis({gcline}) raise head by {opt_head_raise} to avoid thread snag'
 
-			#If there's no Y movement we don't need to do anything; the bed doesn't
-			# move so the thread angle won't change
-			if not gcline.y or gcline.y == prev_loc.y:
-				pass
+				if opt_head_raise and opt_overlap:
+					if 'Z' in gcline.args:
+						raise ValueError("Can't handle lines with Z moves!")
+
+					#If we want to raise the head, we have to split the line. First,
+					# make a GSegment from the current head location to the target
+					# location so we can easily calculate things
+					seg = GSegment(self.prev_loc, GPoint(gcline))
+
+					### TODO: Figure out what to do about the varying z values I have
+					### floating around here for the splits!
+
+					#If the thread/head intersection is very close to the start or end of
+					# the extrusion, we don't try to raise/lower the head before/after the
+					# intersection; otherwise split
+					start, up, down, end = [None]*4
+					start_seg, up_seg, down_seg, end_seg = [None]*4
+					if seg.start_point.distance(head_thread_isec) <= .1:
+						down = gcline
+						down_seg = seg
+					elif seg.end_point.distance(head_thread_isec) <= .1:
+						up = gcline
+						up_seg = seg
+					else:
+						up, down = split_gcline(self.prev_loc, gcline, head_thread_isec)
+						up_seg = GSegment(self.prev_loc, head_thread_isec)
+						down_seg = GSegment(head_thread_isec, gcline, z=gcline.z or self.prev_loc.z)
+
+					#If either up/down split is long enough, split it again so we have
+					# `overlap_length` size splits as `up` and `down`
+					if up is not None and up_seg is not None and up_seg.length > opt_overlap:
+						start, up = split_gcline(up_seg.start_point, up, up_seg.point_at_dist(opt_overlap/2, from_end=True))
+					if down is not None and down_seg is not None and down_seg.length > opt_overlap:
+						down, end = split_gcline(down_seg.start_point, down, down_seg.point_at_dist(opt_overlap/2))
+
+					if start: gclines.extend(self.execute_gcode(start, passthrough=True))
+
+					if up is not None:
+						up_args = {
+								'Z': self.prev_loc.z + opt_head_raise,
+								'E': up.args['E'] * move_opts.get('extrude_multiply', 1),
+							}
+						if 'move_feedrate' in move_opts:
+							up_args['F'] = move_opts['move_feedrate']
+						gclines.extend(self.execute_gcode(
+							up.copy(args=up_args, add_comment=comment),
+							passthrough=True))
+
+					if down is not None:
+						down_args = {'Z': self.prev_loc.z}
+						if 'move_feedrate' in move_opts:
+							down_args['F'] = move_opts['move_feedrate']
+						gclines.extend(self.execute_gcode(
+							down.copy(args=down_args),
+							passthrough=True))
+
+					#Pause for fixing moves if so configured
+					if pause := move_opts.get('post_pause', 0):
+						gclines.extend(self.execute_gcode(
+							GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
+
+					if end: gclines.extend(self.execute_gcode(end, passthrough=True))
 
 			#If the bed is moving, we want to move the thread simultaneously to keep
-			# it in the same relative position
-			else:
+			# it in the same relative position, but only if there's not already an
+			# angle change for this line.
+			if gcline.y is not None and gcline.y != self.prev_loc.y and not gcline.args.get('A'):
 				gcline = self.sync_ring(gcline)
 
 			#Add the line to the list of lines to be executed
 			gclines.append(gcline)
 
-			#Pause for fixing moves if so configured
-			if isec and move_type == 'fixing':
-				if pause := self.config['general'].get('post_thread_overlap_pause', 0):
-					gclines.extend(self.execute_gcode(
-						GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
-
-			if saver:
-				gclines.extend(self.execute_gcode(
-					GCLine('G0', args={'Z': saver.originals['z']}, comment='Drop head back to original location')))
 
 		return gclines
+
+
+	def new_gfunc_move_axis(self, gcline: GCLine, fixing=False, **kwargs) -> list[GCLine]:
+
+		gclines:list[GCLine] = []
+
+		#BUG: Ender3 specific code and hardcoded, should maybe be in config
+		if gcline.is_xymove and gcline.x == 0 and gcline.y == 220:
+			gcline = gcline.copy(args={'X': 55}, add_comment='Avoid knocking clip off the back of the bed')
+
+		#If the line's not moving, we don't need to do anything with it except
+		# update the printer state
+		if not gcline.is_xymove:
+			return super().gcfunc_move_axis(gcline)
+
+		#If there's an X move in this line, check for potential collisions
+		# between the carrier and the head, and move carrier before the head moves
+		if gcline.x:
+			for collision in self.ring_config['collision_avoid']:
+				if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
+					 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
+					gclines.extend(self.execute_gcode(
+						self.ring_move(angle=collision['move_ring_to'],
+													 comment=f'Avoid head collision at {gcline.x} by moving '
+													 f'ring to {collision["move_ring_to"]}')))
+
+		#If the head is going to cross the thread, then we might need to do
+		# specific things depending on configuration.
+		head_thread_isec = self.head_cross_thread(self.head_loc, gcline)
+
+		#Look up the options to see if we should do anything if there is an
+		# intersection
+		move_type = 'anchoring' if kwargs.get('anchoring') else \
+								'extruding' if gcline.is_xyextrude   else 'non_extruding'
+		move_opts      = self.config['general'].get('head_crosses_thread', {}).get(move_type)
+		opt_head_raise = move_opts.get('head_raise', 0)
+		opt_overlap    = move_opts.get('overlap_length', 0)
+		comment        = f'Move: {move_type} → gfunc_move_axis({gcline}) raise head by {opt_head_raise} to avoid thread snag'
+		if not head_thread_isec:
+			gclines.append(gcline)
+		else:
+			if opt_head_raise and opt_overlap:
+				if 'Z' in gcline.args:
+					raise ValueError("Can't handle lines with Z moves!")
+
+				#If we want to raise the head, we have to split the line. First,
+				# make a GSegment from the current head location to the target
+				# location so we can easily split
+				seg = GSegment(self.head_loc, gcline)
+
+				#If the thread/head intersection is very close to the start or end of
+				# the extrusion, we don't try to raise/lower the head before/after the
+				# intersection; otherwise split at the intersection point
+				start, up, down, end = [None]*4
+				if seg.start_point.distance(head_thread_isec) <= .1:
+					down = seg
+				elif seg.end_point.distance(head_thread_isec) <= .1:
+					up = seg
+				else:
+					up, down = seg.split(head_thread_isec)
+
+				#If either up/down split is long enough, split it again so we have
+				# `overlap_length` size splits as `up` and `down`
+				if up is not None and up.length > opt_overlap:
+					start, up = up.split(up.point_at_dist(opt_overlap/2, from_end=True))
+				if down is not None and down.length > opt_overlap:
+					down, end = down.split(down.point_at_dist(opt_overlap/2))
+
+				#Now set up new arguments for the up/down splits
+				up_args   = {'Z': self.z + opt_head_raise}
+				down_args = {'Z': self.z}
+				if feed := move_opts.get('move_feedrate'):
+					up_args['F'] = down_args['F'] = feed
+
+				if 'E' in gcline.args and 'extrude_multiply' in move_opts:
+					if up:     up_args['E'] =   up.args['E'] * move_opts['extrude_multiply']
+					if down: down_args['E'] = down.args['E'] * move_opts['extrude_multiply']
+
+				#Now pass all the splits through execute_gcode() so that the ring gets
+				# synchronized for each move.
+				gclines.extend(self.execute_gcode([
+					start,
+					up.copy(args=up_args) if up else None,
+					down.copy(args=down_args) if down else None,
+					end
+					]))
+
+			else:
+				gclines.append(gcline)
+
+			#Pause for fixing moves if so configured
+			if pause := move_opts.get('post_pause', 0):
+				gclines.extend(self.execute_gcode(
+					GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
+
+		#Finally, update the printer state and return
+		return sum([super().gcfunc_move_axis(line) for line in gclines], [])
 
 
 	def sync_ring(self, gcline:GCLine) -> GCLine:
@@ -306,10 +408,19 @@ class Ender3(GCodePrinter):
 
 	def head_cross_thread(self, head_loc, gcline:GCLine) -> None|GPoint:
 		"""Return where the move from the current head position to the position
-		in `gcline` would cause the head to cross the thread, or None if it doesn't."""
+		in `gcline` would cause the head to cross the thread, or None if it doesn't
+		cross at all or if it exactly intersects an endpoint."""
 		if head_loc.x == gcline.x and head_loc.y == gcline.y:
 			return None
 		head_traj = GSegment(head_loc.as2d(), head_loc.copy(x=gcline.x, y=gcline.y, z=0))
+
+		# -- debugging --
+		self._debug = dict(gcline=gcline.copy(), head_loc=head_loc.copy(),
+										 head_set_by=self.head_set_by.copy(),
+										 prev_loc=self.prev_loc.copy(),
+										 prev_set_by=self.prev_set_by.copy(),
+										 head_traj=head_traj.copy(),
+										 thread_path=self.thread_path.copy())
 		if gcline.lineno == 1285:
 			print(f'Line: {gcline}, head: {head_loc}')
 			print(f'Head set by: {self.head_set_by}')
@@ -317,8 +428,13 @@ class Ender3(GCodePrinter):
 			print(f'Prev head set by: {self.prev_set_by}')
 			print(f'Traj: {head_traj}')
 			print(f'Thread: {self.thread_path}')
+		# -- debugging --
+
 		#Assuming here that the ring is synced to the bed movement
-		return self.thread_path.as2d().intersection(head_traj)
+		if isec := self.thread_path.as2d().intersection(head_traj):
+			return isec.copy(z=head_loc.z)
+
+		return None
 
 
 
