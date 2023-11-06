@@ -11,6 +11,36 @@ from fastcore.basics import ifnone
 from rich.console import Console
 rprint = Console(style="on #272727").print
 
+def parse_gcline(line) -> tuple[str|None, dict, str|None]:
+	"""Parse a single line of gcode into its code, named arguments, and comment."""
+	code = None
+	args:dict[str|None, Number|str|None] = {}
+	comment = None
+
+
+	if line:
+		cmd, comment = re.match('^(.*?)\s*(?:;\s*(.*?))?\s*$', line).groups()
+
+		if cmd: #Not a comment-only line
+			#Get the code and the arguments
+			parts = cmd.split(maxsplit=1)
+			code = parts[0].upper()
+
+			#If there are arguments for the code
+			if len(parts) > 1:
+
+				#Special case for setting message on LCD, no named args
+				if code == 'M117':
+					args[None] = parts[1]
+
+				else:
+					for arg in parts[1].upper().split():
+						argname, argval = re.match('([A-Z])?(.*)?', arg).groups()
+						argval = None if argval == '' else float(argval) if '.' in argval else int(argval)
+						args[argname or None] = argval
+
+	return code, args, comment
+
 #Use total_ordering to allow comparing based on line number
 @total_ordering
 class GCLine:
@@ -29,39 +59,8 @@ class GCLine:
 
 		self.relative_extrude = None
 
-		#Comment-only or empty line
-		if not self.code and self.line in ('', ';'):
-			return
-
-		if ';' in line:
-			cmd, cmt = re.match('^(.*?)\s*;\s*(.*?)\s*$', line).groups()
-			if not self.comment: self.comment = cmt
-		else:
-			cmd = line
-
-		if cmd: #Not a comment-only line
-			#Get the actual code and the arguments
-			parts = cmd.split(maxsplit=1)
-			self.code = parts[0].upper()
-
-			if len(parts) > 1:
-				#Special case for setting message on LCD, no named args
-				if self.code == 'M117':
-					self.args[None] = parts[1]
-				else:
-					#Process the rest of the arguments
-					for arg in parts[1].split():
-						if re.match('[A-Za-z]', arg[0]):
-							if arg[1:] is not None and arg[1:] != '':
-								try:
-									self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
-								except ValueError:
-									sys.stderr.write("GCLine: %s\n" % line)
-									raise
-							else:
-								self.args[arg[0]] = None
-						else:
-							self.args[None] = arg
+		if not self.code:
+			self.code, self.args, self.comment = parse_gcline(line)
 
 		if not (self.comment or self.code):
 			raise ValueError(f'Missing a code for line: "{self}"')
