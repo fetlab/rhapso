@@ -19,17 +19,20 @@ from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, ang_dist, eps
 from geometry.angle import Angle
 
-class GCodePrinter:
-	"""Simulates a printer in order to generate gcode."""
+class BasicGCodePrinter:
+	"""Simulates a basic printer. Maintains state and emits lines converting
+	absolute extrusion to relative."""
 	def __init__(self, *args, **kwargs):
 
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
-		self.e          = 0
-		self.head_loc   = GPoint(0, 0, 0)
-		self.head_set_by = None
-		self.prev_loc = GPoint(0,0,0)
-		self.prev_set_by = None
+		self.extrude_mode = 'relative'
+		self.e            = 0       #Keep track of absolute extrusion amount, independent of extrude_mode
+		self.prev_e       = None
+		self.head_loc     = GPoint(0,0,0)
+		self.head_set_by  = None
+		self.prev_loc     = None
+		self.prev_set_by  = None
 
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
@@ -37,9 +40,11 @@ class GCodePrinter:
 		self.add_codes('G28',      action=self.gcfunc_auto_home)
 		self.add_codes('G0', 'G1', action=self.gcfunc_move_axis)
 		self.add_codes('G92',      action=self.gcfunc_set_axis_value)
+		self.add_codes('M82',      action=self.gcfunc_set_absolute_extrude)
+		self.add_codes('M83',      action=self.gcfunc_set_relative_extrude)
 
 
-	#Create attributes which call Printer.attr_changed on change
+	#Create attributes which call self.attr_changed() on change
 	x = property(**attrhelper('head_loc.x'))
 	y = property(**attrhelper('head_loc.y'))
 	z = property(**attrhelper('head_loc.z'))
@@ -48,7 +53,7 @@ class GCodePrinter:
 	def xy(self): return self.x, self.y
 
 	def __repr__(self):
-		return f'{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z})'
+		return f'{self.__class__.__name__}(x={self.x}, y={self.y}, z={self.z}, e={self.e}, mode={self.extrude_mode})'
 
 
 	def add_codes(self, *codes, action:str|Callable):
