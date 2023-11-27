@@ -1,4 +1,5 @@
 import logging
+
 import plotly.graph_objects as go
 from Geometry3D import Plane, distance, Vector
 from geometry import GPoint, GSegment, GPolyLine
@@ -121,10 +122,10 @@ class TLayer(Cura4Layer):
 		self.preamble, self.geometry.segments, self.postamble = gcode2segments(self.lines, self.z)
 
 		#Find the outline by using Cura comments for "wall-outer"
-		for part, lines in self.parts.items():
-			if 'type:wall-outer' in (lines[0].comment or '').lower():
-				self.geometry.outline.extend(
-						[line.segment for line in lines if line.is_xyextrude])
+		# for part, lines in self.parts.items():
+		# 	if 'type:wall-outer' in (lines[0].comment or '').lower():
+		# 		self.geometry.outline.extend(
+		# 				[line.segment for line in lines if line.is_xyextrude])
 
 
 
