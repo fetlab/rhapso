@@ -124,9 +124,10 @@ class GCodePrinter:
 			if gcline.z: self.z = gcline.z
 
 		if 'E' in gcline.args:
+			#G92: set position in software without any physical movement
 			if gcline.code == 'G92':
-				self.prev_e = self.e
 				self.e = gcline.args['E']
+				self.prev_e = self.e
 
 			elif gcline.code in ('G0', 'G1'):
 				self.prev_e = self.e
@@ -134,21 +135,8 @@ class GCodePrinter:
 					self.e += gcline.args['E']
 				else: #absolute extrude mode
 					self.e = gcline.args['E']
-		#Track head location
-		if gcline.x: self.x = gcline.x
-		if gcline.y: self.y = gcline.y
-		if gcline.z: self.z = gcline.z
 
-		if any((gcline.x, gcline.y, gcline.z)):
-			self.head_set_by = gcline
+				#Return the same line but with relative extrude
+				return [gcline.copy(args={'E': self.e - self.prev_e})]
 
-		if 'E' in gcline.args:
-			#G92: software set value
-			if gcline.code == 'G92':
-				self.e = gcline.args['E']
 
-			#A normal extruding line; we need to use the relative extrude value
-			# since our lines get emitted out-of-order
-			else:
-				self.e += gcline.relative_extrude
-				return [gcline.copy(args={'E': self.e})]
