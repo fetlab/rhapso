@@ -110,17 +110,16 @@ class GCLine:
 		return self.construct()
 
 
-	@property
-	def is_move(self):
-		"""Return True if it's a move in some axis (using Marlin's definition which
-		includes X Y Z A B C U V W), else False."""
-		return self.code in ('G0', 'G1') and any(ax in self.args for ax in 'XYZABCUVW')
+	def is_move(self, axes='XYZABCUVW'):
+		"""Return True if it's a move in some axis (default: using Marlin's
+		definition which includes X Y Z A B C U V W), else False."""
+		return self.code in ('G0', 'G1') and any(ax in self.args for ax in axes)
 
 
 	@property
 	def is_xymove(self):
 		"""Return True if it's a move in the X/Y plane, else False."""
-		return self.code in ('G0', 'G1') and ('X' in self.args or 'Y' in self.args)
+		return self.is_move('XY')
 
 
 	@property
