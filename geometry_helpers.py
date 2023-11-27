@@ -135,9 +135,13 @@ def seg_combine(segs):
 
 
 
-def gcode2segments(gclines:GCLines, z):
+def gcode2segments(gclines:GCLines, initial_z=0):
+	"""Convert a list of gcode lines to GSegments. Segments will use `initial_z`
+	until a line with a `Z` parameter is encountered."""
 	from gcode_printer import GCodePrinter
 	printer = GCodePrinter()
+	if initial_z != printer.z:
+		printer.z = initial_z
 
 	gclines = gclines.copy()
 	preamble = GCLines()
@@ -149,15 +153,18 @@ def gcode2segments(gclines:GCLines, z):
 
 	#Put all beginning non-movement lines into preamble
 	while gclines and not gclines.first.is_xymove:
-		preamble.append(gclines.popidx(0))
+		preamble.extend(printer.execute_gcode(gclines.popidx(0)))
 
 	for line in gclines:
 		printer.execute_gcode(line)
-		if line.is_xymove:
+		if line.is_move('XYZ'):
 			if printer.prev_loc is not None:
+				ext_amt = None
+				if line.is_extrude:
+					ext_amt = (printer.e - printer.prev_e) if printer.prev_e is not None else None
 				segments.append(
-					GSegment(printer.prev_loc, printer.head_loc, z=z,
-						extrude=line.args.get('E'),
+					GSegment(printer.prev_loc, printer.head_loc, #z=z,
+						extrude_amount=ext_amt or None,
 						prev_lines=extra,
 						line_params={k:v for k,v in vars(line).items() if k in keepvars},
 						line_args={k:v for k,v in line.args.items() if k not in 'XYZE'}))
