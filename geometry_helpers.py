@@ -134,7 +134,41 @@ def seg_combine(segs):
 	return r
 
 
-def gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
+
+def gcode2segments(gclines:GCLines, z):
+	from gcode_printer import BasicGCodePrinter
+	printer = BasicGCodePrinter()
+
+	gclines = gclines.copy()
+	preamble = GCLines()
+	extra = GCLines()
+	segments:list[GSegment] = []
+
+	#Extra variables to keep for this line
+	keepvars = ('lineno', 'comment')
+
+	#Put all beginning non-movement lines into preamble
+	while gclines and not gclines.first.is_xymove:
+		preamble.append(gclines.popidx(0))
+
+	for line in gclines:
+		printer.execute_gcode(line)
+		if line.is_xymove:
+			if printer.prev_loc is not None:
+				segments.append(
+					GSegment(printer.prev_loc, printer.head_loc, z=z,
+						extrude=line.args.get('E'),
+						prev_lines=extra,
+						line_params={k:v for k,v in vars(line).items() if k in keepvars},
+						line_args={k:v for k,v in line.args.items() if k not in 'XYZE'}))
+				extra = GCLines()
+		else:
+			extra.append(line)
+
+	return preamble, segments, extra
+
+
+def _gcode2segments(lines:GCLines, z, keep_moves_with_extrusions=True):
 	"""Turn GCLines into GSegments. Keep in mind that the first line denotes the start
 	point only, and the second line denotes the action (e.g. extrude) *and* the end
 	point. Mark extrusion GSegments. Return preamble, segments, postamble.
