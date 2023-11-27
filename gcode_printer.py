@@ -78,7 +78,8 @@ class GCodePrinter:
 
 
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
-		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
+		out = self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs)
+		return [gcline] if out is None else out
 
 
 	def execute_gcode(self, gcline:GCLine|GCLines|list[GCLine|None]|None, **kwargs) -> list[GCLine]:
