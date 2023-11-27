@@ -97,11 +97,13 @@ class GCodePrinter:
 	#M82
 	def gcfunc_set_absolute_extrude(self, gcline:GCLine, **kwargs):
 		self.extrude_mode = 'absolute'
+		return []
 
 
 	#M83
 	def gcfunc_set_relative_extrude(self, gcline:GCLine, **kwargs):
 		self.extrude_mode = 'relative'
+		return []
 
 
 	#G0, G1
