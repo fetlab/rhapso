@@ -34,7 +34,6 @@ class GSegment(Segment):
 		self.info = kwargs
 
 
-	@property
 	def to_gclines(self):
 		"""Return a GCLine representing a move to the end point of this segment.
 		`self.info` will be passed as kwargs to GCLine()."""
