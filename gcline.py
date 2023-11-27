@@ -1,11 +1,12 @@
 from __future__ import annotations
 import re, sys
+from typing import TypedDict
 from functools import total_ordering
 from collections import UserList
 from copy import copy
 from geometry import GPoint, GSegment
 from geometry.angle import Angle
-from util import deep_update, ReadOnlyDict
+from util import deep_update, ReadOnlyDict, Number
 from fastcore.basics import ifnone
 
 from rich.console import Console
@@ -41,10 +42,15 @@ def parse_gcline(line) -> tuple[str|None, dict, str|None]:
 
 	return code, args, comment
 
+
 #Use total_ordering to allow comparing based on line number
 @total_ordering
 class GCLine:
-	def __init__(self, line='', lineno='', code=None, args={}, comment=None, fake=False, meta=None):
+	#The order that arguments should be output with construct()
+	arg_order = 'XYZAE'
+	_arg_order = {arg: i for i, arg in enumerate(arg_order)}
+
+	def __init__(self, line='', lineno='', code=None, args={}, comment=None, fake=False, meta=None, **kwargs):
 		"""Parse a single line of gcode into its code and named
 		arguments."""
 		self.line    = line.strip()
@@ -57,8 +63,6 @@ class GCLine:
 
 		assert not any(isinstance(arg, Angle) for arg in args.values())
 
-		self.relative_extrude = None
-
 		if not self.code:
 			self.code, self.args, self.comment = parse_gcline(line)
 
@@ -67,6 +71,7 @@ class GCLine:
 			self.comment = ''
 
 		self.args = ReadOnlyDict(self.args)
+
 
 
 	def copy(self, add_comment='', **kwargs):
@@ -86,7 +91,6 @@ class GCLine:
 				fake    = kwargs.get('fake',    self.fake),
 				meta    = kwargs.get('meta',    self.meta),
 		)
-		gcline.relative_extrude = self.relative_extrude
 		return gcline
 
 
@@ -172,7 +176,8 @@ class GCLine:
 
 		if self.code:
 			out.append(self.code)
-		for arg, val in args.items():
+		for arg in sorted(args.keys(), key=lambda arg: self._arg_order.get(arg, float('inf'))):
+			val = args[arg]
 			out.append(
 					(arg or "") +
 					("" if val is None
@@ -385,11 +390,15 @@ def split_gcline(start:GPoint, line:GCLine, at:GPoint) -> list[GCLine]:
 	# split location.
 	seg = GSegment(start, end)
 
+	if at.z != seg.start_point.z != seg.end_point.z:
+		rprint("[yellow]WARNING:[/] Z coordinates of segment and split location not all the same!")
+
 	if at not in seg:
 		raise ValueError(f"Requested split location {at} isn't on segment {seg}")
 
 	#If the line is an extruding one, we have to update the 'E' args for each
 	# split accordingly.
+	s1e = s2e = None
 	if line.is_extrude:
 		#If the line has the `relative_extrude` property and it's not the same as
 		# the E argument, then the gcode is in absolute extrusion mode.
@@ -409,13 +418,18 @@ def split_gcline(start:GPoint, line:GCLine, at:GPoint) -> list[GCLine]:
 		else:
 			raise ValueError("No `relative_extrude` propery for line, can't update extrusion value.")
 
+	seg2_frac = at.distance(end)/start.distance(end)
+
 	#First split: starts at `start` (implicit) and ends at `at`.
 	# Copy all the args from `line` then replace destination X/Y with `at`,
 	# and update the extrusion amount if needed.
 	split1 = line.copy(args={'X': at.x, 'Y': at.y, **({'E':s1e} if s1e else {})},
-										 add_comment='(split 1)')
+										 add_comment='(split 1)',
+										lineno=line.lineno)
 
 	#Second split: starts at `at` and ends where `line` ended. Update extrusion.
-	split2 = line.copy(args=({'E':s2e} if s2e else {}), add_comment='(split 2)')
+	split2 = line.copy(args=({'E':s2e} if s2e else {}),
+										add_comment='(split 2)',
+										lineno=line.lineno+seg2_frac if isinstance(line.lineno, (int,float)) else line.lineno)
 
 	return [split1, split2]
