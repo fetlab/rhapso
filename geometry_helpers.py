@@ -136,8 +136,8 @@ def seg_combine(segs):
 
 
 def gcode2segments(gclines:GCLines, z):
-	from gcode_printer import BasicGCodePrinter
-	printer = BasicGCodePrinter()
+	from gcode_printer import GCodePrinter
+	printer = GCodePrinter()
 
 	gclines = gclines.copy()
 	preamble = GCLines()

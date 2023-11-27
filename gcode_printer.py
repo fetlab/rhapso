@@ -19,7 +19,7 @@ from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, ang_dist, eps
 from geometry.angle import Angle
 
-class BasicGCodePrinter:
+class GCodePrinter:
 	"""Simulates a basic printer. Maintains state and emits lines converting
 	absolute extrusion to relative."""
 	def __init__(self, *args, **kwargs):

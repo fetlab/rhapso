@@ -15,14 +15,14 @@ from geometry.utils import ang_diff, circle_intersection, sign
 from geometry_helpers import traj_isec
 from bed            import Bed
 from ring           import Ring
-from gcode_printer  import BasicGCodePrinter
+from gcode_printer  import GCodePrinter
 from gcline         import GCLine, comments, comment, split_gcline
 from logger         import rprint
 from util           import Saver, Number
 from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 
-class Ender3(BasicGCodePrinter):
+class Ender3(GCodePrinter):
 	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
 		self.config = config
 		self.ring_config = get_ring_config(config)
