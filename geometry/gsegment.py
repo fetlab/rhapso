@@ -1,106 +1,67 @@
 from __future__ import annotations
 from copy import copy
-from typing import Collection, Set, List
+from typing import Collection, Sequence
 from Geometry3D import Vector, Segment, Point, Line, angle
 from fastcore.basics import listify
 from .gpoint import GPoint
 from .gcast import gcast
 from .utils import distance_linelike_point
 from .angle import Angle, atan2
+from util import Number, deep_update
 
 def list2gsegments(points:Collection):
 	return [GSegment(s, e) for s,e in points]
 
 
+
 class GSegment(Segment):
-	def __init__(self, a, b=None, z=None, gc_lines=None, is_extrude=False, **kwargs):
-		"""Instantiate a GSegment.
-
-		If the first argument is a Segment, the second argument will be ignored and
-		a copy of the segment will be returned.
-
-		Otherwise, the first two arguments can be any combination of Point, GCLine,
-		or tuple/list (passed to the GPoint constructor).
-		"""
-		#Label whether this is an extrusion move or not
-		self.is_extrude = is_extrude
-
-		self.printed = False
-
-		#Save the movement lines of gcode
-		self.gc_line1 = None
-		self.gc_line2 = None
-
-		#Save *all* lines of gcode involved in this segment
-		self.gc_lines = gc_lines
-
-		#Argument |a| is a GSegment: instantiate a copy
-		if isinstance(a, Segment):
-			if b is not None:
-				raise ValueError('Second argument must be None when first is a Segment')
-			copyseg = a
-			#Make copies of the start/end points to ensure we avoid accidents
-			a = copy(kwargs.get('start_point', copyseg.start_point))
-			b = copy(kwargs.get('end_point',   copyseg.end_point))
-			# z = a.z if z is None else z #Why was I doing this?
-			gc_lines   = getattr(copyseg, 'gc_lines', []) if gc_lines is None else gc_lines
-			is_extrude = getattr(copyseg, 'is_extrude', is_extrude)
-
-		#If instantiating a copy, |a| and |b| have been set from the passed GSegment
-		if isinstance(a, Point):
-			point1 = a if isinstance(a, GPoint) else GPoint(a)
-		elif type(a).__name__ == 'GCLine': #Using type() rather than isinstance() to avoid circular import issues
-			point1 = GPoint(a, z=z)
-			self.gc_line1 = a
-			self.gc_lines.append(a)
-		elif isinstance(a, (tuple,list)):
-			point1 = GPoint(*a)
-		else:
-			print(a, type(a), type(a) == GSegment)
-			raise ValueError("Attempt to instantiate a GSegment with argument |a| as "
-					f"type {type(a)}, but only <GSegment>, <Point>, <GCLine>, <tuple> and <list> are supported.\n"
-					" If this occurrs in a Jupyter notebook, it's because reloading messes things up. Try restarting the kernel.")
-
-		if isinstance(b, Point):
-			point2 = b if isinstance(b, GPoint) else GPoint(b)
-		elif type(b).__name__ == 'GCLine': #Using type() rather than isinstance() to avoid circular import issues
-			point2 = GPoint(b, z=z)
-			self.gc_line2 = b
-			self.gc_lines.append(b)
-		elif isinstance(b, (tuple,list)):
-			point2 = GPoint(*b)
-		else:
-			raise ValueError(f"Arg b is type {type(b)} = {b} but that's not supported!")
-
-		#Ensure that we're not going to overwrite anything
-		if point1 is a: point1 = point1.copy()
-		if point2 is b: point2 = point2.copy()
-
-		if z is not None:
-			point1.z = point2.z = z
+	def __init__(self, start:Sequence[Number]|GPoint,
+							end:Sequence[Number]|GPoint, z=None, extrude_amount=None, **kwargs):
+		"""Create a GSegment. `kwargs` will be available as `.info`"""
+		point1 = start.copy(z=z) if isinstance(start, GPoint) else GPoint(*start, z=z)
+		point2 =   end.copy(z=z) if isinstance(  end, GPoint) else GPoint(  *end, z=z)
 
 		if point1 == point2:
 			raise ValueError("Cannot initialize a Segment with two identical Points\n"
-					f"Init args: a={a}, b={b}, z={z}")
+					f"Init args: {start=}, {end=}, {z=}")
 
 		self.line = Line(point1, point2)
 		self.start_point = point1
 		self.end_point   = point2
 
-		#Sort any gcode lines by line number
-		if self.gc_lines:
-			self.gc_lines.sort()
+		self.extrude_amount = extrude_amount
+		self.printed = False
+		self.info = kwargs
+
+
+	@property
+	def to_gclines(self):
+		"""Return a GCLine representing a move to the end point of this segment.
+		`self.info` will be passed as kwargs to GCLine()."""
+		from gcline import GCLine
+		code = 'G1' if self.is_extrude else 'G0'
+		args = {'X':self.end_point.x, 'Y':self.end_point.y, 'Z':self.end_point.z}
+		return list(self.info.get('prev_lines', [])) + [
+				GCLine(code=code,
+							 args=deep_update(args, self.info.get('line_args', {}),
+												 {'E': self.extrude_amount} if self.is_extrude else {}),
+				**self.info.get('line_params', {}))]
+
+
+	@property
+	def is_extrude(self) -> bool:
+		return bool(self.extrude_amount)
 
 
 	def __repr__(self):
-		if not(self.gc_line1 and self.gc_line2):
-			return "<{}←→{} ({:.2f} mm)>".format(self.start_point, self.end_point,
-					self.length)
-		return "<{}[{:>2}] {}:{}←→{}:{} ({:.2f} mm)>".format(
+		#if not(self.gc_line1 and self.gc_line2):
+			# return "<{}←→{} ({:.2f} mm)>".format(self.start_point, self.end_point,
+			# 		self.length)
+		return "<{}[{:>2}] {}←→{} ({:.2f} mm)>".format(
 				'S' if self.printed else 's',
-				len(self.gc_lines),
-				self.gc_line1.lineno, self.start_point,
-				self.gc_line2.lineno, self.end_point,
+				len(self.info.get('prev_lines', [])),
+				self.start_point,
+				self.end_point,
 				self.length)
 
 
@@ -118,7 +79,7 @@ class GSegment(Segment):
 	def length(self): return super().length()
 
 
-	def intersecting(self, check, ignore:Point | Collection[Point]=()) -> Set[Segment]:
+	def intersecting(self, check, ignore:Point | Collection[Point]=()) -> set[Segment]:
 		"""Return objects in check that this GSegment intersects with, optionally
 		ignoring intersections with Points in ignore."""
 		ignore = [None] + listify(ignore)
@@ -141,21 +102,13 @@ class GSegment(Segment):
 	def set_z(self, z):
 		"""Set both endpoints of this Segment to a new z."""
 		return self.copy(z=z)
-		# if self.start_point.z == z and self.end_point.z == z:
-		# 	return self
-		# self.start_point.z = z
-		# self.end_point.z = z
-		# self.line = Line(self.start_point, self.end_point)
-		# return self
 
 
 	def copy(self, start_point=None, end_point=None, z=None, **kwargs):
-		seg = GSegment(self, None,
-			start_point=start_point or self.start_point,
-			end_point=end_point     or self.end_point,
-			z=z, gc_lines=self.gc_lines, is_extrude=self.is_extrude, **kwargs)
-		seg.gc_line1 = self.gc_line1
-		seg.gc_line2 = self.gc_line2
+		seg = GSegment(
+			start_point or self.start_point,
+			end_point   or self.end_point,
+			z=z, **self.info)
 
 		return seg
 
@@ -199,55 +152,32 @@ class GSegment(Segment):
 			return self.start_point + self.line.dv.normalized() * dist
 
 
-	def split_at(self, split_loc:GPoint) -> List:
+	def split_at(self, split_loc:GPoint):
 		"""Return a set of two GSegments resulting from splitting this one into two
 		pieces at `location`."""
+		from gcline import GCLines
+
 		if split_loc not in self:
 			raise ValueError(f"Requested split location {split_loc} isn't on {self}")
 
-		#Create the new segment pieces
+		#Create the new segment pieces; drop any extra gcode from the second since
+		# it should stay attached to the first
 		seg1 = self.copy(end_point   = split_loc)
 		seg2 = self.copy(start_point = split_loc)
+		seg2.info.pop('prev_lines', None)
 
-		#Update the wrapped gcode lines
-		if self.gc_line1 and self.gc_line2:
+		seg1_frac = seg1.length / self.length
+		seg2_frac = 1 - seg1_frac
 
-			#First segment
-			seg1_frac = seg1.length / self.length
-			seg1_args = {
-					'X': split_loc.x,
-					'Y': split_loc.y,
-					'E': self.gc_line2.args['E'] * seg1_frac,
-			}
-			if 'F' in self.gc_line2.args:
-				seg1_args['F'] = self.gc_line2.args['F']
+		seg2_lineno = seg2.info.get('line_params', {}).get('lineno')
+		if seg2_lineno is not None:
+			seg2.info['line_params']['lineno'] += seg2_frac
 
-			seg1.gc_line2 = self.gc_line2.__class__(
-					code=self.gc_line2.code,
-					args=seg1_args,
-					lineno=self.gc_line1.lineno+seg1_frac)
-			seg1.gc_line2.relative_extrude = seg1.gc_line1.relative_extrude * seg1_frac
-
-
-			#Second segment
-			seg2_frac = 1 - seg1_frac
-			seg2.gc_line1 = copy(seg1.gc_line2)
-			seg2.gc_line2 = self.gc_line2.copy(args={'E': self.gc_line2.args['E'] * seg2_frac})
-			seg2.gc_line2.relative_extrude *= seg2_frac
-
-			#Cleanup
-			seg1.gc_line1.fake = True
-			seg1.gc_line2.fake = True
-			seg2.gc_line1.fake = True
-			seg2.gc_line2.fake = True
-
-			seg1.gc_lines = copy(self.gc_lines)
-			seg1.gc_lines[self.gc_line1.lineno] = seg1.gc_line1
-			seg1.gc_lines[self.gc_line2.lineno] = seg1.gc_line2
-
-			seg2.gc_lines = copy(self.gc_lines)
-			seg2.gc_lines[self.gc_line1.lineno] = seg2.gc_line1
-			seg2.gc_lines[self.gc_line2.lineno] = seg2.gc_line2
+		#If this is an extruding segment, we need to split the extrusion amount
+		# proportionally by length
+		if self.is_extrude:
+			seg1.extrude_amount *= seg1_frac
+			seg2.extrude_amount *= seg2_frac
 
 		return [seg1, seg2]
 
