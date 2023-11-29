@@ -15,5 +15,13 @@ class Cura4Layer(Layer):
 		super().__init__(lines, layernum)
 		parts = listsplit(lines,
 				lambda l: l.line.startswith(';TYPE:'), keepsep='>', minsize=1)
-		self.parts = {m.group(1) if (m:=re.search('TYPE:(.*)',lines[0].line)) else 'NONE': lines
-								for lines in parts}
+
+		self.parts = {}
+
+		for lines in parts:
+			part_name = m.group(1) if (m:=re.search('TYPE:(.*)',lines[0].line)) else 'NONE'
+			self.parts.setdefault(part_name, []).extend(lines)
+
+		for part, lines in self.parts.items():
+			for line in lines:
+				line.meta['type'] = part
