@@ -85,4 +85,20 @@ def load_config(config_file:str) -> dict:
 	except ImportError:
 		raise ImportError(f"Can't load expected class {classname} from {module_name} for config file {config_file}")
 	config['printer_class'] = _class
+
+	#Find any keys in the config dict which end with '_gcode' and convert
+	# every line in them to a GCLine
+	def str2gcode(d):
+		if isinstance(d, dict):
+			for k,v in d.items():
+				if k.endswith('_gcode'):
+					d[k] = [GCLine(l) for l in listify(v)]
+				else:
+					str2gcode(v)
+		elif isinstance(d, list):
+			for v in d:
+				str2gcode(v)
+	str2gcode(config)
+
+
 	return config
