@@ -214,7 +214,7 @@ class Threader:
 				anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if next_anchor in seg]
 				if not anchorsegs: raise ValueError(f'No unprinted segments overlap anchor {next_anchor}')
 				with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
-					s.add(anchorsegs, anchoring=True)
+					s.add(anchorsegs, anchor=next_anchor)
 					#Update the printer state with the new anchor (maintaining the same thread direction)
 					self.printer.move_thread_to(next_anchor)
 
