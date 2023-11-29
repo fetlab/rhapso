@@ -49,11 +49,22 @@ class GSegment(Segment):
 		from gcline import GCLine
 		code = 'G1' if self.is_extrude else 'G0'
 		args = {'X':self.end_point.x, 'Y':self.end_point.y, 'Z':self.end_point.z}
-		return list(self.info.get('prev_lines', [])) + [
-				GCLine(code=code,
-							 args=deep_update(args, self.info.get('line_args', {}),
-												 {'E': self.extrude_amount} if self.is_extrude else {}),
-				**self.info.get('line_params', {}))]
+
+		#Using `list` to make a copy so we can append; start with any lines
+		# appearing before this gcode move
+		lines = list(self.info.get('prev_lines', []))
+
+		#Construct a gcode line representing the move
+		lines.append(GCLine(code=code,
+												args=deep_update(args,
+																				 self.info.get('line_args', {}),
+																				 {'E': self.extrude_amount} if self.is_extrude else {}),
+												**self.info.get('line_params', {})))
+
+		#Add any lines that should come after
+		lines.extend(self.info.get('post_lines', []))
+
+		return lines
 
 
 	@property
