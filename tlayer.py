@@ -270,17 +270,18 @@ class TLayer(Cura4Layer):
 
 				if skip in self.parts and gcseg.gc_lines.data[-1] in self.parts[skip]:
 					inter = None
+					isec = None
 				else:
-					inter = gcseg.intersection(tseg)
+					isec = gcseg.intersection(tseg)
 
-				if inter is None:
+				if isec is None:
 					isecs['nsec_segs'].add(gcseg)
 				else:
 					isecs['isec_segs'].add(gcseg)
-					if isinstance(inter, GPoint):
-						inter = GPoint(inter)
-						isecs['isec_points'].add(inter)
-					elif isinstance(inter, GSegment):
-						isecs['isec_points'].update(map(GPoint, inter[:]))
+					if isinstance(isec, GPoint):
+						isec = GPoint(isec)
+						isecs['isec_points'].add(isec)
+					elif isinstance(isec, GSegment):
+						isecs['isec_points'].update(map(GPoint, isec[:]))
 
 			self.model_isecs[tseg] = isecs
