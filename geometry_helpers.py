@@ -149,7 +149,7 @@ def gcode2segments(gclines:GCLines, initial_z=0):
 	segments:list[GSegment] = []
 
 	#Extra variables to keep for this line
-	keepvars = ('lineno', 'comment')
+	keepvars = ('lineno', 'comment', 'meta')
 
 	#Put all beginning non-movement lines into preamble
 	while gclines and not gclines.first.is_xymove:
