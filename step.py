@@ -20,7 +20,7 @@ class Step:
 		self.gcsegs:list[GSegment] = []
 		self.number = -1
 		self.valid = True
-		self.anchoring = False   #Does this step create a thread anchor?
+		self.anchor:GPoint|None = None   #Does this step create a thread anchor?
 		self.original_thread_path: GHalfLine = self.printer.thread_path.copy()
 		self.thread_path: GHalfLine|None = None
 		self.target:GPoint|None = None
@@ -98,14 +98,14 @@ class Step:
 		return gcode
 
 
-	def add(self, gcsegs:list[GSegment], anchoring=False):
+	def add(self, gcsegs:list[GSegment], anchor:GPoint|None=None):
 		"""Add the GSegments in `gcsegs` to the list of segments that should be
-		printed in this step. Set `anchoring` to True to add the `fixed` property to
-		each of the passed lines."""
+		printed in this step. Set `anchor` to the anchor point if this is an
+		anchoring step."""
 		rprint(f'Adding {len(unprinted(gcsegs))}/{len(gcsegs)} unprinted gcsegs to Step')
-		if anchoring: rprint(f"  -- This is a anchoring step (#{self.number})!")
+		if anchor: rprint(f"  -- This is a anchoring step (#{self.number})!")
 		for seg in unprinted(gcsegs):
-			self.anchoring = anchoring
+			self.anchor = anchor
 			self.gcsegs.append(seg)
 			seg.printed = True
 
