@@ -140,3 +140,127 @@ class GCodePrinter:
 				return [gcline.copy(args={'E': self.e - self.prev_e})]
 
 
+
+class ThreadGCodePrinter(GCodePrinter):
+	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
+		self.config = config
+		self.next_thread_path = initial_thread_path
+
+		#The current path of the thread: the current thread anchor and the
+		# direction of the thread.
+		self.thread_path: GHalfLine|None = None
+
+		super().__init__(*args, **kwargs)
+
+
+	def split_head_move(self, gcseg:GSegment, at:GPoint, split_type:str) -> list[GSegment]:
+		"""Split the print head movement represented by `gcseg` at the point `at`
+		according to `split_type` defined in the yaml file under
+		`head_crosses_thread`.
+
+		The `overlap_length` parameter in yaml is the ideal length of segment
+		crossing the thread. This function will divide the move segment into 2–5
+		parts, depending on the location of `at` on the segment:
+
+			If the segment is long enough, the parts are
+				(a)pproach - 1/2 of length after up/over/down (no changes)
+				(u)p       - 1/2 `overlap_length` (raise to `head_raise`)
+				(o)ver     - `overlap_length` long, centered on `at` (X; apply feedrate & multiply)
+				(d)own     - 1/2 `overlap_length`
+				(l)eave    - 1/2 of length after up/over/down
+
+			Examples where `overlap_length` = 4:
+
+				Before: --------X--------
+				After:  aaaauuooXooddllll
+				            ^ ^   ^ ^
+				Side view:
+											_____
+								____--  X  --____
+								aaaauuoooooddllll
+
+				--X----------
+				ooXooddllllll
+
+				--X--
+				ooXoo
+
+				X----
+				Xoodd
+
+				X--------
+				Xooddllll
+		"""
+		assert(self.thread_path is not None)
+
+		params = self.config['general'].get('head_crosses_thread', {})
+		if split_type not in params:
+			raise ValueError(f"Split type {split_type} not configured in yaml."
+											 f"Options are: {params.keys()}")
+
+		move_opts      = params[split_type]
+		len_up         = move_opts['up_length']
+		len_over       = move_opts['over_length']
+		len_down       = move_opts['down_length']
+
+		# Before: ----------X----------
+		# After:  aaaauuuuooXooddddllll
+		#             ^   ^   ^   ^
+		#             U   L   R   D
+		split_up    = gcseg.point_at_dist_from(len_over/2+len_up,   at, reverse=True)
+		split_left  = gcseg.point_at_dist_from(len_over/2,          at, reverse=True)
+		split_right = gcseg.point_at_dist_from(len_over/2,          at, reverse=False)
+		split_down  = gcseg.point_at_dist_from(len_over/2+len_down, at, reverse=False)
+
+		approach, up, down, right, over = [None]*4
+
+		if split_left in gcseg:
+			left, gcseg = gcseg.split_at(split_left)
+			gcseg.info['prev_lines'] = []    #Keep `prev_lines` with the first segment
+
+			# Now we might have aaaauuuu ooXoo...
+			if split_up in left:
+				approach, up = left.split_at(split_up)
+				up.info['prev_lines'] = []    #Keep `prev_lines` with the first segment
+
+			# or uuu ooXoo...
+			else:
+				up = left
+
+		if split_right in gcseg:
+			gcseg, right = gcseg.split_at(split_right)
+			gcseg.info['post_lines'] = []   #Keep `post_lines` with the last segment
+			# Now we might have ...ooXoo ddddllll
+			if split_down in right:
+				down, leave = right.split_at(split_down)
+				down.info['post_lines'] = []   #Keep `post_lines` with the last segment
+			# or ...ooXoo ddd
+			else:
+				down = right
+
+		over = gcseg
+
+		#Now we have the splits, apply any options to split segments
+		opt_head_raise = move_opts.get('head_raise',       0)
+		opt_ext_mult   = move_opts.get('extrude_multiply', 1)
+		opt_feedrate   = move_opts.get('move_feedrate',    None)
+		opt_pre_gcode  = move_opts.get('pre_gcode',        [])
+		opt_post_gcode = move_opts.get('post_gcode',       [])
+
+		#Raise the print head
+		if up is not None:
+			up.end_point.z += opt_head_raise
+		over.start_point.z += opt_head_raise
+		over.end_point.z += opt_head_raise
+
+		#Multiply the extrude amount and change feedrate
+		if over.is_extrude:
+			over.extrude_amount *= opt_ext_mult
+		if opt_feedrate is not None:
+			over.info.setdefault('line_args', {})['F'] = opt_feedrate
+
+		#Append pre- and post- gcode
+		over.info[ 'pre_lines'].append(opt_pre_gcode)
+		over.info['post_lines'].append(opt_post_gcode)
+
+		return [seg for seg in (approach, up, over, down, leave) if seg is not None]
