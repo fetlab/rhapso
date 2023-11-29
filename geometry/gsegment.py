@@ -1,4 +1,7 @@
+#Avoid circular imports for type checking; see https://adamj.eu/tech/2021/05/13/python-type-hints-how-to-fix-circular-imports/
 from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from gcline import GCLine
 
 from copy            import copy
 from typing          import Collection, Sequence
@@ -40,7 +43,7 @@ class GSegment(Segment):
 			), kwargs)
 
 
-	def to_gclines(self):
+	def to_gclines(self) -> list[GCLine]:
 		"""Return a GCLine representing a move to the end point of this segment.
 		`self.info` will be passed as kwargs to GCLine()."""
 		from gcline import GCLine
