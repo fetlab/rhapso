@@ -1,13 +1,14 @@
 from __future__ import annotations
-from copy import copy
-from typing import Collection, Sequence
-from Geometry3D import Vector, Segment, Point, Line, angle
+
+from copy            import copy
+from typing          import Collection, Sequence
 from fastcore.basics import listify
-from .gpoint import GPoint
-from .gcast import gcast
-from .utils import distance_linelike_point
-from .angle import Angle, atan2
-from util import Number, deep_update
+from Geometry3D      import Vector, Segment, Point, Line, angle
+from util            import Number, deep_update
+from .gpoint         import GPoint
+from .gcast          import gcast
+from .utils          import distance_linelike_point
+from .angle          import Angle, atan2
 
 def list2gsegments(points:Collection):
 	return [GSegment(s, e) for s,e in points]
