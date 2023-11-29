@@ -268,8 +268,7 @@ class TLayer(Cura4Layer):
 			for gcseg in self.geometry.segments:
 				if not gcseg.is_extrude: continue
 
-				if skip in self.parts and gcseg.gc_lines.data[-1] in self.parts[skip]:
-					inter = None
+				if gcseg.info['line_params']['meta']['type'] == skip:
 					isec = None
 				else:
 					isec = gcseg.intersection(tseg)
