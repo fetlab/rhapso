@@ -32,7 +32,12 @@ class GSegment(Segment):
 
 		self.extrude_amount = extrude_amount
 		self.printed = False
-		self.info = kwargs
+		self.info = deep_update(dict(
+			prev_lines  = [],
+			post_line   = [],
+			line_args   = {},
+			line_params = {},
+			), kwargs)
 
 
 	def to_gclines(self):
