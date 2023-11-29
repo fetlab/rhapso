@@ -3,7 +3,6 @@ from copy import deepcopy
 from geometry import GSegment, GPoint, GHalfLine
 from geometry.utils import ang_diff
 from gcline import GCLine, comment
-from gcode_printer import GCodePrinter
 from util import Saver, unprinted, Number
 from logger import rprint, rich_log
 from geometry.angle import Angle
@@ -33,7 +32,7 @@ class Step:
 		)
 
 
-	def gcode(self, gcprinter:GCodePrinter) -> list:
+	def gcode(self, gcprinter) -> list:
 		"""Render the gcode involved in this Step, returning a list of GCLines.
 			There are two possibilities:
 				1. Thread movement: the angle of the thread has changed. We need to
@@ -65,35 +64,52 @@ class Step:
 			else:
 				if self.target is None:
 					raise ValueError('No gcsegs and no target')
+
+				### TODO ###
+				# Need to check to see if the thread move would cross the current head
+				# position and do something if so.
+				### END TODO ###
+
 				return gcprinter.set_thread_path(self.thread_path, self.target)
 
 
+		#If we got here, there are gcsegs, so the thread doesn't move, but the head does
+
 		#Sort gcsegs by the first gcode line number in each
-		self.gcsegs.sort(key=lambda s:s.gc_lines.first.lineno)
+		gcsegs = self.gcsegs.sorted(key=lambda s:s.gc_lines.first.lineno)
 
-		gcode = []
-		for seg in self.gcsegs:
-			#In a GSegment with more than two gc_lines, there is always one or more
-			# X/Y Move lines, but only ever one Extrude line, which is always the
-			# last line. Execute every line, as the XY move will put the head in the
-			# right place for the extrude.
-			if len(seg.gc_lines) > 2:
-				gcode.extend(gcprinter.execute_gcode(seg.gc_lines.data[:-1]))
-				extrude_line = seg.gc_lines.data[-1]
+		#Find missing segments: see if the start point of each GSegment is the same
+		# as the end point of the preceeding one; if a segment is missing, create a
+		# new segment and add it to new_gcsegs
+		new_gcsegs = [gcsegs.pop(0)]
+		while gcsegs:
+			seg = gcsegs.pop(0)
+			s, e = new_gcsegs[-1].end_point, seg.start_point
+			if s != e:
+				new_gcsegs.append(GSegment(s, e))
+			new_gcsegs.append(seg)
+		gcsegs = new_gcsegs
 
-			#For GSegments with exactly two gc_lines
+		#Now gcsegs is a list of GSegments that will be executed during this
+		# Step - both extruding and non-extruding
+
+		#Split any moves that cross the thread and apply parameters
+		new_gcsegs = [gcsegs.pop(0)]
+		while gcsegs:
+			seg = gcsegs.pop(0)
+			if isec := gcprinter.thread_path.intersection(seg):
+				move_type = ('non_extruding' if not seg.is_extrude
+											else
+										 'anchor_fixing' if self.anchor else 'extruding')
+				new_gcsegs.extend(gcprinter.split_head_move(seg, isec, move_type))
 			else:
-				l1, extrude_line = seg.gc_lines.data
+				new_gcsegs.append(seg)
+		gcsegs = new_gcsegs
 
-				#The first line should never execute an extrusion move, but we might need
-				# to use its coordinates to position the print head in the right place.
-				if l1.is_xymove and gcprinter.xy != l1.xy:
-					if l1.is_xyextrude:
-						l1 = l1.as_xymove(fake=True)
-					gcode.extend(gcprinter.execute_gcode(l1))
-
-			assert(extrude_line.is_extrude)
-			gcode.extend(gcprinter.execute_gcode(extrude_line, anchoring=self.anchoring))
+		#Now generate gcode and execute it
+		gcode = []
+		for seg in gcsegs:
+			gcode.extend(seg.to_gclines())
 
 		return gcode
 
