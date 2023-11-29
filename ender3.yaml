@@ -83,34 +83,58 @@ general:
   initial_thread_angle: 90
 
   #Options for when the print head crosses the thread in different situations
+  # If the printed segment is long enough, the parts are:
+  #   (a)pproach - no changes
+  #   (u)p       - raise to `head_raise`
+  #   (o)ver     - centered on thread; operations in this order:
+  #                1. run any gcode in `pre_gcode`
+  #                2. execute move with Z raised by `head_raise` and
+  #                   feedrate and extrude multiply applied
+  #                3. run any gcode in `post_gcode`
+  #   (d)own     - lower to original height
+  #   (l)eave    - no changes
+  #
+  # The approach and leave parts are made of what is left of the segment after
+  # being split into up/over/down parts.
+  #
+  # Example where the length for `over` is set to 4, and `up` and `down` to 2:
+  #
+  #   Before: --------X--------
+  #   After:  aaaauuooXooddllll
+  #               ^ ^   ^ ^
+  #   Side view:
+  #                 _____
+  #           ____--  X  --____
+  #           aaaauuoooooddllll
+  #
   head_crosses_thread:
-    defaults: &head_crosses_thread_defaults
-      #How far to raise the head when it will cross the thread
-      head_raise: 1
-
-      #The ideal length of the head move as it crosses the thread; this will
-      # center the thread in this move. If the segment is shorter than this,
-      # the entire segment will be raised. If 0 or missing the head won't
-      # be raised.
-      overlap_length: 2
+    #Default lengths for up/over/down parts, in mm; override in below move
+    # types if needed
+    default_lengths: &default_lengths
+      up_length:   1
+      over_length: 2
+      down_length: 1
 
     #For explicit anchor-fixing moves, where the thread will be rotating with
     # the anchor as the pivot point
     anchor_fixing:
-      <<: *head_crosses_thread_defaults
+      <<: *default_lengths
+      head_raise: 1
       move_feedrate: 500
       extrude_multiply: 3
-      post_pause: 2
+      post_gcode:
+        - "G4 S2 ; Pause for 2 seconds"
 
     #For moves where filament will be extruded over the thread, but not as an anchor
     extruding:
-      <<: *head_crosses_thread_defaults
+      <<: *default_lengths
+      head_raise: 1
       extrude_multiply: 1
-      post_pause: 0
 
     #Any time the head crosses the thread while *not* extruding
     non_extruding:
-      <<: *head_crosses_thread_defaults
+      <<: *default_lengths
+      head_raise: 1
       move_feedrate: 500
 
 ring:
