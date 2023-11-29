@@ -116,7 +116,10 @@ class GSegment(Segment):
 		seg = GSegment(
 			start_point or self.start_point,
 			end_point   or self.end_point,
-			z=z, **self.info)
+			z=z,
+			extrude_amount=self.extrude_amount,
+			**self.info)
+		seg.printed = self.printed
 
 		return seg
 
