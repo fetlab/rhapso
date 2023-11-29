@@ -1,9 +1,11 @@
-from typing         import TypedDict
-from geometry       import GPoint
-from geometry.angle import Angle
-from util           import Number
-from importlib      import import_module
-from pathlib        import Path
+from typing          import TypedDict
+from fastcore.basics import listify
+from geometry        import GPoint
+from geometry.angle  import Angle
+from util            import Number
+from importlib       import import_module
+from pathlib         import Path
+from gcline          import GCLine
 import yaml
 
 BedConfig  = TypedDict(
