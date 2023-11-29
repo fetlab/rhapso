@@ -36,11 +36,21 @@ class GHalfLine(HalfLine):
 		self.vector = b
 
 	_intersection = HalfLine.intersection
-	intersection  = gcast(HalfLine.intersection)
 
 
 	def as2d(self):
 		return self.__class__(GPoint.as2d(self.point), Vector(self.vector[0], self.vector[1], 0))
+
+
+	def intersection(self, other, ignore_point=True):
+		"""Return the intersection between this GHalfLine and `other`. If
+		`ignore_point` is True (default), intersections with this half line's starting point
+		will be ignored."""
+		isec = gcast(self._intersection(other))
+		if ignore_point:
+			return None if isec in [None, self.point] else isec
+		else:
+			return isec
 
 
 	def intersecting(self, check:Collection[Segment]) -> Set[Segment]:
