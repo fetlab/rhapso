@@ -7,24 +7,23 @@ from typing          import Collection
 from more_itertools  import flatten
 from rich            import print
 from fastcore.basics import first
-# from Geometry3D      import Polygon
 
 from geometry       import GPoint, GSegment, GHalfLine
 from geometry.angle import Angle, atan2, asin, acos
 from geometry.utils import ang_diff, circle_intersection, sign
-from geometry_helpers import traj_isec
 from bed            import Bed
 from ring           import Ring
-from gcode_printer  import GCodePrinter
+from gcode_printer  import ThreadGCodePrinter
 from gcline         import GCLine, comments, comment, split_gcline
 from logger         import rprint
 from util           import Saver, Number
 from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 
-class Ender3(GCodePrinter):
+class Ender3(ThreadGCodePrinter):
 	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
-		self.config = config
+		super().__init__(config, initial_thread_path, **kwargs)
+
 		self.ring_config = get_ring_config(config)
 		self.bed_config  = get_bed_config(config)
 		print(f"Loaded ring: {self.ring_config}")
@@ -42,15 +41,8 @@ class Ender3(GCodePrinter):
 		self._bed_config  = copy(self.bed_config)
 		self.bed = Bed(anchor=self.bed_config['anchor'], size=self.bed_config['size'])
 		self.ring = Ring(**self.ring_config)
-		super().__init__()
-
-		self.next_thread_path = initial_thread_path
 
 		self.add_codes('M109', action=self.gfunc_printer_ready)
-
-		#The current path of the thread: the current thread anchor and the
-		# direction of the thread.
-		self.thread_path: GHalfLine = None
 
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
