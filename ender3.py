@@ -221,6 +221,7 @@ class Ender3(ThreadGCodePrinter):
 	def thread_cross_head(self, ring_move:Angle) -> bool:
 		"""Return True if the ring move would cause the thread to cross the print
 		head."""
+		assert(self.thread_path is not None)
 		head_angle = self.head_loc.angle(self.thread_path.point)
 		new_thread_angle = GHalfLine(self.thread_path.point, self.ring.angle2point(self.ring.angle + ring_move)).angle
 		return sign(new_thread_angle - head_angle) == sign(head_angle - self.thread_path.angle)
