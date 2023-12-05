@@ -76,7 +76,7 @@ class Step:
 		#If we got here, there are gcsegs, so the thread doesn't move, but the head does
 
 		#Sort gcsegs by the first gcode line number in each
-		gcsegs = self.gcsegs.sorted(key=lambda s:s.gc_lines.first.lineno)
+		gcsegs = sorted(self.gcsegs, key=lambda s:s.info['line_params']['lineno'])
 
 		#Find missing segments: see if the start point of each GSegment is the same
 		# as the end point of the preceeding one; if a segment is missing, create a
