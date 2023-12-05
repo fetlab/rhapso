@@ -5,7 +5,7 @@ from Geometry3D import Line, Vector, HalfLine, Point, Segment, Plane, angle
 from Geometry3D.utils import get_eps
 from .gpoint import GPoint
 from .utils import distance_linelike_point
-from .gcast import gcast
+from .gcast import gcastr
 from .angle import Angle, atan2
 
 _eps = get_eps()
@@ -46,7 +46,7 @@ class GHalfLine(HalfLine):
 		"""Return the intersection between this GHalfLine and `other`. If
 		`ignore_point` is True (default), intersections with this half line's starting point
 		will be ignored."""
-		isec = gcast(self._intersection(other))
+		isec = gcastr(self._intersection(other))
 		if ignore_point:
 			return None if isec in [None, self.point] else isec
 		else:
