@@ -1,6 +1,7 @@
 import re
 from gcline import GCLine
 from util import listsplit
+from gcode_printer import GCodePrinter
 
 class GCodeException(Exception):
 	def __init__(self, obj, message):
@@ -42,24 +43,8 @@ def detect(lines):
 def parse(gcobj):
 	"""Parse Cura4 Gcode into layers using the ;LAYER:N comment line."""
 	layer_class = gcobj.layer_class
-	#glines = [GCLine(l, lineno=n+1) for n,l in enumerate(gcobj.filelines)]
-	glines = []
-	last_extrude = 0
-	ext_mode = 'relative'
-	for i,l in enumerate(gcobj.filelines):
-		line = GCLine(l, lineno=i+1)
-		if line.code == 'M82': ext_mode = 'absolute'
-		if line.code == 'M83': ext_mode = 'relative'
-		if 'E' in line.args:
-			if ext_mode == 'absolute':
-				if line.code == 'G92':
-					last_extrude = line.args['E']
-				elif line.code in ['G0', 'G1']:
-					line.relative_extrude = line.args['E'] - last_extrude
-					last_extrude = line.args['E']
-			else:
-				line.relative_extrude = line.args['E']
-		glines.append(line)
+	gcprinter = GCodePrinter()
+	glines = gcprinter.execute_gcode([GCLine(l, lineno=i+1) for i,l in enumerate(gcobj.filelines)])
 
 	gcobj.lines = glines.copy()
 
