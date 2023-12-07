@@ -106,12 +106,17 @@ class Step:
 				new_gcsegs.append(seg)
 		gcsegs = new_gcsegs
 
-		#Now generate gcode and execute it
+		#Now generate gcode...
 		gcode = []
 		for seg in gcsegs:
 			gcode.extend(seg.to_gclines())
 
-		return gcode
+		#...and execute it
+		r = gcprinter.execute_gcode(gcode)
+		for l in r:
+			if not l.construct():
+				raise ValueError
+		return r
 
 
 	def add(self, gcsegs:list[GSegment], anchor:GPoint|None=None):
