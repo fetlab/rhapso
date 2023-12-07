@@ -80,9 +80,10 @@ class Ender3(ThreadGCodePrinter):
 		if (ring_move_by := self.ring_delta_for_thread(thread_path, target.y)) is None:
 			raise ValueError(f'No ring/thread intersection for {thread_path}')
 		new_ring_angle = self.ring.angle + ring_move_by
+		gclines = self.ring_move(dist=ring_move_by, raise_head=True,
+			comment=f'Ring move: {self.thread_path.repr_diff(thread_path)},  ⃘{self.ring.angle + ring_move_by:.3f}°')
 		self.thread_path = thread_path
-		return self.ring_move(dist=ring_move_by, raise_head=True,
-			comment=f'{self.thread_path.repr_diff(thread_path)},  ⃘{self.ring.angle + ring_move_by:.3f}°')
+		return gclines
 
 
 	def gfunc_set_absolute_positioning(self, gcline: GCLine, **kwargs) -> list[GCLine]:
