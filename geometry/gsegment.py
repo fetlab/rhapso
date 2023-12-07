@@ -37,7 +37,7 @@ class GSegment(Segment):
 		self.printed = False
 		self.info = deep_update(dict(
 			prev_lines  = [],
-			post_line   = [],
+			post_lines  = [],
 			line_args   = {},
 			line_params = {},
 			), kwargs)
