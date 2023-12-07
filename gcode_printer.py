@@ -212,7 +212,9 @@ class ThreadGCodePrinter(GCodePrinter):
 		split_right = gcseg.point_at_dist_from(len_over/2,          at, reverse=False)
 		split_down  = gcseg.point_at_dist_from(len_over/2+len_down, at, reverse=False)
 
-		approach, up, down, right, over = [None]*4
+		approach, up, over, down, leave = [None]*5
+		gcseg.info['prev_lines'] = []
+		gcseg.info['post_lines'] = []
 
 		if split_left in gcseg:
 			left, gcseg = gcseg.split_at(split_left)
@@ -260,7 +262,7 @@ class ThreadGCodePrinter(GCodePrinter):
 			over.info.setdefault('line_args', {})['F'] = opt_feedrate
 
 		#Append pre- and post- gcode
-		over.info[ 'pre_lines'].append(opt_pre_gcode)
-		over.info['post_lines'].append(opt_post_gcode)
+		over.info['prev_lines'].extend(opt_pre_gcode)
+		over.info['post_lines'].extend(opt_post_gcode)
 
 		return [seg for seg in (approach, up, over, down, leave) if seg is not None]
