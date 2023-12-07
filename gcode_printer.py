@@ -244,6 +244,7 @@ class ThreadGCodePrinter(GCodePrinter):
 
 		#Now we have the splits, apply any options to split segments
 		opt_head_raise = move_opts.get('head_raise',       0)
+		#BUG: how should extrusion multiply interact with the internal state?
 		opt_ext_mult   = move_opts.get('extrude_multiply', 1)
 		opt_feedrate   = move_opts.get('move_feedrate',    None)
 		opt_pre_gcode  = move_opts.get('pre_gcode',        [])
