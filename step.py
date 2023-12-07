@@ -113,9 +113,6 @@ class Step:
 
 		#...and execute it
 		r = gcprinter.execute_gcode(gcode)
-		for l in r:
-			if not l.construct():
-				raise ValueError
 		return r
 
 
