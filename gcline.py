@@ -63,7 +63,7 @@ class GCLine:
 
 		assert not any(isinstance(arg, Angle) for arg in args.values())
 
-		if not self.code:
+		if line and not self.code:
 			self.code, self.args, self.comment = parse_gcline(line)
 
 		if not (self.comment or self.code):
