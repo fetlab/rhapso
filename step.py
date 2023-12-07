@@ -103,7 +103,10 @@ class Step:
 				move_type = ('non_extruding' if not seg.is_extrude
 											else
 										 'anchor_fixing' if self.anchor else 'extruding')
+				new_gcsegs.append(comment(f'*** Split segment {seg} [{seg.info["line_params"].get("lineno", "?")}]'
+					f' at {isec}'))
 				new_gcsegs.extend(gcprinter.split_head_move(seg, isec, move_type))
+				new_gcsegs.append(comment('*** End split ***'))
 			else:
 				new_gcsegs.append(seg)
 		gcsegs = new_gcsegs
@@ -111,7 +114,12 @@ class Step:
 		#Now generate gcode...
 		gcode = []
 		for seg in gcsegs:
-			gcode.extend(seg.to_gclines())
+			if isinstance(seg, GSegment):
+				gcode.extend(seg.to_gclines())
+			elif isinstance(seg, GCLine):
+				gcode.append(seg)
+			else:
+				raise ValueError
 
 		#...and execute it
 		r = gcprinter.execute_gcode(gcode)
