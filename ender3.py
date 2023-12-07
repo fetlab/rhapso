@@ -209,7 +209,7 @@ class Ender3(ThreadGCodePrinter):
 
 		gcode.extend([
 			GCLine(f'M117 Ring {self.ring.angle+ring_move_by}'),
-			GCLine('G0', args={'A': ring_move_by.degrees, 'F': self.ring_config['feedrate']}, comment=comment),
+			GCLine(code='G0', args={'A': ring_move_by.degrees, 'F': self.ring_config['feedrate']}, comment=comment),
 		])
 
 		if saver:
