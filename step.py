@@ -70,6 +70,8 @@ class Step:
 				# position and do something if so.
 				### END TODO ###
 
+				#Don't need to do gcprinter.execute() here because it gets done in
+				# ender3.ring_move()
 				return gcprinter.set_thread_path(self.thread_path, self.target)
 
 
