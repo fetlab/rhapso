@@ -171,6 +171,7 @@ class Ender3(ThreadGCodePrinter):
 		"""Return the a copy of the line with a ring movement added to keep the
 		thread angle in sync with bed movement. Update the ring angle accordingly.
 		If the line contains no y movement, return the line unmodified."""
+		assert(self.thread_path is not None)
 		if 'fake from [747]' in (gcline.comment or '') and gcline.x == 69.8:
 			print(f'ring_delta_for_thread({self.thread_path}, {gcline.y}) with ring {self.ring}')
 		ring_move_by = self.ring_delta_for_thread(self.thread_path, gcline.y)
