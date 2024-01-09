@@ -165,6 +165,7 @@ class Ender3(GCodePrinter):
 			move_type = 'fixing' if gcline.is_xyextrude() else 'normal'
 			with Saver(self.head_loc, 'z') as saver:
 				raise_amt = self.config['general'].get('thread_crossing_head_raise', {}).get(move_type)
+				if raise_amt is None: raise_amt = 0
 				if isec and raise_amt > 0:
 					gclines.extend(self.execute_gcode(GCLine('G0',
 					args={'Z':self.head_loc.z + raise_amt},
