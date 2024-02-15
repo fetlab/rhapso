@@ -105,7 +105,7 @@ class Ender3(GCodePrinter):
 		self.ring.angle = self.ring_config['home_angle']
 		self.thread_path = self.next_thread_path
 		ring_home_to_thread = self.ring_delta_for_thread(self.next_thread_path, self.bed.y)
-		self.ring.angle += ring_home_to_thread
+		if ring_home_to_thread is not None: self.ring.angle += ring_home_to_thread
 
 		#Fractional steps per unit don't seem to stick in the Marlin firmware, so
 		# set manually at init
@@ -118,7 +118,7 @@ class Ender3(GCodePrinter):
 				f'; Assume the ring has been manually homed, set its position to {self.ring_config["home_angle"]}°'),
 			GCLine(f'M92 A{steps_per_unit:.4f} ; Set fractional steps/unit for ring moves'),
 			GCLine(f'G0 F5000 X{self.bed.width/2} ; Move head out of the way of the carrier'),
-			GCLine(f'G0 F5000 A{ring_home_to_thread} ; Move ring to initial thread position ({self.info})'),
+			GCLine(f'G0 F5000 A{ring_home_to_thread or 0} ; Move ring to initial thread position ({self.info})'),
 			GCLine(comment='--- Printer state ---'),
 			GCLine(comment=repr(self.ring)),
 			GCLine(comment=repr(self.bed)),
