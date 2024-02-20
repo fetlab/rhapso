@@ -19,15 +19,17 @@ from gcode_printer  import GCodePrinter
 from gcline         import GCLine, comments, comment
 from logger         import rprint
 from util           import Saver, Number
-from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
+from config         import load_config, get_general_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 
 class Ender3(GCodePrinter):
 	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
 		self.config = config
+		self.general_config = get_general_config(config)
+		print(f"Loaded general config: {self.general_config}")
 		self.ring_config = get_ring_config(config)
-		self.bed_config  = get_bed_config(config)
 		print(f"Loaded ring: {self.ring_config}")
+		self.bed_config  = get_bed_config(config)
 		print(f"Loaded bed: {self.bed_config}")
 
 		#Move the zero points so the bed zero is actually 0,0

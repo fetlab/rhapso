@@ -6,6 +6,24 @@ from importlib      import import_module
 from pathlib        import Path
 import yaml
 
+HeadCrossesThread = TypedDict(
+	'HeadCrossesThread', {
+		'head_raise': 			Number,
+    	'overlap_length': 		Number,
+      	'move_feedrate': 		Number,
+      	'extrude_multiply': 	Number,
+      	'post_pause': 			Number,
+	})
+    
+GeneralConfig  = TypedDict(
+	'GeneralConfig', {
+    	'initial_thread_angle': Number,
+        'cross_defaults':		HeadCrossesThread,
+        'cross_anchor_fixing':	HeadCrossesThread,
+        'cross_extruding':		HeadCrossesThread,
+        'cross_non_extruding':	HeadCrossesThread,
+	})
+
 BedConfig  = TypedDict(
 	'BedConfig',  {
 		'zero':   GPoint,
@@ -35,6 +53,27 @@ RingConfig = TypedDict(
 		'collision_avoid': list[CollisionAvoid],
 	})
 
+def process_cross_config(crossConfig:dict[str]) -> HeadCrossesThread:
+	return HeadCrossesThread(
+		head_raise 			= crossConfig.get('head_raise',			-1),
+		overlap_length 		= crossConfig.get('overlap_length',		-1),
+		move_feedrate 		= crossConfig.get('move_feedrate',		-1),
+		extrude_multiply 	= crossConfig.get('extrude_multiply',	-1),
+		post_pause 			= crossConfig.get('post_pause',			-1),
+	)
+
+def get_general_config(config:dict) -> GeneralConfig:
+	"""Construct a general configuration from the config dictionary."""
+	general:dict[str] = config['general']
+	crossConfigs:dict[str] = general['head_crosses_thread']
+
+	return GeneralConfig(
+		initial_thread_angle	= 	general['initial_thread_angle'],
+		cross_defaults			=	process_cross_config(crossConfigs['defaults']),
+		cross_anchor_fixing		=	process_cross_config(crossConfigs['anchor_fixing']),
+		cross_extruding			=	process_cross_config(crossConfigs['extruding']),
+		cross_non_extruding		=	process_cross_config(crossConfigs['non_extruding']),
+	)
 
 def get_ring_config(config:dict) -> RingConfig:
 	"""Construct a ring configuration from the config dictionary."""
