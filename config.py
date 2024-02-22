@@ -18,10 +18,10 @@ HeadCrossesThread = TypedDict(
 GeneralConfig  = TypedDict(
 	'GeneralConfig', {
     	'initial_thread_angle': Number,
-        'cross_defaults':		HeadCrossesThread,
-        'cross_anchor_fixing':	HeadCrossesThread,
-        'cross_extruding':		HeadCrossesThread,
-        'cross_non_extruding':	HeadCrossesThread,
+        'defaults':				HeadCrossesThread,
+        'anchor_fixing':		HeadCrossesThread,
+        'extruding':			HeadCrossesThread,
+        'non_extruding':		HeadCrossesThread,
 	})
 
 BedConfig  = TypedDict(
@@ -69,10 +69,10 @@ def get_general_config(config:dict) -> GeneralConfig:
 
 	return GeneralConfig(
 		initial_thread_angle	= 	general['initial_thread_angle'],
-		cross_defaults			=	process_cross_config(crossConfigs['defaults']),
-		cross_anchor_fixing		=	process_cross_config(crossConfigs['anchor_fixing']),
-		cross_extruding			=	process_cross_config(crossConfigs['extruding']),
-		cross_non_extruding		=	process_cross_config(crossConfigs['non_extruding']),
+		defaults				=	process_cross_config(crossConfigs['defaults']),
+		anchor_fixing			=	process_cross_config(crossConfigs['anchor_fixing']),
+		extruding				=	process_cross_config(crossConfigs['extruding']),
+		non_extruding			=	process_cross_config(crossConfigs['non_extruding']),
 	)
 
 def get_ring_config(config:dict) -> RingConfig:
@@ -113,7 +113,9 @@ def load_config(config_file:str) -> dict:
 		config = yaml.load(fp, yaml.Loader)
 	if not config: raise ValueError(f"Empty config file {config_file}")
 	try:
-		module_name = Path(config_file).stem
+		#Split on underscores here to allow for different configs for the same machine.
+		# e.g. UoB_ender3.yaml
+		module_name = Path(config_file).stem.split('_')[-1]
 		module = import_module(module_name)
 		classname = ''.join(x.capitalize() or '_' for x in module_name.split('_'))
 		_class = getattr(module, classname)
