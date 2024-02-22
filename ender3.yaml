@@ -87,6 +87,7 @@ general:
     defaults: &head_crosses_thread_defaults
       #How far to raise the head when it will cross the thread
       head_raise: 1
+      head_raise_speed: 200
 
       #The ideal length of the head move as it crosses the thread; this will
       # center the thread in this move. If the segment is shorter than this,

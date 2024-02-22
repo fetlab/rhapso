@@ -9,6 +9,7 @@ import yaml
 HeadCrossesThread = TypedDict(
 	'HeadCrossesThread', {
 		'head_raise': 			Number,
+		'head_raise_speed':		Number,
     	'overlap_length': 		Number,
       	'move_feedrate': 		Number,
       	'extrude_multiply': 	Number,
@@ -56,6 +57,7 @@ RingConfig = TypedDict(
 def process_cross_config(crossConfig:dict[str]) -> HeadCrossesThread:
 	return HeadCrossesThread(
 		head_raise 			= crossConfig.get('head_raise',			-1),
+		head_raise_speed	= crossConfig.get('head_raise_speed',	-1),
 		overlap_length 		= crossConfig.get('overlap_length',		-1),
 		move_feedrate 		= crossConfig.get('move_feedrate',		-1),
 		extrude_multiply 	= crossConfig.get('extrude_multiply',	-1),

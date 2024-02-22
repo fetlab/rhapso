@@ -176,10 +176,10 @@ class Ender3(GCodePrinter):
 
 			saveZ = self.head_loc.z
 			raise_amt = self.general_config[move_type]['head_raise'] or 0 if isec else 0
-			zSpeed = 200 #PLACEHOLDER
+			raise_speed = self.general_config[move_type]['head_raise_speed'] or 0 if isec else 0
 			if raise_amt > 0:
 				gclines.append(GCLine('G0',
-				args={'Z':self.head_loc.z + raise_amt, 'F': zSpeed},
+				args={'Z':self.head_loc.z + raise_amt, 'F': raise_speed},
 					comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag'))
 				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
 
@@ -212,7 +212,7 @@ class Ender3(GCodePrinter):
 			# need to put it back to where it was
 			if raise_amt > 0:
 				gclines.append(
-					GCLine('G0', args={'Z': saveZ, 'F': zSpeed}, comment='Drop head back to original location'))
+					GCLine('G0', args={'Z': saveZ, 'F': raise_speed}, comment='Drop head back to original location'))
 				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
 
 		return gclines
