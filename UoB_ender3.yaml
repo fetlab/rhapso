@@ -86,7 +86,7 @@ general:
   head_crosses_thread:
     defaults: &head_crosses_thread_defaults
       #How far to raise the head when it will cross the thread
-      head_raise: 1
+      head_raise: 0.4
 
       #The ideal length of the head move as it crosses the thread; this will
       # center the thread in this move. If the segment is shorter than this,
@@ -98,20 +98,17 @@ general:
     # the anchor as the pivot point
     anchor_fixing:
       <<: *head_crosses_thread_defaults
-      move_feedrate: 300
-      extrude_multiply: 3
-      post_pause: 2
+      move_feedrate: 700
+      extrude_multiply: 1.2
+      post_pause: 0.2
 
     #For moves where filament will be extruded over the thread, but not as an anchor
     extruding:
       <<: *head_crosses_thread_defaults
-      extrude_multiply: 1.5
-      post_pause: 0
 
     #Any time the head crosses the thread while *not* extruding
     non_extruding:
       <<: *head_crosses_thread_defaults
-      move_feedrate: 500
 
 ring:
   #16 microsteps, 200 steps per rotation = 3200
@@ -129,7 +126,7 @@ ring:
   radius: 93
 
   #Home angle of ring, in degrees
-  home_angle: 270
+  home_angle: 90
 
   #How fast to move the ring?
   feedrate: 5000

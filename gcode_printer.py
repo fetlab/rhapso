@@ -26,6 +26,7 @@ class GCodePrinter:
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
 		self.e          = 0
+		self.f			= 5000
 		self.head_loc   = GPoint(0, 0, 0)
 		self.head_set_by = None
 		self.prev_loc = GPoint(0,0,0)
@@ -90,16 +91,17 @@ class GCodePrinter:
 
 
 	#G0, G1
-	def gcfunc_move_axis(self, gcline:GCLine, **kwargs):
+	def gcfunc_move_axis(self, gcline:GCLine, **kwargs) -> list[GCLine]:
 		return self.gcfunc_set_axis_value(gcline, **kwargs)
 
 
 	#G0, G1, G92
-	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs):
+	def gcfunc_set_axis_value(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		#Track head location
 		if gcline.x: self.x = gcline.x
 		if gcline.y: self.y = gcline.y
 		if gcline.z: self.z = gcline.z
+		self.f = gcline.args.get('F',None) or self.f
 
 		if any((gcline.x, gcline.y, gcline.z)):
 			self.head_set_by = gcline
