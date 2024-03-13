@@ -194,12 +194,12 @@ class Ender3(GCodePrinter):
 			newArgs = {}
 			if 'E' in gcline.args and extrustion_multiplier > 0:
 				newArgs['E'] = gcline.args['E'] * extrustion_multiplier
-			
+
 			if adjusted_feedrate > 0:
 				newArgs['F'] = adjusted_feedrate
 
-			gclines.append(gcline.copy(args=newArgs, comment=f'Movetype:|{move_type}|{'|adjusted feed rate|' if adjusted_feedrate > 0 else ''}{'|extrustion multiplier|' if extrustion_multiplier > 0 else ''}'))
-			
+			gclines.append(gcline.copy(args=newArgs, comment=f"Movetype:|{move_type}|{'|adjusted feed rate|' if adjusted_feedrate > 0 else ''}{'|extrustion multiplier|' if extrustion_multiplier > 0 else ''}"))
+
 			if adjusted_feedrate:
 				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
 
