@@ -19,15 +19,17 @@ from gcode_printer  import GCodePrinter
 from gcline         import GCLine, comments, comment
 from logger         import rprint
 from util           import Saver, Number
-from config         import load_config, get_ring_config, get_bed_config, RingConfig, BedConfig
+from config         import load_config, get_general_config, get_ring_config, get_bed_config, RingConfig, BedConfig
 
 
 class Ender3(GCodePrinter):
 	def __init__(self, config, initial_thread_path:GHalfLine, *args, **kwargs):
 		self.config = config
+		self.general_config = get_general_config(config)
+		print(f"Loaded general config: {self.general_config}")
 		self.ring_config = get_ring_config(config)
-		self.bed_config  = get_bed_config(config)
 		print(f"Loaded ring: {self.ring_config}")
+		self.bed_config  = get_bed_config(config)
 		print(f"Loaded bed: {self.bed_config}")
 
 		#Move the zero points so the bed zero is actually 0,0
@@ -105,7 +107,7 @@ class Ender3(GCodePrinter):
 		self.ring.angle = self.ring_config['home_angle']
 		self.thread_path = self.next_thread_path
 		ring_home_to_thread = self.ring_delta_for_thread(self.next_thread_path, self.bed.y)
-		self.ring.angle += ring_home_to_thread
+		if ring_home_to_thread is not None: self.ring.angle += ring_home_to_thread
 
 		#Fractional steps per unit don't seem to stick in the Marlin firmware, so
 		# set manually at init
@@ -118,7 +120,7 @@ class Ender3(GCodePrinter):
 				f'; Assume the ring has been manually homed, set its position to {self.ring_config["home_angle"]}°'),
 			GCLine(f'M92 A{steps_per_unit:.4f} ; Set fractional steps/unit for ring moves'),
 			GCLine(f'G0 F5000 X{self.bed.width/2} ; Move head out of the way of the carrier'),
-			GCLine(f'G0 F5000 A{ring_home_to_thread} ; Move ring to initial thread position ({self.info})'),
+			GCLine(f'G0 F5000 A{ring_home_to_thread or 0} ; Move ring to initial thread position ({self.info})'),
 			GCLine(comment='--- Printer state ---'),
 			GCLine(comment=repr(self.ring)),
 			GCLine(comment=repr(self.bed)),
@@ -145,7 +147,7 @@ class Ender3(GCodePrinter):
 		#Run the passed gcode line `gcline` through the parent class's
 		# gfunc_set_axis_value() function. This might return multiple lines, so we
 		# need to process each of the returned list values.
-		super_gclines = super().gcfunc_move_axis(gcline) or [gcline]
+		super_gclines = super().gcfunc_move_axis(gcline, **kwargs) or [gcline]
 
 		for gcline in super_gclines:
 			if not gcline.is_xymove:
@@ -157,38 +159,61 @@ class Ender3(GCodePrinter):
 				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
 						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
-						gclines.extend(self.ring_move(angle=collision['move_ring_to'],
+						gclines.append(self.ring_move(angle=collision['move_ring_to'],
 										 comment=f'Avoid head collision at {gcline.x} by moving '
 														 f'ring to {collision["move_ring_to"]}'))
 
 			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove() else None
-			move_type = 'fixing' if gcline.is_xyextrude() else 'normal'
-			with Saver(self.head_loc, 'z') as saver:
-				raise_amt = self.config['general'].get('thread_crossing_head_raise', {}).get(move_type)
-				if isec and raise_amt > 0:
-					gclines.extend(self.execute_gcode(GCLine('G0',
-					args={'Z':self.head_loc.z + raise_amt},
-						comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag')))
+
+			move_type = None
+			if isec:
+				if kwargs.get('anchoring',False):
+					move_type = 'anchor_fixing'
+				elif 'E' in gcline.args:
+					move_type = 'extruding' 
+				else:
+					move_type = 'non_extruding'
+
+			saveZ = self.head_loc.z
+			raise_amt = self.general_config[move_type]['head_raise'] or 0 if isec else 0
+			raise_speed = self.general_config[move_type]['head_raise_speed'] or 0 if isec else 0
+			if raise_amt > 0:
+				gclines.append(GCLine('G0',
+				args={'Z':self.head_loc.z + raise_amt, 'F': raise_speed},
+					comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag'))
+				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
 
 			#If the bed is moving, we want to move the thread simultaneously to keep
 			# it in the same relative position
 			if gcline.y is not None and gcline.y != prev_loc.y:
 				gcline = self.sync_ring(gcline)
 
-			#Add the line to the list of lines to be executed
-			gclines.append(gcline)
+			#Add the line to the list of lines to be executed, with multiplied extrusion amount and adjusted feedrate if necessary
+			extrustion_multiplier = self.general_config[move_type]['extrude_multiply'] or 0 if move_type else 0
+			adjusted_feedrate = self.general_config[move_type]['move_feedrate'] or 0 if move_type else 0
+			newArgs = {}
+			if 'E' in gcline.args and extrustion_multiplier > 0:
+				newArgs['E'] = gcline.args['E'] * extrustion_multiplier
+			
+			if adjusted_feedrate > 0:
+				newArgs['F'] = adjusted_feedrate
 
-			#Pause for fixing moves if so configured
-			if isec and move_type == 'fixing':
-				if pause := self.config['general'].get('post_thread_overlap_pause', 0):
-					gclines.extend(self.execute_gcode(
-						GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after print-over')))
+			gclines.append(gcline.copy(args=newArgs, comment=f'Movetype:|{move_type}|{'|adjusted feed rate|' if adjusted_feedrate > 0 else ''}{'|extrustion multiplier|' if extrustion_multiplier > 0 else ''}'))
+			
+			if adjusted_feedrate:
+				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
+
+			#Pause for moves if so configured
+			if isec:
+				if (pause := self.general_config[move_type]['post_pause'] or 0) > 0:
+					gclines.append(GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after move'))
 
 			#If we changed the z-height during a head-thread crossing move above, we
 			# need to put it back to where it was
-			if saver:
-				gclines.extend(self.execute_gcode(
-					GCLine('G0', args={'Z': saver.originals['z']}, comment='Drop head back to original location')))
+			if raise_amt > 0:
+				gclines.append(
+					GCLine('G0', args={'Z': saveZ, 'F': raise_speed}, comment='Drop head back to original location'))
+				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
 
 		return gclines
 

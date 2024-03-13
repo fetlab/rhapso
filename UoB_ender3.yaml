@@ -86,7 +86,7 @@ general:
   head_crosses_thread:
     defaults: &head_crosses_thread_defaults
       #How far to raise the head when it will cross the thread
-      head_raise: 1
+      head_raise: 0.4
       head_raise_speed: 200
 
       #The ideal length of the head move as it crosses the thread; this will
@@ -99,20 +99,17 @@ general:
     # the anchor as the pivot point
     anchor_fixing:
       <<: *head_crosses_thread_defaults
-      move_feedrate: 500
-      extrude_multiply: 3
-      post_pause: 2
+      move_feedrate: 700
+      extrude_multiply: 1.2
+      post_pause: 0.2
 
     #For moves where filament will be extruded over the thread, but not as an anchor
     extruding:
       <<: *head_crosses_thread_defaults
-      extrude_multiply: 1
-      post_pause: 0
 
     #Any time the head crosses the thread while *not* extruding
     non_extruding:
       <<: *head_crosses_thread_defaults
-      move_feedrate: 500
 
 ring:
   #16 microsteps, 200 steps per rotation = 3200
@@ -155,12 +152,12 @@ bed:
   # actually printable, taking the ring into account.
 
   #The "zero" point of the effective bed in mm, in printer frame coordinates
-  zero: [-51, -65, 0]
+  zero: [-41.35, -65, 0]
 
   #The size of the effective bed in mm
-  size: [110, 220]
+  size: [106, 220]
 
   #The point where the thread is anchored to the bed, in mm, in printer frame
   # coordinates
-  #(Here it's 45mm from the actual bed's left edge)
-  anchor: [-72.5, -65, 0]
+  #(Here it's Xmm from the actual bed's left edge and Ymm from the front)3.45 , -1.2 
+  anchor: [-114.05, -66.2, 0]
