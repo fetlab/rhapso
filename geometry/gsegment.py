@@ -167,6 +167,19 @@ class GSegment(Segment):
 		return self.copy(sp.moved(vec, x, y, z), ep.moved(vec, x, y, z))
 
 
+	def rotated(self, by:Angle=Angle(degrees=0), to:Angle=Angle(degrees=0), from_end=False):
+		"""Return a copy of this GSegment rotated by `by_angle` or to `to_angle`
+		around its start point (or end point if `from_end` is False)."""
+		if by != 0 and to != 0:
+			raise ValueError(f"Can't rotate both by_angle ({by}) and to_angle ({to})")
+
+		from .ghalfline import GHalfLine
+		hl = GHalfLine(self.start_point, self.end_point).rotated(
+			(to - self.angle()) if to else by)
+		return self.__class__(self.start_point,
+													hl.point + hl.line.dv.normalized() * self.length)
+
+
 	def parallels2d(self, distance=1, inc_self=False):
 		"""Return two GSegments parallel to this one, offset by `distance` to either
 		side. Include this segment if in_self is True."""
