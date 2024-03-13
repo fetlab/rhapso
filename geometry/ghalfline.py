@@ -49,6 +49,13 @@ class GHalfLine(HalfLine):
 		return {seg for seg in listify(check) if self._intersection(seg) not in [None, self.point]}
 
 
+	def intersections(self, check:Collection[Segment]) -> dict[Segment,Point]:
+		"""Return {seg_from_check: intersection, ...}"""
+		isecs = {seg: self._intersection(seg) for seg in listify(check)}
+		return {seg: GPoint(isec) for seg,isec in isecs.items() if isec not in [None, self.point]}
+
+
+
 	def __repr__(self):
 		return "H({}, {})".format(self.point, self.vector)
 
