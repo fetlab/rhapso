@@ -163,7 +163,7 @@ class Ender3(GCodePrinter):
 										 comment=f'Avoid head collision at {gcline.x} by moving '
 														 f'ring to {collision["move_ring_to"]}'))
 
-			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove() else None
+			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove else None
 
 			move_type = None
 			if isec:
