@@ -22,7 +22,10 @@ class GPoint(Point):
 				self.line = l
 
 			elif isinstance(args[0], (list,tuple)):
-				super().__init__(args[0])
+				if len(args[0]) == 2:
+					super().__init__(*args[0], 0)
+				else:
+					super().__init__(args[0])
 
 			elif isinstance(args[0], Point):
 				super().__init__(
@@ -34,7 +37,7 @@ class GPoint(Point):
 				raise ValueError(f'Invalid type for arg to GPoint: ({type(args[0])}) {args[0]}')
 
 		elif len(args) == 2:
-			super().__init__(*args)
+			super().__init__(*args, 0)
 
 		elif len(args) == 3:
 			super().__init__(*args)
