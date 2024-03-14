@@ -159,7 +159,7 @@ class Ender3(GCodePrinter):
 				for collision in self.ring_config['collision_avoid']:
 					if(collision['head_between'][0] <= gcline.x        <= collision['head_between'][1] and
 						 collision['ring_between'][0] <= self.ring.angle <= collision['ring_between'][1]):
-						gclines.append(self.ring_move(angle=collision['move_ring_to'],
+						gclines.extend(self.ring_move(angle=collision['move_ring_to'],
 										 comment=f'Avoid head collision at {gcline.x} by moving '
 														 f'ring to {collision["move_ring_to"]}'))
 
