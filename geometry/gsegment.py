@@ -128,6 +128,12 @@ class GSegment(Segment):
 				(self.intersection(o) not in ignore)}
 
 
+	def intersections(self, check:Collection[Segment], ignore:Point|Collection[Point]=()) -> dict[Segment,Point]:
+		"""Return {seg_from_check: intersection, ...}"""
+		isecs = {seg: self.intersection(seg) for seg in listify(check)}
+		return {seg:isec for seg,isec in isecs.items() if isec not in listify(ignore)}
+
+
 	def intersection2d(self, other):
 		return self.as2d().intersection(other.as2d())
 
