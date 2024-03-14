@@ -14,9 +14,10 @@ styles_dark: dict[str, dict] = {
 	'printed_thread':  {'line': dict(color='olivedrab', width=1,  dash='dot')},
 
 	#Anchors
-	'anchor':          { 'marker': dict(color='red',   symbol='x', size=4)},
-	'original_anchor': { 'marker': dict(color='coral', symbol='x', size=4)},
-	'future_anchor':   { 'marker': dict(color='blue',  symbol='x', size=4)},
+	'anchor':          { 'marker': dict(color='red',     symbol='x', size=4)},
+	'original_anchor': { 'marker': dict(color='coral',   symbol='x', size=4)},
+	'future_anchor':   { 'marker': dict(color='blue',    symbol='x', size=4)},
+	'thread_fixation': { 'marker': dict(color='magenta', symbol='x', size=4)},
 
 	#GCode segment styles
 	'gc_segs':    {'line': dict(color='green',     width=2)},

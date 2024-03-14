@@ -8,6 +8,7 @@ from geometry.utils import angle2point
 from Geometry3D import Vector
 from gcline import GCLine
 from itertools import pairwise
+from more_itertools  import flatten
 
 
 def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
@@ -70,25 +71,34 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		#Plot segments to be printed this layer
 		plot_segments(fig, layer.geometry.segments, name='to print', style=styles['to_print'])
 
+		#Plot the thread and anchors from the previous steps
+		points = [step.thread_path.point for step in steps[:stepnum+1]]
+		thread_segs = [GSegment(a,b) for a,b in pairwise(points) if a != b]
+		plot_segments(fig, thread_segs, style=styles['printed_thread'],
+									name='finished thread', mode='markers+lines',
+									**styles['original_anchor'])
+
 		#Plot any geometry that was printed in the previous step
 		if stepnum > 0:
 			segs = set.union(*[set(s.gcsegs) for s in steps[:stepnum]])
 			plot_segments(fig, segs, name='prev step segs', style=styles['old_segs'])
 
-		#Plot the thread and anchors from the previous steps
-		points = [step.thread_path.point for step in steps[:stepnum+1]]
-		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
-		 							style=styles['printed_thread'], name='finished thread',
-									mode='markers+lines', **styles['original_anchor'])
+		#Plot geometry printed in this step
+		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
+
+		#Plot callouts for where geometry crossed thread
+		if print_thread_isecs := [p for p in flatten(
+				[seg.intersections(thread_segs).values() for seg in step.gcsegs])
+														if p is not None and p not in points]:
+			print(f'{print_thread_isecs=}')
+			plot_points(fig, print_thread_isecs, name='thread fixations',
+							 style=styles['thread_fixation'])
 
 		#Plot future thread and anchors
 		points = [step.thread_path.point for step in steps[stepnum+1:]]
 		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
 		 							style=styles['future_thread'], name='thread',
 									mode='markers+lines', **styles['future_anchor'])
-
-		#Plot geometry printed in this step
-		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
 
 		#Plot thread->carrier for this step
 		tp = step.thread_path
@@ -104,6 +114,7 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 
 		#Plot next anchor, if any
 		if points := [step.thread_path.point for step in steps[stepnum+1:stepnum+2]]:
+			plot_points(fig, points, name='next anchor', style=styles['future_anchor'])
 			plot_points(fig, points, name='next anchor', style=styles['next_anchor'])
 
 		#Plot current anchor
