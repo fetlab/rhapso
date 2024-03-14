@@ -47,10 +47,14 @@ class Threader:
 		self.config = load_config(config_file)
 		bed_config  = get_bed_config(self.config)
 
-		self.start_anchor = bed_config['anchor'] - bed_config['zero']
+		#Allow a start anchor to be specified as a kwarg - useful for generating
+		# figures
+		self.start_anchor = kwargs.get('start_anchor',
+																 bed_config['anchor'] - bed_config['zero'])
 
 		#Set up the thread and snap it to the layers and geometry
 		if thread_list[0] != self.start_anchor:
+			thread_list = thread_list.copy()
 			thread_list.insert(0, self.start_anchor)
 		thread = GPolyLine(thread_list)
 		self.snapped_thread = thread_snap(thread, self.gcode_file.layers[start_layer:end_layer])
