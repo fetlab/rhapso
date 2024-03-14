@@ -12,6 +12,7 @@ from itertools import pairwise
 
 def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 							 prev_layer_only_outline=True, preview_layer=True,
+							 plot_steps=True,
 							 template='plotly_dark', styles=default_styles,
 							 zoom_box=None, show_args={}, show=True) -> list[go.Figure]:
 
@@ -39,13 +40,16 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 		points = [step.thread_path.point for step in steps]
 		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
 		 							style=styles['future_thread'], name='thread',
-									mode='markers+lines', **styles['anchor'])
+									mode='markers+lines', **styles['future_anchor'])
 
 		if show:
 			show_fig(fig, zoom_box=zoom_box or layer.extents(), template=template,
 						 **show_args)
 
 		figs.append(fig)
+
+	if not plot_steps:
+		return figs
 
 	for stepnum,step in enumerate(steps):
 		if not step.valid:
@@ -71,15 +75,22 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			segs = set.union(*[set(s.gcsegs) for s in steps[:stepnum]])
 			plot_segments(fig, segs, name='prev step segs', style=styles['old_segs'])
 
-		##Plot the thread from the previous steps
+		#Plot the thread and anchors from the previous steps
 		points = [step.thread_path.point for step in steps[:stepnum+1]]
 		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
-		 							style=styles['printed_thread'], name='finished thread')
+		 							style=styles['printed_thread'], name='finished thread',
+									mode='markers+lines', **styles['original_anchor'])
+
+		#Plot future thread and anchors
+		points = [step.thread_path.point for step in steps[stepnum+1:]]
+		plot_segments(fig, [GSegment(a,b) for a,b in pairwise(points) if a != b],
+		 							style=styles['future_thread'], name='thread',
+									mode='markers+lines', **styles['future_anchor'])
 
 		#Plot geometry printed in this step
 		plot_segments(fig, step.gcsegs, name='gcsegs', style=styles['gc_segs'])
 
-		#Plot thread for this step
+		#Plot thread->carrier for this step
 		tp = step.thread_path
 		plot_segments(fig, [GSegment(tp.point, tp.point.moved(tp.vector.normalized()*200))],
 							style=styles['thread_ring'], name='thread path')
@@ -91,8 +102,14 @@ def plot_steps(steps_obj, prev_layer:TLayer=None, stepnum=None,
 			plot_segments(fig, avoid, name='avoid', style=styles['avoid_segs'])
 			plot_segments(fig, isecs, name='isecs', style=styles['isec_segs'])
 
-		#Plot anchor/enter/exit points if any
+		#Plot next anchor, if any
+		if points := [step.thread_path.point for step in steps[stepnum+1:stepnum+2]]:
+			plot_points(fig, points, name='next anchor', style=styles['next_anchor'])
+
+		#Plot current anchor
 		plot_points(fig, [step.thread_path.point], name='anchor', style=styles['anchor'])
+
+		#Plot enter/exit points if any
 		if hasattr(layer, 'start_anchor'):
 			plot_points(fig, [layer.start_anchor], style=styles['anchor'],
 							 name='start anchor', marker_symbol='circle', marker_size=6)
