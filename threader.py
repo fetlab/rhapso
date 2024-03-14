@@ -57,7 +57,7 @@ class Threader:
 		rprint('Initial thread:', thread.points)
 		rprint('\nSnapped anchors to layers; anchors now:', self.snapped_thread.points)
 
-		#Initialze the printer with the configured bed anchor and starting angle
+		#Initialize the printer with the configured bed anchor and starting angle
 		initial_thread_angle     = Angle(degrees=self.config['general']['initial_thread_angle'])
 		thread_vec               = Vector(cos(initial_thread_angle), sin(initial_thread_angle), 0)
 		self.initial_thread_path = GHalfLine(self.start_anchor, thread_vec)
