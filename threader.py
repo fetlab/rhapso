@@ -182,65 +182,63 @@ class Threader:
 		rprint(f'[yellow]————[/] Start [yellow]————[/]', div=True)
 
 		#Find and print geometry that will not be intersected by any thread segments
-		to_print = unprinted(layer.non_intersecting(layerthread) if thread else layer.geometry.segments)
-		self.printer.avoid_and_print(steps, to_print)
+		non_isecs = unprinted(layer.non_intersecting(layerthread) if thread else layer.geometry.segments)
 
-		if not unprinted(layer.geometry.segments):
-			rprint(f'Nothing left to print, so not processing {len(layerthread)} thread segments:', layerthread)
-		else:
-			rprint(f"[red]———[/] Now process {len(layerthread)} thread segments [red]———[/]")
+		rprint(f"[red]———[/] Now process {len(layerthread)} thread segments [red]———[/]")
 
-			#At this point we've printed everything that does not intersect the
-			# thread path. Now we need to work with the individual thread segments
-			# one by one, where each segment is already anchored at its start
-			# point:
-			# 1. Move the thread path so the thread crosses the next anchor point
-			# 2. Print gcode segments that intersect this part of the thread, but
-			#    that don't intersect:
-			#    - the thread path trajectory
-			#    - the future thread path
-			#    except where those intersections are only at the anchor point iself.
+		#At this point we've printed everything that does not intersect the
+		# thread path. Now we need to work with the individual thread segments
+		# one by one, where each segment is already anchored at its start
+		# point:
+		# 1. Move the thread path so the thread crosses the next anchor point
+		# 2. Print gcode segments that intersect this part of the thread, but
+		#    that don't intersect:
+		#    - the thread path trajectory
+		#    - the future thread path
+		#    except where those intersections are only at the anchor point iself.
 
-			for i,thread_seg in enumerate(layerthread):
-				rprint(f'[yellow]————[/] Thread {i}: {thread_seg} [yellow]————[/]')
+		for i,thread_seg in enumerate(layerthread):
+			rprint(f'[yellow]————[/] Thread {i}: {thread_seg} [yellow]————[/]')
 
-				next_anchor = thread_seg.end_point
+			next_anchor = thread_seg.end_point
 
-				with steps.new_step(f'Rotate thread at {self.printer.thread_path.point}'
-														f' to overlap next anchor at {next_anchor}') as s:
-					self.printer.rotate_thread_to(next_anchor)
+			with steps.new_step(f'Rotate thread at {self.printer.thread_path.point}'
+													f' to overlap next anchor at {next_anchor}') as s:
+				self.printer.rotate_thread_to(next_anchor)
 
-				#Find and print the segment that fixes the thread at the anchor point
-				anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if next_anchor in seg]
-				if not anchorsegs: raise ValueError(f'No unprinted segments overlap anchor {next_anchor}')
-				with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
-					s.add(anchorsegs, anchoring=True)
-					#Update the printer state with the new anchor (maintaining the same thread direction)
-					self.printer.move_thread_to(next_anchor)
+			#Find and print the segment that fixes the thread at the anchor point
+			anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if next_anchor in seg]
+			if not anchorsegs: raise ValueError(f'No unprinted segments overlap anchor {next_anchor}')
+			with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
+				s.add(anchorsegs, anchoring=True)
+				#Update the printer state with the new anchor (maintaining the same thread direction)
+				self.printer.move_thread_to(next_anchor)
 
-				#Get unprinted segments that overlap the current thread segment. We
-				# want to print these to fix the thread in place.
-				to_print = unprinted(layer.intersecting(thread_seg))
-				rprint(f'{len(to_print)} unprinted segments intersecting this thread segment')
+			#Get unprinted segments that overlap the current thread segment. We
+			# want to print these to fix the thread in place.
+			to_print = unprinted(layer.intersecting(thread_seg))
+			rprint(f'{len(to_print)} unprinted segments intersecting this thread segment')
 
-				#Find gcode segments that intersect future thread segments; we don't
-				# want to print these yet, so remove them
-				avoid = unprinted(layer.intersecting(layerthread[i+1:]))
-				rprint(f'{len(avoid)} unprinted segments intersecting future thread segments')
-				to_print -= avoid
+			#Find gcode segments that intersect future thread segments; we don't
+			# want to print these yet, so remove them
+			avoid = unprinted(layer.intersecting(layerthread[i+1:]))
+			rprint(f'{len(avoid)} unprinted segments intersecting future thread segments')
+			to_print -= avoid
 
-				if to_print:
-					self.printer.avoid_and_print(steps, to_print)
-					to_print = set()
+			if to_print:
+				self.printer.avoid_and_print(steps, to_print)
+				to_print = set()
 
+		self.printer.avoid_and_print(steps, non_isecs)
 
-			# --- Print what's left
-			remaining = {s for s in layer.geometry.segments if not s.printed}
-			if not remaining == to_print:
-				rprint('[red]Odd:\n  remaining - to_print:', remaining - to_print, indent=4)
-				rprint('  to_print - remaining:', to_print - remaining, indent=4)
-			if remaining:
-				self.printer.avoid_and_print(steps, remaining, '(remaining)')
+		# --- Print what's left
+		remaining = {s for s in layer.geometry.segments if not s.printed}
+		if not remaining == to_print:
+			rprint('[red]Odd:\n  remaining - to_print:', remaining - to_print, indent=4)
+			rprint('  to_print - remaining:', to_print - remaining, indent=4)
+		if remaining:
+			self.printer.avoid_and_print(steps, remaining, '(remaining)')
+
 
 		rprint('[yellow]Done routing this layer[/];',
 				len([s for s in layer.geometry.segments if not s.printed]),
