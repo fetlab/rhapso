@@ -158,12 +158,14 @@ def update_figure(fig, name, style, what='traces'):
 		getattr(fig, f'update_{what}')(selector={'name':name}, **style[name])
 
 
-def plot_points(fig, points: Collection[GPoint], name='points',
+def plot_points(fig, points: GPoint|Collection[GPoint], name='points',
 									style:str|Dict|None=None, plot3d=False, **kwargs):
 
 	if isinstance(style, str):
 		style = str2style(style)
 	style = deep_update(styles['points'], style or {}, kwargs)
+
+	points = listify(points)
 
 	x,y,z = xyz = zip(*[p[:] for p in points])
 	if plot3d:
@@ -180,12 +182,14 @@ def plot_points(fig, points: Collection[GPoint], name='points',
 
 
 
-def plot_segments(fig, segs_to_plot: Collection[GSegment], name='segments',
+def plot_segments(fig, segs_to_plot: GSegment|Collection[GSegment], name='segments',
 									style:str|Dict|None=None, plot3d=False, **kwargs):
 
 	if isinstance(style, str):
 		style = str2style(style)
 	style = deep_update(styles['segments'], style or {}, kwargs)
+
+	segs_to_plot = listify(segs_to_plot)
 
 	if plot3d:
 		scatter_func = go.Scatter3d
