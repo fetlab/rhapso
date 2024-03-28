@@ -206,16 +206,16 @@ def plot_segments(fig, segs_to_plot: GSegment|Collection[GSegment], name='segmen
 	fig.add_trace(scatter_func(**segs_func(*segs_to_plot, name=name, **style)))
 
 
-def add_circles(fig, centers, radius=1, name='circles', style=None):
+def add_circles(fig, centers, radius=1, name='circles', style=None, **kwargs):
 	if isinstance(style, str): style = str2style(style)
 	style = deep_update(styles['circles'], style or {})
 	if 'mode' in style: del(style['mode'])
-	for c in centers:
+	for c in listify(centers):
 		fig.add_shape(type='circle',
 				xref='x', yref='y',
 				x0=c.x-radius, x1=c.x+radius,
 				y0=c.y-radius, y1=c.y+radius,
-				**style)
+				**style, **kwargs)
 
 
 def update_fig(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:float=1.1,
