@@ -214,8 +214,8 @@ def add_circles(fig, centers, radius=1, name='circles', style=None):
 				**style)
 
 
-def show_fig(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:float=1.1,
-						 template='plotly_dark', xaxis={}, yaxis={}):
+def update_fig(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:float=1.1,
+							 template='plotly_dark', xaxis={}, yaxis={}):
 	yaxis = deep_update({'scaleanchor':'x', 'scaleratio':1}, yaxis)
 	if zoom_box is not None:
 		(x1,y1),(x2,y2)	= zoom_box
@@ -228,8 +228,13 @@ def show_fig(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:
 			margin=dict(l=0, r=20, b=0, t=0, pad=0),
 			width=450, height=450,
 			showlegend=False,)
-	fig.show()
 
 
 def show_dark(*args, **kwargs):
 	show_fig(*args, **kwargs)
+
+
+def show_fig(fig, zoom_box:None|Collection[Collection[float]]=None, zoom_factor:float=1.1,
+						 template='plotly_dark', xaxis={}, yaxis={}):
+	update_fig(fig, zoom_box, zoom_factor, template, xaxis, yaxis)
+	fig.show()
