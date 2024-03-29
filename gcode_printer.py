@@ -25,12 +25,13 @@ class GCodePrinter:
 
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
-		self.e          = 0
-		self.f			= 5000
-		self.head_loc   = GPoint(0, 0, 0)
+		self.e           = 0
+		self.f           = 5000
+		self.head_loc    = GPoint(0, 0, 0)
 		self.head_set_by = None
-		self.prev_loc = GPoint(0,0,0)
+		self.prev_loc    = GPoint(0,0,0)
 		self.prev_set_by = None
+		self.curr_gcline = None
 
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
