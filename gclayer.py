@@ -1,13 +1,13 @@
 from gcline import GCLine, GCLines
 
 class Layer():
-	def __init__(self, lines=[], layernum=None):
+	def __init__(self, lines=[], layernum=None, z=None):
 		self.layernum  = layernum
 		self.preamble:  list[GCLine] | GCLines = GCLines()
 		self.lines:     list[GCLine] | GCLines = GCLines(lines)
 		self.postamble: list[GCLine] | GCLines = GCLines()
 		self.has_moves = len(list(filter(lambda l:l.is_xymove, self.lines)))
-		self._z        = None
+		self._z        = z
 
 	def __repr__(self):
 		#If this layer contains some X/Y moves, print the extents
