@@ -56,8 +56,7 @@ class GCLine:
 								try:
 									self.args[arg[0]] = float(arg[1:]) if '.' in arg[1:] else int(arg[1:])
 								except ValueError:
-									sys.stderr.write("GCLine: %s\n" % line)
-									raise
+									self.args[arg[0]] = arg[1:]
 							else:
 								self.args[arg[0]] = None
 						else:
