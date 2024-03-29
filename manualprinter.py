@@ -64,9 +64,10 @@ class Manualprinter(GCodePrinter):
 		gcode:list[GCLine] = []
 		target_angle = thread_path.angle
 		gcode.extend([
-			GCLine('M0', comment="Pausing for manual thread angle"),
 			GCLine('M300', args={'S':40, 'P':10} , comment="Notification chirp"),
 			GCLine(f'M117 Move to angle {target_angle}'),
+			GCLine('M601', comment="Pausing for manual thread angle"),
+			self.curr_gcline.copy(comment='Return after park')
 		])
 		return gcode
 
@@ -95,10 +96,6 @@ class Manualprinter(GCodePrinter):
 		self.prev_loc = prev_loc
 		self.prev_set_by = self.head_set_by
 
-		#BUG: Ender3 specific code and hardcoded, should maybe be in config
-		if gcline.is_xymove and gcline.x == 0 and gcline.y == 220:
-			gcline = gcline.copy(args={'X': 55}, add_comment='Avoid knocking clip off the back of the bed')
-
 		#Run the passed gcode line `gcline` through the parent class's
 		# gfunc_set_axis_value() function. This might return multiple lines, so we
 		# need to process each of the returned list values.
@@ -109,68 +106,4 @@ class Manualprinter(GCodePrinter):
 				gclines.append(gcline)
 				continue
 
-			isec = self.head_cross_thread(prev_loc, gcline) if gcline.is_xymove else None
-
-			move_type = None
-			if isec:
-				if kwargs.get('anchoring',False):
-					move_type = 'anchor_fixing'
-				elif 'E' in gcline.args:
-					move_type = 'extruding' 
-				else:
-					move_type = 'non_extruding'
-
-			saveZ = self.head_loc.z
-			raise_amt = self.general_config[move_type]['head_raise'] or 0 if isec else 0
-			raise_speed = self.general_config[move_type]['head_raise_speed'] or 0 if isec else 0
-			if raise_amt > 0:
-				gclines.append(GCLine('G0',
-				args={'Z':self.head_loc.z + raise_amt, 'F': raise_speed},
-					comment=f'gfunc_move_axis({gcline}) raise head by {raise_amt} to avoid thread snag'))
-				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
-
-			#Add the line to the list of lines to be executed, with multiplied extrusion amount and adjusted feedrate if necessary
-			extrustion_multiplier = self.general_config[move_type]['extrude_multiply'] or 0 if move_type else 0
-			adjusted_feedrate = self.general_config[move_type]['move_feedrate'] or 0 if move_type else 0
-			newArgs = {}
-			if 'E' in gcline.args and extrustion_multiplier > 0:
-				newArgs['E'] = gcline.args['E'] * extrustion_multiplier
-
-			if adjusted_feedrate > 0:
-				newArgs['F'] = adjusted_feedrate
-
-			gclines.append(gcline.copy(args=newArgs, comment=f"Movetype:|{move_type}|{'|adjusted feed rate|' if adjusted_feedrate > 0 else ''}{'|extrustion multiplier|' if extrustion_multiplier > 0 else ''}"))
-
-			if adjusted_feedrate:
-				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
-
-			#Pause for moves if so configured
-			if isec:
-				if (pause := self.general_config[move_type]['post_pause'] or 0) > 0:
-					gclines.append(GCLine(code='G4', args={'S': pause}, comment=f'Pause for {pause} sec after move'))
-
-			#If we changed the z-height during a head-thread crossing move above, we
-			# need to put it back to where it was
-			if raise_amt > 0:
-				gclines.append(
-					GCLine('G0', args={'Z': saveZ, 'F': raise_speed}, comment='Drop head back to original location'))
-				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
-
 		return gclines
-
-
-	def head_cross_thread(self, head_loc, gcline:GCLine) -> None|GPoint:
-		"""Return where the move from the current head position to the position
-		in `gcline` would cause the head to cross the thread, or None if it doesn't."""
-		if head_loc.x == gcline.x and head_loc.y == gcline.y:
-			return None
-		head_traj = GSegment(head_loc.as2d(), head_loc.copy(x=gcline.x, y=gcline.y, z=0))
-		if gcline.lineno == 1285:
-			print(f'Line: {gcline}, head: {head_loc}')
-			print(f'Head set by: {self.head_set_by}')
-			print(f'Prev head: {self.prev_loc}')
-			print(f'Prev head set by: {self.prev_set_by}')
-			print(f'Traj: {head_traj}')
-			print(f'Thread: {self.thread_path}')
-		#Assuming here that the ring is synced to the bed movement
-		return self.thread_path.as2d().intersection(head_traj)
