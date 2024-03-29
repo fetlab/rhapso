@@ -11,8 +11,8 @@ class Cura4Layer(Layer):
 
 	Cura Gcode as of 4.12.1 has the same pattern every layer except layer 0.
 	"""
-	def __init__(self, lines=[], layernum=None):
-		super().__init__(lines, layernum)
+	def __init__(self, lines=[], layernum=None, **kwargs):
+		super().__init__(lines, layernum, **kwargs)
 		parts = listsplit(lines,
 				lambda l: l.line.startswith(';TYPE:'), keepsep='>', minsize=1)
 		self.parts = {m.group(1) if (m:=re.search('TYPE:(.*)',lines[0].line)) else 'NONE': lines
