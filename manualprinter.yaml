@@ -155,12 +155,12 @@ bed:
   # actually printable, taking the ring into account.
 
   #The "zero" point of the effective bed in mm, in printer frame coordinates
-  zero: [-51, -65, 0]
+  zero: [0, 0, 0]
 
   #The size of the effective bed in mm
-  size: [110, 220]
+  size: [180, 180]
 
   #The point where the thread is anchored to the bed, in mm, in printer frame
   # coordinates
   #(Here it's 45mm from the actual bed's left edge)
-  anchor: [-72.5, -65, 0]
+  anchor: [45, 0, 0]
