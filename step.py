@@ -33,7 +33,7 @@ class Step:
 		)
 
 
-	def gcode(self, gcprinter:GCodePrinter) -> list:
+	def gcode(self, gcprinter:GCodePrinter) -> list[GCLine]:
 		"""Render the gcode involved in this Step, returning a list of GCLines.
 			There are two possibilities:
 				1. Thread movement: the angle of the thread has changed. We need to
