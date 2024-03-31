@@ -90,9 +90,10 @@ class Ender3(GCodePrinter):
 		if (ring_move_by := self.ring_delta_for_thread(thread_path, target.y)) is None:
 			raise ValueError(f'No ring/thread intersection for {thread_path}')
 		new_ring_angle = self.ring.angle + ring_move_by
-		self.thread_path = thread_path
-		return self.ring_move(dist=ring_move_by, raise_head=True,
+		gcline = self.ring_move(dist=ring_move_by, raise_head=True,
 			comment=f'{self.thread_path.repr_diff(thread_path)},  ⃘{self.ring.angle + ring_move_by:.3f}°')
+		self.thread_path = thread_path
+		return gcline
 
 
 	def gfunc_set_absolute_positioning(self, gcline: GCLine, **kwargs) -> list[GCLine]:
@@ -170,7 +171,7 @@ class Ender3(GCodePrinter):
 				if kwargs.get('anchoring',False):
 					move_type = 'anchor_fixing'
 				elif 'E' in gcline.args:
-					move_type = 'extruding' 
+					move_type = 'extruding'
 				else:
 					move_type = 'non_extruding'
 
@@ -198,7 +199,11 @@ class Ender3(GCodePrinter):
 			if adjusted_feedrate > 0:
 				newArgs['F'] = adjusted_feedrate
 
-			gclines.append(gcline.copy(args=newArgs, comment=f"Movetype:|{move_type}|{'|adjusted feed rate|' if adjusted_feedrate > 0 else ''}{'|extrustion multiplier|' if extrustion_multiplier > 0 else ''}"))
+			debug_cmt = []
+			if move_type is not None:      debug_cmt.append(f"Move type: {move_type}")
+			if adjusted_feedrate > 0:      debug_cmt.append(f"Feed rate: {adjusted_feedrate}")
+			if extrustion_multiplier != 0: debug_cmt.append(f"Ext. mult: {extrustion_multiplier}")
+			gclines.append(gcline.copy(args=newArgs, comment=', '.join(debug_cmt)))
 
 			if adjusted_feedrate:
 				gclines.append(GCLine('G0', args={'F': self.f}, comment='Returning original feed rate'))
