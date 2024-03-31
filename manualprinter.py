@@ -14,7 +14,7 @@ from geometry.angle import Angle, atan2, asin, acos
 from geometry.utils import ang_diff, circle_intersection, sign
 from geometry_helpers import traj_isec
 from bed            import Bed
-from gcode_printer  import GCodePrinter
+from gcode_printer  import GCodePrinter, E_ABS, E_REL
 from gcline         import GCLine, comments, comment
 from logger         import rprint
 from util           import Saver, Number
@@ -46,6 +46,7 @@ class Manualprinter(GCodePrinter):
 		#The current path of the thread: the current thread anchor and the
 		# direction of the thread.
 		self.thread_path: GHalfLine = None
+		self.target_anchor: GPoint|None  = None
 
 		self.add_codes('G28', action=lambda gcline, **kwargs: [
 			GCLine('G28 X Y Z ; Home only X, Y, and Z axes, but avoid trying to home A')])
@@ -61,15 +62,73 @@ class Manualprinter(GCodePrinter):
 
 	def set_thread_path(self, thread_path:GHalfLine, target:GPoint) -> list[GCLine]:
 		"""We have no ring to move - but we do need to tell the user to move the thread"""
-		gcode:list[GCLine] = []
-		target_angle = thread_path.angle
-		gcode.extend([
+		self.thread_path = thread_path
+		self.target_anchor = target
+		return [comment("About to move thread; blob_anchor() will happen next")]
+
+
+	def blob_anchor(self):
+		#Procedure:
+		# * Ensure relative extruder mode (M83)
+		# * Beep
+		# * Display instruction
+		# * Retract by ? (Frank uses -5)
+		# * Park and wait
+		# * Return to a point on the line that will be drawn across the anchor
+		#   point, that is .4mm towards the origin of that line.
+		# * Draw the "blob" by un-retracting then extruding extra (by 2?), then
+		#   raising the head by 1.4mm while extruding 3.3
+		# * Return to the start of the anchoring line (self's position) then draw
+		#   the anchoring line
+		# * Return to absolute extruder mode if that's what it was before (M82)
+
+		#Defaults, need to move to yaml
+		retract_amount      = -2.5
+		retract_feedrate    = 4200
+		blob_amount1        = 2
+		blob_amount2        = 2
+		blob_feedrate       = 2700
+		blob_raise          = 1.4
+		blob_raise_feedrate = 100
+		unpark_feedrate     = 10000
+
+		gclines = []
+
+		#Ensure relative extruder mode
+		was_abs = False
+		if self.e_mode != E_REL:
+			was_abs = True
+			gclines.append(GCLine('M83'))
+
+		#Beep, instruct, retract and park
+		gclines.extend([
 			GCLine('M300', args={'S':40, 'P':10} , comment="Notification chirp"),
-			GCLine(f'M117 Move to angle {target_angle}'),
+			GCLine(f'M117 Move to angle {self.thread_path.angle}'),
+			GCLine('G1', args={'E':retract_amount, 'F':retract_feedrate}),
 			GCLine('M601', comment="Pausing for manual thread angle"),
-			self.curr_gcline.copy(comment='Return after park')
 		])
-		return gcode
+		#Next lines will happen after user hits button
+
+		#Unpark to blob point, draw blob
+		blob_point = GSegment(self.target_anchor, self.curr_gcseg.start_point).point_at_dist(.4)
+		gclines.extend([
+			GCLine('G0', args={'X':blob_point.x, 'Y':blob_point.y, 'Z':blob_point.z,
+						'F':unpark_feedrate}, comment='Move to blob point'),
+			GCLine('G1', args={'E':blob_amount1 - retract_amount, 'F':blob_feedrate},
+						 comment='Unretract plus first blob'),
+			GCLine('G1', args={'Z':blob_point.z + blob_raise, 'E':blob_amount2,
+						 'F':blob_raise_feedrate}, comment='Second blob'),
+			comment('Next thing should be drawing the original anchoring line')
+		])
+
+		if was_abs:
+			gclines.append(GCLine('M82'))
+
+		#Next gcline processed should return head to anchoring segment start and
+		# print it, smushing down the blob on the way
+
+		return gclines
+
 
 	def gfunc_printer_ready(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""At least with the current version of Cura, M109 is the last command
@@ -86,10 +145,11 @@ class Manualprinter(GCodePrinter):
 
 
 	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
-		"""Process gcode lines with instruction G0, G1. Move the ring such
-		that the angle of `self.thread_path` stays constant with any Y movement."""
-
+		"""Process gcode lines with instruction G0, G1."""
 		gclines:list[GCLine] = []
+		if self.target_anchor is not None:
+			 gclines.extend(self.blob_anchor())
+			 self.target_anchor = None
 
 		#Keep a copy of the head location since super() will change it.
 		prev_loc = self.head_loc.copy()
@@ -99,11 +159,6 @@ class Manualprinter(GCodePrinter):
 		#Run the passed gcode line `gcline` through the parent class's
 		# gfunc_set_axis_value() function. This might return multiple lines, so we
 		# need to process each of the returned list values.
-		super_gclines = super().gcfunc_move_axis(gcline, **kwargs) or [gcline]
-
-		for gcline in super_gclines:
-			if not gcline.is_xymove:
-				gclines.append(gcline)
-				continue
+		gclines.extend(super().gcfunc_move_axis(gcline, **kwargs) or [gcline])
 
 		return gclines
