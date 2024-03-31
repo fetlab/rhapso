@@ -73,17 +73,24 @@ class Step:
 
 		gcode = []
 		for seg in self.gcsegs:
-			#In a GSegment with more than two gc_lines, there is always one or more
-			# X/Y Move lines, but only ever one Extrude line, which is always the
-			# last line. Execute every line, as the XY move will put the head in the
-			# right place for the extrude.
-			if len(seg.gc_lines) > 2:
+			gcprinter.curr_gcseg = seg
+
+			#gc_lines always starts and ends with an xymove but could have other
+			# stuff in-between, such as more xymoves or comments or other commands.
+			moves = [s for s in seg.gc_lines if s.is_xymove]
+
+			#In a GSegment with more than two X/Y Move lines, there should only ever
+			# be one Extrude line, which is always the last line.  Execute every
+			# line, as the XY move will put the head in the right place for the
+			# extrude.
+			if len(moves) > 2:
 				gcode.extend(gcprinter.execute_gcode(seg.gc_lines.data[:-1]))
 				extrude_line = seg.gc_lines.data[-1]
 
-			#For GSegments with exactly two gc_lines
+			#For GSegments with exactly two xymoves; the first might be an extruding move
 			else:
-				l1, extrude_line = seg.gc_lines.data
+				l1 = seg.gc_lines.data[0]
+				extrude_line = seg.gc_lines.data[-1]
 
 				#The first line should never execute an extrusion move, but we might need
 				# to use its coordinates to position the print head in the right place.
