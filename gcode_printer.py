@@ -19,6 +19,10 @@ from geometry_helpers import visibility, too_close
 from geometry.utils import angsort, ang_diff, ang_dist, eps
 from geometry.angle import Angle
 
+#Extruder mode constants
+E_ABS = 'absolute'
+E_REL = 'relative'
+
 class GCodePrinter:
 	"""Simulates a printer in order to generate gcode."""
 	def __init__(self, *args, **kwargs):
@@ -26,12 +30,16 @@ class GCodePrinter:
 		#State: absolute extrusion amount, print head location, anchor location
 		# (initially the bed's anchor)
 		self.e           = 0
+		self.e_mode      = E_ABS
+		self.last_e      = 0
+
 		self.f           = 5000
 		self.head_loc    = GPoint(0, 0, 0)
 		self.head_set_by = None
 		self.prev_loc    = GPoint(0,0,0)
 		self.prev_set_by = None
-		self.curr_gcline = None
+		self.curr_gcline:GCline = None
+		self.curr_gcseg:GSegment  = None
 
 		#Functions for different Gcode commands
 		self._code_actions: dict[str|None,Callable] = {}
@@ -39,6 +47,8 @@ class GCodePrinter:
 		self.add_codes('G28',      action=self.gcfunc_auto_home)
 		self.add_codes('G0', 'G1', action=self.gcfunc_move_axis)
 		self.add_codes('G92',      action=self.gcfunc_set_axis_value)
+		self.add_codes('M82',      action=self.gcfunc_set_e_absolute)
+		self.add_codes('M83',      action=self.gcfunc_set_e_relative)
 
 
 	#Create attributes which call Printer.attr_changed on change
@@ -79,7 +89,6 @@ class GCodePrinter:
 
 
 	def _execute_gcline(self, gcline:GCLine, **kwargs) -> list[GCLine]:
-		self.curr_gcline = gcline
 		return self._code_actions.get(gcline.code, self._code_actions[None])(gcline, **kwargs) or [gcline]
 
 
@@ -117,4 +126,15 @@ class GCodePrinter:
 			# since our lines get emitted out-of-order
 			else:
 				self.e += gcline.relative_extrude
-				return [gcline.copy(args={'E': self.e})]
+				if self.e_mode == E_ABS:
+					return [gcline.copy(args={'E': self.e})]
+				elif self.e_mode == E_REL:
+					return [gcline.copy(args={'E': gcline.relative_extrude})]
+
+
+	def gcfunc_set_e_absolute(self, gcline:GCLine, **kwargs) -> list[GCLine]:
+		self.e_mode = E_ABS
+
+
+	def gcfunc_set_e_relative(self, gcline:GCLine, **kwargs) -> list[GCLine]:
+		self.e_mode = E_REL
