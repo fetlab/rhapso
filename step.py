@@ -97,6 +97,8 @@ class Step:
 				if l1.is_xymove and gcprinter.xy != l1.xy:
 					if l1.is_xyextrude:
 						l1 = l1.as_xymove(fake=True)
+					if gcprinter.prev_loc.z != l1.z:
+						l1 = l1.copy(args={'Z': gcprinter.prev_loc.z})
 					gcode.extend(gcprinter.execute_gcode(l1))
 
 			assert(extrude_line.is_extrude)
