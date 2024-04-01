@@ -132,9 +132,9 @@ class GCodePrinter:
 					return [gcline.copy(args={'E': gcline.relative_extrude})]
 
 
-	def gcfunc_set_e_absolute(self, gcline:GCLine, **kwargs) -> list[GCLine]:
+	def gcfunc_set_e_absolute(self, gcline:GCLine, **kwargs):
 		self.e_mode = E_ABS
 
 
-	def gcfunc_set_e_relative(self, gcline:GCLine, **kwargs) -> list[GCLine]:
+	def gcfunc_set_e_relative(self, gcline:GCLine, **kwargs):
 		self.e_mode = E_REL
