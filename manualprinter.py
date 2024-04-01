@@ -83,10 +83,11 @@ class Manualprinter(GCodePrinter):
 		# * Return to absolute extruder mode if that's what it was before (M82)
 
 		#Defaults, need to move to yaml
+		pre_park_location   = GPoint(158, 158, 1) #Park at X/Y, raise by Z
 		retract_amount      = -2.5
 		retract_feedrate    = 4200
-		blob_amount1        = 2
-		blob_amount2        = 2
+		blob_amount1        = 4.5
+		blob_amount2        = 3.3
 		blob_feedrate       = 2700
 		blob_raise          = 1.4
 		blob_raise_feedrate = 100
@@ -104,20 +105,30 @@ class Manualprinter(GCodePrinter):
 		gclines.extend([
 			GCLine('M300', args={'S':40, 'P':10} , comment="Notification chirp"),
 			GCLine(f'M117 Move to angle {self.thread_path.angle}'),
-			GCLine('G1', args={'E':retract_amount, 'F':retract_feedrate}),
+			GCLine('G1', args={
+					'X': pre_park_location.x, 'Y': pre_park_location.y,
+					'Z': self.z + pre_park_location.z,
+					'E':retract_amount, 'F':retract_feedrate,
+					}, comment="Move to pre-park location",
+				),
 			GCLine('M601', comment="Pausing for manual thread angle"),
 		])
 		#Next lines will happen after user hits button
 
 		#Unpark to blob point, draw blob
+		rprint(f'{self.target_anchor=}\n{self.curr_gcseg=}')
 		blob_point = GSegment(self.target_anchor, self.curr_gcseg.start_point).point_at_dist(.4)
+		blob_line = GCLine('G0',
+										 args={'X':blob_point.x, 'Y':blob_point.y, 'Z':blob_point.z,
+													 'F':unpark_feedrate},
+										 comment='Move to blob point')
 		gclines.extend([
-			GCLine('G0', args={'X':blob_point.x, 'Y':blob_point.y, 'Z':blob_point.z,
-						'F':unpark_feedrate}, comment='Move to blob point'),
+			blob_line,
+			blob_line,   #A second time because the first seems to get eaten by Buddy firmware
 			GCLine('G1', args={'E':blob_amount1 - retract_amount, 'F':blob_feedrate},
-						 comment='Unretract plus first blob'),
+						 comment='Unretract plus first blob extrude'),
 			GCLine('G1', args={'Z':blob_point.z + blob_raise, 'E':blob_amount2,
-						 'F':blob_raise_feedrate}, comment='Second blob'),
+						 'F':blob_raise_feedrate}, comment='Second blob extrude, with raise'),
 			comment('Next thing should be drawing the original anchoring line')
 		])
 
@@ -146,19 +157,14 @@ class Manualprinter(GCodePrinter):
 
 	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""Process gcode lines with instruction G0, G1."""
-		gclines:list[GCLine] = []
-		if self.target_anchor is not None:
-			 gclines.extend(self.blob_anchor())
-			 self.target_anchor = None
 
 		#Keep a copy of the head location since super() will change it.
-		prev_loc = self.head_loc.copy()
-		self.prev_loc = prev_loc
+		self.prev_loc    = self.head_loc.copy()
 		self.prev_set_by = self.head_set_by
 
-		#Run the passed gcode line `gcline` through the parent class's
-		# gfunc_set_axis_value() function. This might return multiple lines, so we
-		# need to process each of the returned list values.
-		gclines.extend(super().gcfunc_move_axis(gcline, **kwargs) or [gcline])
+		blob_lines  = self.blob_anchor() if self.target_anchor is not None else []
+		super_lines = super().gcfunc_move_axis(gcline, **kwargs) or [gcline]
 
-		return gclines
+		self.target_anchor = None
+
+		return blob_lines + super_lines
