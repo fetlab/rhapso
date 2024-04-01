@@ -112,10 +112,18 @@ class GCodePrinter:
 		if gcline.x: self.x = gcline.x
 		if gcline.y: self.y = gcline.y
 		if gcline.z: self.z = gcline.z
-		self.f = gcline.args.get('F',None) or self.f
 
 		if any((gcline.x, gcline.y, gcline.z)):
 			self.head_set_by = gcline
+
+		new_args = {}
+
+		#Try to keep feedrate for a line, even when moving lines around
+		feedrate = gcline.args.get('F', gcline.meta.get('feedrate', self.f))
+		if feedrate != self.f:
+			self.f = feedrate
+			if 'F' not in gcline.args:
+				new_args['F'] = feedrate
 
 		if 'E' in gcline.args:
 			#G92: software set value
@@ -125,11 +133,16 @@ class GCodePrinter:
 			#A normal extruding line; we need to use the relative extrude value
 			# since our lines get emitted out-of-order
 			else:
-				self.e += gcline.relative_extrude
+				self.e += gcline.relative_extrude or 0
 				if self.e_mode == E_ABS:
-					return [gcline.copy(args={'E': self.e})]
+					new_args['E'] = self.e
 				elif self.e_mode == E_REL:
-					return [gcline.copy(args={'E': gcline.relative_extrude})]
+					new_args['E'] = gcline.relative_extrude
+
+		if new_args:
+			return [gcline.copy(args=new_args)]
+
+		return [gcline]
 
 
 	def gcfunc_set_e_absolute(self, gcline:GCLine, **kwargs):

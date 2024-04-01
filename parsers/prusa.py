@@ -14,10 +14,12 @@ def parse(gcobj):
 	gclines = []
 	last_extrude = 0
 	ext_mode = 'relative'
+	feedrate = None
 	for i,l in enumerate(gcobj.filelines):
 		line = GCLine(l, lineno=i+1)
 		if line.code == 'M82': ext_mode = 'absolute'
 		if line.code == 'M83': ext_mode = 'relative'
+		if 'F' in line.args: feedrate = line.args['F']
 		if 'E' in line.args:
 			if ext_mode == 'absolute':
 				if line.code == 'G92':
@@ -27,6 +29,7 @@ def parse(gcobj):
 					last_extrude = line.args['E']
 			else:
 				line.relative_extrude = line.args['E']
+		line.meta['feedrate'] = feedrate
 		gclines.append(line)
 
 	gcobj.lines = gclines.copy()
