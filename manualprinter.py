@@ -67,7 +67,7 @@ class Manualprinter(GCodePrinter):
 		return [comment("About to move thread; blob_anchor() will happen next")]
 
 
-	def blob_anchor(self):
+	def blob_anchor(self) -> list[GCLine]:
 		#Procedure:
 		# * Ensure relative extruder mode (M83)
 		# * Beep
@@ -82,18 +82,21 @@ class Manualprinter(GCodePrinter):
 		#   the anchoring line
 		# * Return to absolute extruder mode if that's what it was before (M82)
 
-		#Defaults, need to move to yaml
-		pre_park_location   = GPoint(158, 158, 1) #Park at X/Y, raise by Z
-		retract_amount      = -2.5
-		retract_feedrate    = 4200
-		blob_amount1        = 4.5
-		blob_amount2        = 3.3
-		blob_feedrate       = 2700
-		blob_raise          = 1.4
-		blob_raise_feedrate = 100
-		unpark_feedrate     = 10000
+		gclines: list[GCLine] = []
 
-		gclines = []
+		manual_settings = self.config['general']['manual_printer']
+		park_settings = manual_settings['park_settings']
+		blob_settings = manual_settings['blob_anchors']
+		if not blob_settings['use_blob_anchors']:
+			return gclines
+
+		retract_amount      = park_settings['retract_amount']
+		unpark_feedrate     = park_settings['unpark_feedrate']
+		blob_amount1        = blob_settings['blob_amount1']
+		blob_amount2        = blob_settings['blob_amount2']
+		blob_feedrate       = blob_settings['blob_feedrate']
+		blob_raise          = blob_settings['blob_raise']
+		blob_raise_feedrate = blob_settings['blob_raise_feedrate']
 
 		#Ensure relative extruder mode
 		was_abs = False
@@ -101,18 +104,6 @@ class Manualprinter(GCodePrinter):
 			was_abs = True
 			gclines.append(GCLine('M83'))
 
-		#Beep, instruct, retract and park
-		gclines.extend([
-			GCLine('M300', args={'S':40, 'P':10} , comment="Notification chirp"),
-			GCLine(f'M117 Move to angle {self.thread_path.angle}'),
-			GCLine('G1', args={
-					'X': pre_park_location.x, 'Y': pre_park_location.y,
-					'Z': self.z + pre_park_location.z,
-					'E':retract_amount, 'F':retract_feedrate,
-					}, comment="Move to pre-park location",
-				),
-			GCLine('M601', comment="Pausing for manual thread angle"),
-		])
 		#Next lines will happen after user hits button
 
 		#Unpark to blob point, draw blob
@@ -157,14 +148,41 @@ class Manualprinter(GCodePrinter):
 
 	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""Process gcode lines with instruction G0, G1."""
+		gclines = []
 
 		#Keep a copy of the head location since super() will change it.
 		self.prev_loc    = self.head_loc.copy()
 		self.prev_set_by = self.head_set_by
 
-		blob_lines  = self.blob_anchor() if self.target_anchor is not None else []
-		super_lines = super().gcfunc_move_axis(gcline, **kwargs) or [gcline]
+		manual_settings = self.config['general']['manual_printer']
+		park_settings = manual_settings['park_settings']
+
+		pre_park_location = GPoint(*park_settings['pre_park_location'])
+		retract_amount    = park_settings['retract_amount']
+		retract_feedrate  = park_settings['retract_feedrate']
+		unpark_feedrate   = park_settings['unpark_feedrate']
+
+		#Beep, instruct, retract and park
+		gclines.extend([
+			GCLine('M300', args={'S':40, 'P':10} , comment="Notification chirp"),
+			GCLine(f'M117 Move to angle {self.thread_path.angle}'),
+			GCLine('G1', args={
+					'X': pre_park_location.x, 'Y': pre_park_location.y,
+					'Z': self.z + pre_park_location.z,
+					'E':retract_amount, 'F':retract_feedrate,
+					}, comment="Move to pre-park location",
+				),
+			GCLine(manual_settings['pause_command'], comment="Pausing for manual thread angle"),
+		])
+
+		if manual_settings['blob_anchors']['use_blob_anchors']:
+			gclines.extend(
+				self.blob_anchor() if self.target_anchor is not None else [])
+		else:
+			gclines.append(GCLine('G1', args={'E': -retract_amount}, comment='Unretract'))
+
+		gclines.extend(super().gcfunc_move_axis(gcline, **kwargs) or [gcline])
 
 		self.target_anchor = None
 
-		return blob_lines + super_lines
+		return gclines
