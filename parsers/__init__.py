@@ -17,4 +17,4 @@ def find_parser(lines):
 	raise ValueError("No parsers match")
 
 
-__all__ = [find_parser]
+__all__ = ['find_parser']
