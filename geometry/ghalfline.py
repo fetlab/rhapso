@@ -55,7 +55,6 @@ class GHalfLine(HalfLine):
 		return {seg: GPoint(isec) for seg,isec in isecs.items() if isec not in [None, self.point]}
 
 
-
 	def __repr__(self):
 		return "H({}, {})".format(self.point, self.vector)
 
