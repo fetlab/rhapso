@@ -1,7 +1,7 @@
 import pkgutil, importlib
 
 def get_parsers():
-	"""Return the list of available parser names. Make sure the basic parser is
+	"""Return the list of available parser names. Makes sure the basic parser is
 	always last in the list."""
 	mods = [m.name for m in filter(
 		lambda m:m.name != 'basic', pkgutil.iter_modules([__name__]))]
