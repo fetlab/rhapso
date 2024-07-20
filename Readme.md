@@ -36,3 +36,13 @@ The router needs to have enough infill to find places to attach the thread when 
 7. Open the _Text Commands_ window (_View → Show Text Commands_). Ensure that the radio button at the bottom-right of this pane is set to **Py**.
 8. Copy the contents of [thread_from_fusion.py](thread_from_fusion.py). Paste this into the command line (verbatim, including quotation marks!) and hit enter. It will select the entire connected path and output a list of the vertices. If you're running the code on Mac OS, it will copy the output to the clipboard for you. Otherwise you'll have to do it yourself.
 9. Follow the pattern in the demo notebook to use the gcode file and copied thread path to route the model.
+
+## Software architecture
+
+The entry point for everything is `threader.py`.
+
+Routing and Gcode generation are separate processes.
+
+### Routing
+
+### Gcode generation
