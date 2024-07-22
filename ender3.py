@@ -168,7 +168,7 @@ class Ender3(GCodePrinter):
 
 			move_type = None
 			if isec:
-				if kwargs.get('anchoring',False):
+				if anchor := kwargs.get('anchor', None):
 					move_type = 'anchor_fixing'
 				elif 'E' in gcline.args:
 					move_type = 'extruding'
