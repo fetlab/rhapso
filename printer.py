@@ -80,7 +80,7 @@ class Printer:
 		self.thread_path = GHalfLine(self.thread_path.point, target)
 
 
-	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]=None, extra_message='', avoid_by=1):
+	def avoid_and_print(self, steps: Steps, avoid: Collection[GSegment]|None=None, extra_message='', avoid_by=1):
 		"""Loop to print everything in `avoid` without thread intersections."""
 		avoid = set(avoid or [])
 		repeats = 0
@@ -89,7 +89,7 @@ class Printer:
 			rprint(f'Avoid and print {len(avoid)} segments, iteration {repeats}')
 			if repeats > 5: raise ValueError("Too many repeats")
 			with steps.new_step(f"Move thread to avoid printing over it with {len(avoid)} segments?" + extra_message) as s:
-				if isecs := self.thread_avoid(avoid):
+				if isecs := self.thread_avoid(avoid, avoid_by):
 					rprint(f"{len(isecs)} thread/segment intersections")
 				avoid -= isecs
 			if s.thread_path == s.original_thread_path:
@@ -138,6 +138,10 @@ class Printer:
 		if not (isecs := self.thread_path.intersecting(avoid)):
 			#Thread is already not intersecting segments in `avoid`, but we want to try
 			# to move it so it's not very close to the ends of the segments either.
+
+			#If avoid_by isn't > 0, then we don't need to do anything else, so we're done.
+			if avoid_by <= 0:
+				return isecs
 
 			rprint(f'No intersections, ensure thread avoids segments by at least {avoid_by} mm')
 
