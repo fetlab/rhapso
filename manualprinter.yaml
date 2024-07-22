@@ -13,14 +13,14 @@ general:
       retract_feedrate:  4200
       unpark_feedrate:   10000
 
-    #If you do this, you might need to make a half-pipe for your anchors
-    blob_anchors:
-      use_blob_anchors:    True
-      blob_amount1:        4.5
-      blob_amount2:        3.3
-      blob_feedrate:       2700
-      blob_raise:          1.4
-      blob_raise_feedrate: 100
+  #If you do this, you might need to make a half-pipe for your anchors
+  blob_anchors:
+    use_blob_anchors:    True
+    blob_amount1:        4.5
+    blob_amount2:        3.3
+    blob_feedrate:       2700
+    blob_raise:          1.4
+    blob_raise_feedrate: 100
 
   #Options for when the print head crosses the thread in different situations
   head_crosses_thread:

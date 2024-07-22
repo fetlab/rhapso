@@ -129,6 +129,66 @@ class Ender3(GCodePrinter):
 			GCLine(comment=f'Print head: {self.head_loc}'),
 		]
 
+	def blob_anchor(self) -> list[GCLine]:
+		#Procedure:
+		# * Ensure relative extruder mode (M83)
+		# * Retract by ? (Frank uses -5)
+		# * Move to the next segment start point, but .2mm higher
+		# * Move the ring to cross the anchor point
+		# * Drop back to layer z
+		# * Draw the "blob" by un-retracting then extruding extra (by 2?), then
+		#   raising the head by 1.4mm while extruding 3.3
+		# * Return to the start of the anchoring line (self's position) then draw
+		#   the anchoring line
+		# * Return to absolute extruder mode if that's what it was before (M82)
+
+		gclines: list[GCLine] = []
+
+		blob_settings = self.config['general']['blob_anchors']
+		if not blob_settings['use_blob_anchors']:
+			return gclines
+
+		retract_amount      = park_settings['retract_amount']
+		unpark_feedrate     = park_settings['unpark_feedrate']
+		blob_amount1        = blob_settings['blob_amount1']
+		blob_amount2        = blob_settings['blob_amount2']
+		blob_feedrate       = blob_settings['blob_feedrate']
+		blob_raise          = blob_settings['blob_raise']
+		blob_raise_feedrate = blob_settings['blob_raise_feedrate']
+
+		#Ensure relative extruder mode
+		was_abs = False
+		if self.e_mode != E_REL:
+			was_abs = True
+			gclines.append(GCLine('M83'))
+
+		#Next lines will happen after user hits button
+
+		#Unpark to blob point, draw blob
+		rprint(f'{self.target_anchor=}\n{self.curr_gcseg=}')
+		blob_point = GSegment(self.target_anchor, self.curr_gcseg.start_point).point_at_dist(.4)
+		blob_line = GCLine('G0',
+										 args={'X':blob_point.x, 'Y':blob_point.y, 'Z':blob_point.z,
+													 'F':unpark_feedrate},
+										 comment='Move to blob point')
+		gclines.extend([
+			blob_line,
+			blob_line,   #A second time because the first seems to get eaten by Buddy firmware
+			GCLine('G1', args={'E':blob_amount1 - retract_amount, 'F':blob_feedrate},
+						 comment='Unretract plus first blob extrude'),
+			GCLine('G1', args={'Z':blob_point.z + blob_raise, 'E':blob_amount2,
+						 'F':blob_raise_feedrate}, comment='Second blob extrude, with raise'),
+			comment('Next thing should be drawing the original anchoring line')
+		])
+
+		if was_abs:
+			gclines.append(GCLine('M82'))
+
+		#Next gcline processed should return head to anchoring segment start and
+		# print it, smushing down the blob on the way
+
+		return gclines
+
 
 	def gcfunc_move_axis(self, gcline: GCLine, **kwargs) -> list[GCLine]:
 		"""Process gcode lines with instruction G0, G1. Move the ring such

@@ -175,7 +175,7 @@ class Manualprinter(GCodePrinter):
 			GCLine(manual_settings['pause_command'], comment="Pausing for manual thread angle"),
 		])
 
-		if manual_settings['blob_anchors']['use_blob_anchors']:
+		if self.config['general']['blob_anchors']['use_blob_anchors']:
 			gclines.extend(
 				self.blob_anchor() if self.target_anchor is not None else [])
 		else:
