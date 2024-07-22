@@ -1,23 +1,12 @@
-from math import pi
 from copy import copy, deepcopy
 from collections import defaultdict
-from typing import Collection, Callable
-from itertools import groupby
-from more_itertools import flatten
-from fastcore.basics import first, listify
-from Geometry3D import Line, Vector
-from rich.pretty import pretty_repr
+from typing import Callable
+from fastcore.basics import listify
 
-from rich.console import Console
-print = Console(style="on #272727").print
-
-from util import attrhelper, Number
+from util import attrhelper
 from geometry import GPoint, GSegment, GHalfLine
-from gcline import GCLine, GCLines
+from gcline import GCLine
 from gclayer import Layer
-from geometry_helpers import visibility, too_close
-from geometry.utils import angsort, ang_diff, ang_dist, eps
-from geometry.angle import Angle
 
 #Extruder mode constants
 E_ABS = 'absolute'
