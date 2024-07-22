@@ -19,6 +19,7 @@ from itertools import pairwise
 from geometry import GPoint, GPolyLine, GHalfLine
 from geometry.angle import Angle
 from geometry_helpers import thread_snap
+from special_points import NonFixedAnchor
 
 from logger import rprint, restart_logging, reinit_logging, end_accordion_logging
 
@@ -56,8 +57,8 @@ class Threader:
 		if thread_list[0] != self.start_anchor:
 			thread_list = thread_list.copy()
 			thread_list.insert(0, self.start_anchor)
-		thread = GPolyLine(thread_list)
-		self.snapped_thread = thread_snap(thread, self.gcode_file.layers[start_layer:end_layer])
+		thread = GPolyLine(thread_list)                                  # ↓ Snap all the layers to prevent errors
+		self.snapped_thread = thread_snap(thread, self.gcode_file.layers)#[start_layer:end_layer])
 		rprint('Initial thread:', thread.points)
 		rprint('\nSnapped anchors to layers; anchors now:', self.snapped_thread.points)
 
@@ -169,17 +170,25 @@ class Threader:
 				layer.geometry.segments[seg_idx:seg_idx+1] = splits
 				rprint(f'Split {seg} into', splits, indent=2)
 		else:
-			anchor_segs = {anchor: anchor.intersecting(layer.geometry.segments) for anchor in anchors}
+			anchor_segs = {anchor: anchor.intersecting(layer.geometry.segments) for
+									anchor in anchors if not isinstance(anchor, NonFixedAnchor)}
 			rprint('Anchors fixed by segments:', pretty_repr(anchor_segs))
 
-		rprint('Thread now:', pretty_repr(thread.points))
-		rprint('Anchors now:', pretty_repr(anchors))
+		rprint('Thread now:', pretty_repr(thread.segments))
+		rprint(f'Anchors for layer {layer.layernum} now:', pretty_repr(anchors))
 
 		#Set the printer thread path's z to this layer's z
 		self.printer.move_thread_to(self.printer.thread_path.point.copy(z=layer.z))
 
-		#Get segments of thread to work with, set to layer's z
-		layerthread = [seg.copy(z=layer.z) for seg in thread.segments if seg.end_point.z == layer.z]
+		#Get segments of thread to work with, set to layer's z,
+		# but avoid vertical segments
+		#Get segments of thread that *end* within this layer: segments starting
+		# lower than this layer will have been anchored elsewhere; segments ending
+		# above this layer will be anchored there.
+		layerthread = [seg.copy(z=layer.z) for seg in thread.segments if
+									 seg.end_point.z == layer.z and
+									 (seg.start_point.x != seg.end_point.x or
+										seg.start_point.y != seg.end_point.y)]
 		rprint('Thread in layer:', pretty_repr(layerthread))
 
 		#Done preprocessing thread; now we can start figuring out what to print and how
@@ -206,34 +215,38 @@ class Threader:
 
 			next_anchor = thread_seg.end_point
 
-			with steps.new_step(f'Rotate thread at {self.printer.thread_path.point}'
+			with steps.new_step(f'Rotate thread anchored at {self.printer.thread_path.point}'
 													f' to overlap next anchor at {next_anchor}') as s:
 				self.printer.rotate_thread_to(next_anchor)
 
-			#Find and print the segment that fixes the thread at the anchor point
-			anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if next_anchor in seg]
-			if not anchorsegs: raise ValueError(f'No unprinted segments overlap anchor {next_anchor}')
-			with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
-				s.add(anchorsegs, anchoring=True)
-				#Update the printer state with the new anchor (maintaining the same thread direction)
-				self.printer.move_thread_to(next_anchor)
+			#Find and print the segment that fixes the thread at the anchor point, if
+			# the next anchor point should be fixed
+			if isinstance(next_anchor, NonFixedAnchor):
+				rprint(f'Next anchor will not be fixed: {next_anchor}')
+			else:
+				anchorsegs = [seg for seg in unprinted(layer.geometry.segments) if next_anchor in seg]
+				if not anchorsegs: raise ValueError(f"No unprinted segments overlap anchor {next_anchor}; can't rotate thread.")
+				with steps.new_step(f'Print {len(anchorsegs)} segment{"s" if len(anchorsegs) > 1 else ""} to fix anchor') as s:
+					s.add(anchorsegs, anchor=next_anchor)
+					#Update the printer state with the new anchor (maintaining the same thread direction)
+					self.printer.move_thread_to(next_anchor)
 
-			#Get unprinted segments that overlap the current thread segment. We
-			# want to print these to fix the thread in place.
-			to_print = unprinted(layer.intersecting(thread_seg))
-			rprint(f'{len(to_print)} unprinted segments intersecting this thread segment')
+				#Get unprinted segments that overlap the current thread segment. We
+				# want to print these to fix the thread in place.
+				to_print = unprinted(layer.intersecting(thread_seg))
+				rprint(f'{len(to_print)} unprinted segments intersecting this thread segment')
 
-			#Find gcode segments that intersect future thread segments; we don't
-			# want to print these yet, so remove them
-			avoid = unprinted(layer.intersecting(layerthread[i+1:]))
-			rprint(f'{len(avoid)} unprinted segments intersecting future thread segments')
-			to_print -= avoid
+				#Find gcode segments that intersect future thread segments; we don't
+				# want to print these yet, so remove them
+				avoid = unprinted(layer.intersecting(layerthread[i+1:]))
+				rprint(f'{len(avoid)} unprinted segments intersecting future thread segments')
+				to_print -= avoid
 
-			if to_print:
-				self.printer.avoid_and_print(steps, to_print)
-				to_print = set()
+				if to_print:
+					self.printer.avoid_and_print(steps, to_print)
+					to_print = set()
 
-		self.printer.avoid_and_print(steps, non_isecs)
+		self.printer.avoid_and_print(steps, non_isecs, avoid_by=0)
 
 		# --- Print what's left
 		remaining = {s for s in layer.geometry.segments if not s.printed}
@@ -241,7 +254,7 @@ class Threader:
 			rprint('[red]Odd:\n  remaining - to_print:', remaining - to_print, indent=4)
 			rprint('  to_print - remaining:', to_print - remaining, indent=4)
 		if remaining:
-			self.printer.avoid_and_print(steps, remaining, '(remaining)')
+			self.printer.avoid_and_print(steps, remaining, '(remaining)', avoid_by=0)
 
 
 		rprint('[yellow]Done routing this layer[/];',

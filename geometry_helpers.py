@@ -6,6 +6,7 @@ from dataclasses import make_dataclass
 from typing import List, Dict, Collection, Set
 from collections import defaultdict
 from more_itertools import flatten
+from special_points import NonFixedAnchor
 
 from util import Number
 from geometry import GPoint, GSegment, GHalfLine, GPolyLine
@@ -36,6 +37,9 @@ def thread_z_snap(thread:GPolyLine, layer_z_heights:list[Number]) -> GPolyLine:
 	#Now, for any thread segment which doesn't start and end on the same layer,
 	# split it; skip the first segment since it's the bed anchor as start point
 	for seg in thread.segments[1:]:
+		#Do nothing if both ends of the segment aren't fixed
+		if isinstance(seg.start_point, NonFixedAnchor) and isinstance(seg.end_point, NonFixedAnchor):
+			continue
 		mps = zs.index(seg.start_point.z)
 		mpe = zs.index(seg.end_point.z)
 		if mps > mpe: mps, mpe = mpe, mps
