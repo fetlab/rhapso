@@ -141,7 +141,7 @@ class GSegment(Segment):
 	def as2d(self):
 		if self.start_point.z == 0 and self.end_point.z == 0:
 			return self
-		return GSegment(self.start_point.as2d(), self.end_point.as2d())
+		return self.__class__(self.start_point.as2d(), self.end_point.as2d())
 
 
 	def set_z(self, z):
@@ -156,7 +156,7 @@ class GSegment(Segment):
 
 
 	def copy(self, start_point=None, end_point=None, z=None, **kwargs):
-		seg = GSegment(self, None,
+		seg = self.__class__(self, None,
 			start_point=start_point or self.start_point,
 			end_point=end_point     or self.end_point,
 			z=z, gc_lines=self.gc_lines, is_extrude=self.is_extrude, **kwargs)

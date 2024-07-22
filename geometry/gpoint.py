@@ -88,10 +88,10 @@ class GPoint(Point):
 		return c
 
 
-	def moved(self, vec:Vector=None, x:Number=None, y:Number=None, z:Number=None) -> GPoint:
+	def moved(self, vec:Vector=None, x:Number|None=None, y:Number|None=None, z:Number|None=None) -> GPoint:
 		"""Return a copy of this point moved by vector vec or by x/y/z."""
 		x, y, z = vec[:] if vec else (x or 0, y or 0, z or 0)
-		return GPoint(self.x + x, self.y + y, self.z + z)
+		return self.__class__(self.x + x, self.y + y, self.z + z)
 
 
 	def intersecting(self, check) -> set:

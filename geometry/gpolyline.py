@@ -71,7 +71,7 @@ class GPolyLine:
 		return new_segs
 
 
-	def move(self, what:GPoint, to:GPoint=None, **kwargs) -> GPoint:
+	def move(self, what:GPoint, to:GPoint|None=None, **kwargs) -> GPoint:
 		"""Move the passed point. Modifies this GPolyLine by creating a
 		copy of the point, which is subsequently returned."""
 		if self.segments[0].start_point == what:
