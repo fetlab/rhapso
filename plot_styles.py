@@ -1,3 +1,5 @@
+from util import deep_update
+
 styles_dark: dict[str, dict] = {
 	#Generic styles
 	'segments':     {'mode': 'lines', 'line': dict(color='blue', width=1)},
@@ -95,4 +97,16 @@ styles_light: dict[str, dict] = {
 }
 
 
-styles=styles_dark
+styles_paper = deep_update(styles_dark, {
+    'gc_segs':         {'line':   dict(width=2)},
+    'to_print':        {'line':   dict(color='#1192e8', dash='dot'), 'opacity': 1},
+    'future_thread':   {'line':   dict(color='#b28600', width=2, dash='dot')},
+    'thread_ring':     {'line':   dict(color='#b28600', width=3, dash='dash')},
+    'printed_thread':  {'line':   dict(color='#b28600', width=3, dash=None)},
+    'anchor':          {'marker': dict(symbol='circle', size=6)},
+    'original_thread': {'line':   dict(color='gray', width=2, dash='dot')},
+    'original_anchor': {'marker': dict(color='gray', symbol='circle', size=6)},
+    'next_anchor':     {'marker': dict(symbol='circle', size=6, color='white', line=dict(width=2, color='red'))},
+})
+
+styles=styles_paper
