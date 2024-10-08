@@ -1,6 +1,8 @@
 # Rhapso: Automatically Embedding Fiber Materials into 3D Prints for Enhanced Interactivity
 
-This respository hosts the 3D design files and software for Rhapso, a system to automatically embed fiber materials like thread into 3D-printed objects while they are being printed. Rhapso is published at the The 37th Annual ACM Symposium on User Interface Software and Technology (UIST ’24) ([DOI](https://doi.org/10.1145/3654777.3676468)). If you use any of the code or models from this repository, please cite the paper as follows:
+This respository hosts the 3D design files and software for Rhapso, a system to automatically embed fiber materials like thread into 3D-printed objects while they are being printed. Rhapso is published at the The 37th Annual ACM Symposium on User Interface Software and Technology (UIST ’24) ([DOI](https://doi.org/10.1145/3654777.3676468) | [PDF](rhapso-uist24.pdf) | [YouTube](https://www.youtube.com/watch?v=JTUB1JMb3As)).
+
+If you use any of the code or models from this repository, please cite the paper as follows:
 
 Daniel Ashbrook, Wei-Ju Lin, Nicholas Bentley, Diana Soponar, Valkyrie Savage, Zeyu Yan, Lung-Pan Cheng, Huaishu Peng, and Hyunyoung Kim.  2024. Rhapso: Automatically Embedding Fiber Materials into 3D Prints for Enhanced Interactivity. In The 37th Annual ACM Symposium on User Interface Software and Technology (UIST ’24), October 13–16, 2024, Pittsburgh, PA, USA.  ACM, New York, NY, USA, 20 pages. https://doi.org/10.1145/3654777.3676468
 
