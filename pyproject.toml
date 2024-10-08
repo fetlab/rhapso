@@ -1,0 +1,23 @@
+[project]
+name = "rhapso"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "gcode-geom",
+		"python-gcode",
+]
+
+[tool.ruff.lint]
+ignore = [
+	"E101",   #Mixed spaces & tabs
+	"E401",   #Multiple imports on a line
+	"E501",   #Too-long lines
+	"E701",   #Multiple statements on a line
+	"E741",   #Ambiguous variable names
+]
+
+[tool.uv.sources]
+gcode-geom = { git = "https://github.com/fetlab/gcode_geom" }
+python-gcode = { git = "https://github.com/fetlab/python_gcode", branch = "new" }

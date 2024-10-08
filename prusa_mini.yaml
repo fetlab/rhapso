@@ -1,0 +1,18 @@
+general:
+  initial_thread_angle: 90
+  xml_grabber_name: 'Grabber'
+
+bed:
+  zero:   [0, 0, 0]
+  size:   [180, 180]
+  anchor: [0, 0, 0]
+
+printer:
+  #Extents of the print head, not currently used
+  head_extents:
+    x: [-31, 34]
+    y: [-40, 31]
+
+  #A list of GCode lines to run on gcode_pause_for_thread()
+  pause_commands:
+    - 'M601 ; Pause, wait for user to click button'
