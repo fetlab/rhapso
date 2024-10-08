@@ -27,7 +27,7 @@ The requirements are listed in `pyproject.toml` and can be installed via `pip in
 
 ### Demo
 
-See [basic test.ipynb](basic test.ipynb) for a demo of the router.
+See [basic_test.ipynb](basic_test.ipynb) for a demo of the router.
 
 ## How to…
 
